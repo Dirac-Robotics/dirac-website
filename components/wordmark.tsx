@@ -22,7 +22,7 @@ export function Wordmark({
         className,
       )}
     >
-      Apeiron Labs
+      dirac<span style={{ color: "var(--white)" }}>.</span>
     </span>
   );
 }

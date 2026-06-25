@@ -1,46 +1,39 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono, Instrument_Serif } from "next/font/google";
+import { Syne, DM_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
   subsets: ["latin"],
-  weight: ["400", "500"],
-});
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
+  weight: ["300", "400", "500"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://apeironlabs.ai"),
+  metadataBase: new URL("https://diracrobotics.com"),
   title: {
-    default: "Apeiron Labs — Foundation models for embodied intelligence",
-    template: "%s · Apeiron Labs",
+    default: "Dirac Robotics -- Real2Sim pipelines for robotics",
+    template: "%s · Dirac Robotics",
   },
   description:
-    "Apeiron Labs is building vision-language-action foundation models for general-purpose robotics, and the RL gyms that hold them honest.",
+    "Dirac Robotics builds physics-accurate simulation from your real environment, automated. Close the sim-to-real gap.",
   openGraph: {
-    title: "Apeiron Labs — Foundation models for embodied intelligence",
+    title: "Dirac Robotics -- Real2Sim pipelines for robotics",
     description:
-      "Vision-language-action foundation models for general-purpose robotics, and the RL gyms to evaluate them.",
+      "Physics-accurate simulation from your real environment. Automated.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Apeiron Labs",
+    title: "Dirac Robotics",
     description:
-      "Foundation models for embodied intelligence. Models and RL gyms for general-purpose robotics.",
+      "Physics-accurate simulation from your real environment. Automated.",
   },
 };
 
@@ -53,7 +46,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plexSans.variable} ${plexMono.variable} ${instrumentSerif.variable} h-full antialiased`}
+      className={`${syne.variable} ${dmMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <a
@@ -64,7 +57,7 @@ export default function RootLayout({
         </a>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange
         >
