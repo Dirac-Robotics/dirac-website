@@ -9,7 +9,7 @@ This code appears in the output and can be copied directly into your test files.
 
 ## Example Workflow
 
-```bah
+```bash
 # Start a session
 playwright-cli open https://example.com/login
 
