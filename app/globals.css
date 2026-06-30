@@ -53,37 +53,37 @@
   --graphite: #3A3C44;
   --carbon: #1A1C24;
   --obsidian: #0D0F14;
-  --void: #080A0D;
+  --void: #050508;
   --line-1: #14161C;
-  --line-2: #1A1E28;
-  --line-3: #2A2C34;
+  --line-2: #181B26;
+  --line-3: #242636;
 
-  --background: #080A0D;
+  --background: #050508;
   --foreground: #E8E6E0;
-  --card: #1A1C24;
+  --card: #0D0F18;
   --card-foreground: #E8E6E0;
-  --popover: #0D0F14;
+  --popover: #0A0C14;
   --popover-foreground: #E8E6E0;
   --primary: #E8E6E0;
-  --primary-foreground: #080A0D;
-  --secondary: #1A1C24;
+  --primary-foreground: #050508;
+  --secondary: #0D0F18;
   --secondary-foreground: #C8C5BC;
-  --muted: #2E3040;
+  --muted: #1C1E2A;
   --muted-foreground: #6A6E7A;
-  --accent: #0D0F14;
+  --accent: #0A0C14;
   --accent-foreground: #E8E6E0;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #1A1E28;
-  --input: #2A2C34;
+  --border: #181B26;
+  --input: #1C1E2A;
   --ring: #3A3C44;
   --radius: 0.5rem;
-  --sidebar: #0D0F14;
+  --sidebar: #0A0C14;
   --sidebar-foreground: #E8E6E0;
   --sidebar-primary: #E8E6E0;
-  --sidebar-primary-foreground: #080A0D;
-  --sidebar-accent: #1A1C24;
+  --sidebar-primary-foreground: #050508;
+  --sidebar-accent: #0D0F18;
   --sidebar-accent-foreground: #C8C5BC;
-  --sidebar-border: #1A1E28;
+  --sidebar-border: #181B26;
   --sidebar-ring: #3A3C44;
 }
 
@@ -108,6 +108,52 @@
     font-size: 0.68rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #2E3040;
+    color: #3A3D50;
+  }
+
+  /* Subtle dot-grid background */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+    background-size: 72px 72px;
+  }
+
+  /* Radial fade to kill grid at edges */
+  .bg-vignette::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 90% 75% at 50% 50%, transparent 30%, var(--background) 100%);
+    pointer-events: none;
+  }
+
+  /* Ambient glow blob — position with Tailwind absolute/translate utilities */
+  .glow-blob {
+    border-radius: 9999px;
+    filter: blur(110px);
+    pointer-events: none;
+  }
+
+  /* Elevated card with subtle inner highlight */
+  .card-glow {
+    background: var(--card);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.03),
+      0 8px 32px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  /* Gradient-edge horizontal rule */
+  .rule-fade {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(255, 255, 255, 0.08) 20%,
+      rgba(255, 255, 255, 0.08) 80%,
+      transparent
+    );
   }
 }
