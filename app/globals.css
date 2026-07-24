@@ -39,52 +39,50 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Brand tokens */
+/*
+ * Brand: Ghost White monochrome on near-black. High contrast, technical.
+ * No gradients, no pills, no stock-startup styling. Syne for headings,
+ * DM Mono for body / labels / UI.
+ */
 :root {
-  --white: #FFFFFF;
-  --chalk: #E8E6E0;
-  --ash: #C8C5BC;
-  --flint: #6A6E7A;
-  --graphite: #3A3C44;
-  --carbon: #1A1C24;
-  --obsidian: #0D0F14;
+  --white: #ffffff;
+  --chalk: #e8e6e0;
+  --ash: #c8c5bc;
+  --flint: #6a6e7a;
+  --graphite: #3a3c44;
+  --carbon: #1a1c24;
+  --obsidian: #0d0f14;
   --void: #050508;
-  --line-1: #14161C;
-  --line-2: #181B26;
-  --line-3: #242636;
 
   --background: #050508;
-  --foreground: #E8E6E0;
-  --card: #0D0F18;
-  --card-foreground: #E8E6E0;
-  --popover: #0A0C14;
-  --popover-foreground: #E8E6E0;
-  --primary: #E8E6E0;
+  --foreground: #e8e6e0;
+  --card: #0b0d13;
+  --card-foreground: #e8e6e0;
+  --popover: #0a0c14;
+  --popover-foreground: #e8e6e0;
+  --primary: #e8e6e0;
   --primary-foreground: #050508;
-  --secondary: #0D0F18;
-  --secondary-foreground: #C8C5BC;
-  --muted: #1C1E2A;
-  --muted-foreground: #6A6E7A;
-  --accent: #0A0C14;
-  --accent-foreground: #E8E6E0;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #181B26;
-  --input: #1C1E2A;
-  --ring: #3A3C44;
-  --radius: 0.5rem;
-  --sidebar: #0A0C14;
-  --sidebar-foreground: #E8E6E0;
-  --sidebar-primary: #E8E6E0;
+  --secondary: #0d0f18;
+  --secondary-foreground: #c8c5bc;
+  --muted: #12141c;
+  --muted-foreground: #6a6e7a;
+  --accent: #0d0f18;
+  --accent-foreground: #e8e6e0;
+  --destructive: #e5484d;
+  --border: #1c1f2a;
+  --input: #1c1f2a;
+  --ring: #3a3c44;
+  --radius: 0.375rem;
+  --sidebar: #0a0c14;
+  --sidebar-foreground: #e8e6e0;
+  --sidebar-primary: #e8e6e0;
   --sidebar-primary-foreground: #050508;
-  --sidebar-accent: #0D0F18;
-  --sidebar-accent-foreground: #C8C5BC;
-  --sidebar-border: #181B26;
-  --sidebar-ring: #3A3C44;
+  --sidebar-accent: #0d0f18;
+  --sidebar-accent-foreground: #c8c5bc;
+  --sidebar-border: #1c1f2a;
+  --sidebar-ring: #3a3c44;
 }
 
 @layer base {
@@ -103,57 +101,29 @@
   .font-serif {
     font-family: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   }
+  /* Small uppercase mono label used throughout for eyebrows and metadata. */
   .eyebrow {
     font-family: var(--font-dm-mono);
     font-size: 0.68rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #3A3D50;
+    color: var(--flint);
   }
-
-  /* Subtle dot-grid background */
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.032) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
-    background-size: 72px 72px;
+  .mono {
+    font-family: var(--font-dm-mono);
   }
-
-  /* Radial fade to kill grid at edges */
-  .bg-vignette::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 90% 75% at 50% 50%, transparent 30%, var(--background) 100%);
-    pointer-events: none;
-  }
-
-  /* Ambient glow blob — position with Tailwind absolute/translate utilities */
-  .glow-blob {
-    border-radius: 9999px;
-    filter: blur(110px);
-    pointer-events: none;
-  }
-
-  /* Elevated card with subtle inner highlight */
-  .card-glow {
-    background: var(--card);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.03),
-      0 8px 32px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-
-  /* Gradient-edge horizontal rule */
-  .rule-fade {
+  /* Solid hairline rule. No gradient. */
+  .hairline {
     height: 1px;
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(255, 255, 255, 0.08) 20%,
-      rgba(255, 255, 255, 0.08) 80%,
-      transparent
-    );
+    width: 100%;
+    background: var(--border);
+  }
+  /* Flat technical card. Border only, no shadow glow, no gradient. */
+  .card-flat {
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+  .card-flat:hover {
+    border-color: var(--graphite);
   }
 }

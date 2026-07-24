@@ -1,0 +1,48 @@
+/**
+ * Environment variable validation. Import this instead of touching
+ * `process.env` directly on the server so a missing/typo'd key fails loudly
+ * at startup rather than at the first request.
+ *
+ * Server-only. Do NOT import from a Client Component — client code only ever
+ * needs `NEXT_PUBLIC_*` values, which Next inlines at build time.
+ */
+import { z } from "zod";
+
+const serverSchema = z.object({
+  // Postgres (Supabase or Neon). Use the pooled connection string on Vercel.
+  DATABASE_URL: z.url(),
+
+  // Auth.js
+  AUTH_SECRET: z.string().min(1),
+  // Optional on Vercel (auto-detected); set for local/preview if needed.
+  AUTH_URL: z.url().optional(),
+
+  // Resend — used for BOTH magic-link delivery and internal notifications.
+  RESEND_API_KEY: z.string().min(1),
+  // Verified sender, e.g. "Dirac Robotics <noreply@diracrobotics.com>".
+  EMAIL_FROM: z.string().min(1),
+  // Where new-request / new-lead notifications are sent.
+  ADMIN_NOTIFY_EMAIL: z.email(),
+
+  // Supabase Storage (object storage for uploads). Service role key is
+  // server-only and used to mint short-lived presigned upload URLs.
+  SUPABASE_URL: z.url(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  SUPABASE_STORAGE_BUCKET: z.string().min(1).default("uploads"),
+
+  // Public origin, e.g. https://diracrobotics.com. Used in emails + metadata.
+  SITE_URL: z.url().default("http://localhost:3000"),
+});
+
+const parsed = serverSchema.safeParse(process.env);
+
+if (!parsed.success) {
+  const flat = parsed.error.issues
+    .map((i) => `  - ${i.path.join(".") || "(root)"}: ${i.message}`)
+    .join("\n");
+  throw new Error(
+    `Invalid or missing environment variables:\n${flat}\n\nSee .env.example for the full list.`,
+  );
+}
+
+export const env = parsed.data;
