@@ -71,23 +71,24 @@ export function VoteControl({
         aria-pressed={active}
         aria-label={dir === 1 ? "Upvote" : "Downvote"}
         className={cn(
-          "flex size-7 items-center justify-center rounded-sm border transition-colors outline-none",
+          "flex h-5 w-7 items-center justify-center rounded-sm border transition-colors outline-none",
           "focus-visible:ring-2 focus-visible:ring-ring/40 disabled:opacity-60",
           active
             ? "border-foreground text-foreground"
-            : "border-border text-muted-foreground hover:border-graphite hover:text-foreground",
+            : "border-border text-dim hover:border-graphite hover:text-foreground",
         )}
       >
-        <Icon className="size-4" />
+        <Icon className="size-3.5" />
       </button>
     );
   };
 
+  // Arrows and score are grouped tight so a row is no taller than it must be.
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex shrink-0 flex-col items-center gap-0.5">
       {arrow(1)}
       <span
-        className="mono min-w-8 text-center text-sm tabular-nums text-foreground"
+        className="data w-7 text-center text-sm leading-none text-foreground"
         aria-live="polite"
       >
         {score}

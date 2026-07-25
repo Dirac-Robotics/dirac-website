@@ -278,7 +278,7 @@ export function SubmitAssetModal({
                   className="flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border px-4 py-6 text-center transition-colors hover:border-graphite"
                 >
                   <UploadIcon className="size-5 text-muted-foreground" />
-                  <span className="mono text-xs text-muted-foreground">
+                  <span className="ui-text text-[0.8125rem]">
                     Click or drop images and video
                   </span>
                 </button>
@@ -307,7 +307,7 @@ export function SubmitAssetModal({
                           <ImageIcon className="size-4 shrink-0 text-muted-foreground" />
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="mono truncate text-xs text-foreground">
+                          <p className="data truncate text-xs text-foreground">
                             {f.name}
                           </p>
                           {f.status === "uploading" ? (
@@ -318,11 +318,11 @@ export function SubmitAssetModal({
                               />
                             </div>
                           ) : f.status === "error" ? (
-                            <p className="mono text-[0.65rem] text-destructive">
+                            <p className="text-[0.8125rem] text-destructive">
                               {f.error}
                             </p>
                           ) : (
-                            <p className="mono text-[0.65rem] text-muted-foreground">
+                            <p className="data text-[0.65rem] text-dim">
                               {formatBytes(f.size)} · ready
                             </p>
                           )}
@@ -342,7 +342,7 @@ export function SubmitAssetModal({
               </div>
 
               {formError ? (
-                <p role="alert" className="mono text-xs text-destructive">
+                <p role="alert" className="text-[0.8125rem] text-destructive">
                   {formError}
                 </p>
               ) : null}
@@ -385,10 +385,10 @@ function Field({
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {hint && !error ? (
-        <p className="mono text-[0.65rem] text-muted-foreground">{hint}</p>
+        <p className="ui-text text-[0.8125rem]">{hint}</p>
       ) : null}
       {error ? (
-        <p role="alert" className="mono text-[0.65rem] text-destructive">
+        <p role="alert" className="text-[0.8125rem] text-destructive">
           {error}
         </p>
       ) : null}

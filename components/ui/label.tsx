@@ -13,7 +13,8 @@ function Label({
     <LabelPrimitive.Root
       data-slot="label"
       className={cn(
-        "mono text-[0.7rem] uppercase tracking-[0.16em] text-muted-foreground select-none peer-disabled:opacity-50",
+        // Form labels are body sans, not mono. Family comes from the root.
+        "text-[0.8125rem] text-body select-none peer-disabled:opacity-50",
         className,
       )}
       {...props}

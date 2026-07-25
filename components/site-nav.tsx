@@ -20,9 +20,10 @@ import { signOutAction } from "@/app/signin/actions";
 type NavUser = { email?: string | null; role: "user" | "admin" } | null;
 
 function navLinkClass(active: boolean) {
+  // Nav links are body sans, not mono.
   return cn(
-    "mono text-[0.72rem] uppercase tracking-[0.16em] transition-colors",
-    active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+    "text-[0.8125rem] tracking-[0.01em] transition-colors",
+    active ? "text-foreground" : "text-body hover:text-foreground",
   );
 }
 
@@ -104,10 +105,10 @@ export function SiteNav({ user }: { user: NavUser }) {
                     onClick={() => setOpen(false)}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "mono rounded-md px-3 py-3 text-[0.8rem] uppercase tracking-[0.14em] transition-colors",
+                      "rounded-md px-3 py-3 text-[0.9375rem] transition-colors",
                       active
                         ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                        : "text-body hover:bg-muted hover:text-foreground",
                     )}
                   >
                     {item.label}

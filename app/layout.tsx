@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Syne, DM_Mono } from "next/font/google";
+import { Syne, DM_Mono, Inter } from "next/font/google";
 
 import "./globals.css";
 import { SITE } from "@/lib/site";
@@ -10,6 +10,12 @@ const syne = Syne({
   variable: "--font-syne",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+});
+
+// Body face. Variable, so no weight list. Role assignment lives in globals.css.
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
 });
 
 const dmMono = DM_Mono({
@@ -46,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${syne.variable} ${dmMono.variable} h-full antialiased`}
+      className={`dark ${syne.variable} ${inter.variable} ${dmMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <a

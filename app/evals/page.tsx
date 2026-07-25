@@ -1,36 +1,53 @@
 import type { Metadata } from "next";
 
-import { LeadForm } from "@/components/contact/lead-form";
+import { PageHeader } from "@/components/marketing/page-header";
+import { ProseBlocks } from "@/components/marketing/prose-blocks";
+import { SpecStrip, type Spec } from "@/components/marketing/spec-strip";
+import { CtaSection } from "@/components/marketing/cta-section";
 
-export const metadata: Metadata = { title: "Evals" };
+export const metadata: Metadata = {
+  title: "Evals",
+  description:
+    "Regression testing for robots. We build an evaluation suite for your deployment and run it before the robot touches your floor.",
+};
+
+const BLOCKS = [
+  "A policy that works in the lab is not a policy that works in your building. You usually find that out on day one, on site, with a customer watching and a real cost attached.",
+  "We turn your reconstructed scene into an evaluation suite. Real tasks pulled from your actual workflow. Randomization across the things that genuinely vary on a floor: lighting, object placement, clutter, wear, human interference. Hundreds of runs before a single real one.",
+  "What comes back is not a score. It is a pass rate per task plus the specific conditions where the policy failed, with the scene state that caused each failure. If the robot cannot do the job, you learn it in simulation, on your schedule, instead of on site.",
+  "Then every policy update reruns the suite. If a change breaks a task that used to pass, you see it before it ships. That is what regression testing has always meant, and it is overdue in robotics.",
+];
+
+const SPECS: Spec[] = [
+  { label: "Tasks", value: "Built from your workflow" },
+  { label: "Randomization", value: "Lighting, placement, clutter, wear" },
+  { label: "Output", value: "Pass rate plus failure conditions" },
+  { label: "Rerun", value: "On every policy update" },
+];
 
 export default function EvalsPage() {
   return (
     <main id="content" className="relative flex-1">
-      <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-        <div className="eyebrow mb-6">Evals</div>
-        <h1 className="font-serif text-5xl leading-[1.03] tracking-[-0.03em] text-foreground md:text-7xl">
-          The Evals platform.
-        </h1>
-        <p className="mt-6 max-w-[52ch] text-sm leading-relaxed text-muted-foreground md:text-base">
-          Benchmark policies against ground-truth hardware data. More detail is
-          coming soon.
-        </p>
-      </section>
-
-      <section className="border-t border-border bg-background">
-        <div className="mx-auto max-w-2xl px-6 py-20">
-          <div className="eyebrow mb-4">Get early access</div>
-          <h2 className="mb-8 font-serif text-2xl text-foreground md:text-3xl">
-            Tell us about your evaluation needs.
-          </h2>
-          <LeadForm
-            variant="compact"
-            presetInterest="evals"
-            sourcePage="/evals"
-          />
+      <section className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <PageHeader
+          eyebrow="Evals"
+          headline="Regression testing for robots."
+          standfirst="Nobody ships software without a test suite. Most robots ship on a demo and a hope. We build the suite for your deployment and run it before the robot touches your floor."
+        />
+        <div className="mt-12">
+          <ProseBlocks blocks={BLOCKS} />
+        </div>
+        <div className="mt-12">
+          <SpecStrip specs={SPECS} />
         </div>
       </section>
+
+      <CtaSection
+        headline="Find out if your robot is ready."
+        line="Tell us the site and the task. We will build the suite and show you where it breaks."
+        interest="evals"
+        sourcePage="/evals"
+      />
     </main>
   );
 }

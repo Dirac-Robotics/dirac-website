@@ -23,7 +23,7 @@ export function StatusBadge({ status }: { status: string }) {
   return (
     <Badge
       variant={VARIANT[status] ?? "outline"}
-      className="mono text-[0.6rem] uppercase tracking-[0.12em]"
+      className="data text-[0.6rem] uppercase"
     >
       {LABELS[status] ?? status}
     </Badge>

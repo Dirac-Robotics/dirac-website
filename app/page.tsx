@@ -6,6 +6,7 @@ import {
 import { getCurrentUser } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { ChallengeStrip } from "@/components/assets/challenge-strip";
+import { HeroVideo } from "@/components/assets/hero-video";
 import { Leaderboard } from "@/components/assets/leaderboard";
 import { SubmitAssetModal } from "@/components/assets/submit-asset-modal";
 import { AssetGallery } from "@/components/assets/asset-gallery";
@@ -27,22 +28,27 @@ export default async function Home() {
 
   return (
     <main id="content" className="relative flex-1">
-      {/* Section A: hero + leaderboard */}
-      <section id="top" className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-6 pt-16 pb-16 md:pt-24 md:pb-24">
+      {/* Section A: hero + leaderboard. `isolate` scopes the video's -z-10. */}
+      <section
+        id="top"
+        className="relative isolate overflow-hidden border-b border-border"
+      >
+        <HeroVideo />
+        <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+          {/*
+            min-w-0 on both columns: the leaderboard's truncated (nowrap) row
+            titles otherwise force a min-content wider than a phone viewport.
+          */}
           <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-            <div>
+            <div className="min-w-0">
               <div className="eyebrow mb-6">Community asset program</div>
-              <h1 className="font-serif text-[2.75rem] leading-[1.03] tracking-[-0.03em] text-balance text-foreground sm:text-6xl lg:text-[4.25rem]">
+              <h1 className="text-[2.75rem] leading-[1.03] tracking-[-0.03em] text-foreground sm:text-6xl lg:text-[4.25rem]">
                 For the community, by the community.
               </h1>
-              <p className="mt-7 max-w-[52ch] text-sm leading-relaxed tracking-[0.02em] text-muted-foreground md:text-base">
-                We are releasing our first Isaac Sim asset pack, and we are
-                building it with the robotics community. Request any asset.
-                Describe it in text, upload a photo, upload a video, or any
-                combination. Every request goes on a public leaderboard where the
-                community votes. The most upvoted asset gets built, and the person
-                who requested it gets it free.
+              <p className="prose-lead mt-7">
+                Our first Isaac Sim asset pack is built by request. Ask for what
+                you need, the community votes, and the top request gets built.
+                Whoever asked for it gets it free.
               </p>
 
               <div className="mt-8">
@@ -56,7 +62,7 @@ export default async function Home() {
               </div>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <div className="eyebrow mb-4">Leaderboard</div>
               <Leaderboard
                 rows={rows}

@@ -98,7 +98,8 @@ function DialogTitle({
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "font-serif text-2xl leading-tight tracking-[-0.01em] text-foreground",
+        // Renders an <h2>, so Syne comes from the base heading rule.
+        "text-2xl leading-tight tracking-[-0.01em] text-foreground",
         className,
       )}
       {...props}
@@ -113,7 +114,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-sm leading-relaxed text-muted-foreground", className)}
+      className={cn("prose-body", className)}
       {...props}
     />
   );

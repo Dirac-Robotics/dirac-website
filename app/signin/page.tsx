@@ -18,10 +18,10 @@ export default async function SignInPage({
     <main className="relative flex flex-1 flex-col">
       <section className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-32">
         <div className="eyebrow mb-5">Sign in</div>
-        <h1 className="mb-4 font-serif text-4xl leading-[1.05] tracking-[-0.02em] text-foreground">
+        <h1 className="mb-4 text-4xl leading-[1.05] tracking-[-0.02em] text-foreground">
           Verify your email.
         </h1>
-        <p className="mb-10 text-sm leading-relaxed text-muted-foreground">
+        <p className="prose-body mb-10">
           We use passwordless sign-in. Enter your email and we will send a link.
           Confirming it verifies your account so your vote counts.
         </p>

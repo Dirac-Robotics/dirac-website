@@ -46,8 +46,8 @@ export function LeadForm({
   if (state.status === "success") {
     return (
       <div className="border border-border p-6">
-        <p className="mono text-sm text-foreground">Message received.</p>
-        <p className="mono mt-2 text-xs text-muted-foreground">
+        <p className="text-base text-foreground">Message received.</p>
+        <p className="ui-text mt-2">
           Thanks for reaching out. We will be in touch shortly.
         </p>
       </div>
@@ -124,7 +124,7 @@ export function LeadForm({
       </FormField>
 
       {state.status === "error" ? (
-        <p role="alert" className="mono text-xs text-destructive">
+        <p role="alert" className="text-[0.8125rem] text-destructive">
           {state.message}
         </p>
       ) : null}
@@ -152,7 +152,7 @@ function FormField({
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {error ? (
-        <p role="alert" className="mono text-[0.65rem] text-destructive">
+        <p role="alert" className="text-[0.8125rem] text-destructive">
           {error}
         </p>
       ) : null}

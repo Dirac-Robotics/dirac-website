@@ -28,7 +28,7 @@ export default async function AdminPage() {
     <main id="content" className="relative flex-1">
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="eyebrow mb-2">Admin</div>
-        <h1 className="mb-12 font-serif text-3xl text-foreground">Triage</h1>
+        <h1 className="mb-12 text-3xl text-foreground">Triage</h1>
 
         {/* Asset requests */}
         <div className="mb-16">
@@ -75,7 +75,7 @@ export default async function AdminPage() {
                       </div>
                     </Td>
                     <Td>
-                      <p className="font-serif text-sm text-foreground">
+                      <p className="text-sm text-foreground">
                         {r.title}
                       </p>
                       <p className="mono text-[0.65rem] text-muted-foreground">

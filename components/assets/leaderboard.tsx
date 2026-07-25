@@ -21,8 +21,8 @@ export function Leaderboard({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="border border-border p-8 text-center">
-        <p className="mono text-sm text-muted-foreground">
+      <div className="panel-solid border border-border p-8 text-center">
+        <p className="ui-text">
           No requests yet. Be the first to request an asset.
         </p>
       </div>
@@ -31,13 +31,14 @@ export function Leaderboard({
 
   return (
     <div>
-      <ol className="border border-border">
+      {/* Opaque: this panel sits over the hero video on the home page. */}
+      <ol className="panel-solid border border-border">
         {rows.map((row) => (
           <li
             key={row.id}
-            className="flex items-center gap-4 border-b border-border px-4 py-4 last:border-b-0"
+            className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0"
           >
-            <span className="mono w-6 shrink-0 text-center text-xs text-[var(--graphite)] tabular-nums">
+            <span className="data w-6 shrink-0 text-center text-xs text-dim">
               {row.rank}
             </span>
 
@@ -53,7 +54,7 @@ export function Leaderboard({
               ) : (
                 <span
                   aria-hidden="true"
-                  className="mono flex size-full items-center justify-center text-[0.6rem] text-[var(--graphite)]"
+                  className="data flex size-full items-center justify-center text-[0.6rem] text-dim"
                 >
                   {row.title.slice(0, 2).toUpperCase()}
                 </span>
@@ -61,11 +62,11 @@ export function Leaderboard({
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate font-serif text-base leading-tight text-foreground">
+              <p className="truncate text-base leading-tight text-foreground">
                 {row.title}
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-2">
-                <span className="mono text-[0.68rem] text-muted-foreground">
+                <span className="data text-[0.68rem] text-dim">
                   by {row.requesterFirstName}
                 </span>
                 <StatusBadge status={row.status} />
@@ -86,7 +87,7 @@ export function Leaderboard({
         <div className="mt-4 text-center">
           <Link
             href="/requests"
-            className="mono text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            className="ui-text underline-offset-4 hover:text-foreground hover:underline"
           >
             View all {totalCount} requests
           </Link>

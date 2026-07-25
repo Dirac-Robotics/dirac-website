@@ -33,7 +33,7 @@ export default async function RequestsPage({
     <main id="content" className="relative flex-1">
       <section className="mx-auto max-w-3xl px-6 py-20 md:py-28">
         <div className="eyebrow mb-4">Leaderboard</div>
-        <h1 className="mb-10 font-serif text-4xl leading-[1.05] tracking-[-0.02em] text-foreground md:text-5xl">
+        <h1 className="mb-10 text-4xl leading-[1.05] tracking-[-0.02em] text-foreground md:text-5xl">
           All asset requests
         </h1>
 
@@ -53,7 +53,7 @@ export default async function RequestsPage({
             <PageLink page={pageNum - 1} disabled={pageNum <= 1}>
               Previous
             </PageLink>
-            <span className="mono text-xs text-muted-foreground">
+            <span className="data text-xs text-dim">
               Page {pageNum} of {totalPages}
             </span>
             <PageLink page={pageNum + 1} disabled={pageNum >= totalPages}>
@@ -77,7 +77,7 @@ function PageLink({
 }) {
   if (disabled) {
     return (
-      <span className="mono text-[0.72rem] uppercase tracking-[0.16em] text-[var(--graphite)]">
+      <span className="text-[0.8125rem] text-graphite">
         {children}
       </span>
     );
@@ -85,7 +85,7 @@ function PageLink({
   return (
     <Link
       href={`/requests?page=${page}`}
-      className="mono text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+      className="text-[0.8125rem] text-body underline-offset-4 hover:text-foreground hover:underline"
     >
       {children}
     </Link>

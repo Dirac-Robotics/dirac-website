@@ -14,18 +14,17 @@ function PhysicsLine({ asset }: { asset: GalleryAsset }) {
   const friction = fmt(asset.physics.friction);
   const inertia = fmt(asset.physics.inertia);
   if (mass) parts.push({ label: "mass", value: mass });
-  if (friction) parts.push({ label: "μ", value: friction });
+  // Not "μ": the labels are uppercased, and μ uppercases to a capital Mu.
+  if (friction) parts.push({ label: "friction", value: friction });
   if (inertia) parts.push({ label: "inertia", value: inertia });
   if (parts.length === 0) return null;
 
   return (
-    <dl className="mono flex flex-wrap gap-x-4 gap-y-1 text-[0.65rem] text-muted-foreground">
+    <dl className="data flex flex-wrap gap-x-4 gap-y-1 text-[0.65rem]">
       {parts.map((p) => (
         <div key={p.label} className="flex gap-1.5">
-          <dt className="uppercase tracking-[0.12em] text-[var(--graphite)]">
-            {p.label}
-          </dt>
-          <dd className="text-ash tabular-nums">{p.value}</dd>
+          <dt className="uppercase text-dim">{p.label}</dt>
+          <dd className="text-ash">{p.value}</dd>
         </div>
       ))}
     </dl>
@@ -34,7 +33,7 @@ function PhysicsLine({ asset }: { asset: GalleryAsset }) {
 
 function AssetTile({ asset }: { asset: GalleryAsset }) {
   return (
-    <article className="card-flat flex flex-col overflow-hidden rounded-md transition-colors">
+    <article className="card-flat flex h-full flex-col overflow-hidden rounded-md transition-colors">
       {/*
         ── PHASE 2 SEAM: 3D VIEWER ──────────────────────────────────────────
         This media block is a static image today. Swapping it for an
@@ -56,14 +55,14 @@ function AssetTile({ asset }: { asset: GalleryAsset }) {
         ) : (
           <div
             aria-hidden="true"
-            className="mono flex size-full items-center justify-center text-xs text-[var(--graphite)]"
+            className="data flex size-full items-center justify-center text-xs text-dim"
           >
             {asset.name}
           </div>
         )}
       </div>
       <div className="flex flex-col gap-3 p-4">
-        <h3 className="font-serif text-lg leading-tight text-foreground">
+        <h3 className="text-lg leading-tight text-foreground">
           {asset.name}
         </h3>
         <PhysicsLine asset={asset} />
@@ -79,14 +78,30 @@ export function AssetGallery({ assets }: { assets: GalleryAsset[] }) {
       id="gallery"
       className="relative z-10 border-b border-border bg-background"
     >
-      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
-        <div className="eyebrow mb-4">Shipped assets</div>
-        <h2 className="mb-10 max-w-[36ch] font-serif text-3xl leading-[1.1] tracking-[-0.02em] text-foreground md:text-4xl">
-          Built and measured. Every value is real.
-        </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
+        <div className="mb-10 text-center">
+          <div className="eyebrow mb-4">Shipped assets</div>
+          <h2 className="text-3xl leading-[1.1] text-foreground md:text-4xl">
+            Built and measured.
+          </h2>
+          <p className="prose-body mx-auto mt-4">
+            Every physical value on these assets was measured against real
+            hardware, with stated uncertainty.
+          </p>
+        </div>
+        {/*
+          Centred flex-wrap rather than a grid: with a count that is not a
+          multiple of the column number, a grid orphans the trailing tile
+          against an empty half-row, which reads as a bug. This centres it.
+        */}
+        <div className="flex flex-wrap justify-center gap-5">
           {assets.map((asset) => (
-            <AssetTile key={asset.id} asset={asset} />
+            <div
+              key={asset.id}
+              className="w-full sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]"
+            >
+              <AssetTile asset={asset} />
+            </div>
           ))}
         </div>
       </div>

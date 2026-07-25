@@ -3,8 +3,9 @@ import Link from "next/link";
 import { SITE } from "@/lib/site";
 import { Logo } from "@/components/logo";
 
+// Footer links read as nav, so they are body sans. Only the meta line is mono.
 const linkClass =
-  "mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground";
+  "text-[0.8125rem] text-body transition-colors hover:text-foreground";
 
 export function SiteFooter() {
   return (
@@ -35,10 +36,10 @@ export function SiteFooter() {
         <div className="mt-8 hairline" />
 
         <div className="mt-6 flex items-center justify-between">
-          <span className="mono text-[0.6rem] uppercase tracking-[0.2em] text-[var(--graphite)]">
+          <span className="data text-[0.65rem] uppercase text-dim">
             © {new Date().getFullYear()} {SITE.name}
           </span>
-          <span className="mono text-[0.6rem] uppercase tracking-[0.2em] text-[var(--graphite)]">
+          <span className="data text-[0.65rem] uppercase text-dim">
             {SITE.domain}
           </span>
         </div>
