@@ -149,6 +149,7 @@ export const assetRequests = pgTable(
       .references(() => users.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     description: text("description"),
+    organization: text("organization"),
     status: requestStatus("status").notNull().default("submitted"),
     moderationState: moderationState("moderation_state").notNull().default("visible"),
     // Denormalized for sort. Source of truth is the votes table; this is
@@ -176,6 +177,7 @@ export const assetRequestMedia = pgTable(
       .notNull()
       .references(() => assetRequests.id, { onDelete: "cascade" }),
     storageKey: text("storage_key").notNull(),
+    url: text("url"),
     mimeType: text("mime_type").notNull(),
     sizeBytes: bigint("size_bytes", { mode: "number" }).notNull(),
     kind: mediaKind("kind").notNull(),
@@ -257,6 +259,7 @@ export const assetMedia = pgTable(
       .notNull()
       .references(() => assets.id, { onDelete: "cascade" }),
     storageKey: text("storage_key").notNull(),
+    url: text("url"),
     mimeType: text("mime_type").notNull(),
     kind: assetMediaKind("kind").notNull(),
     sortOrder: integer("sort_order").notNull().default(0),

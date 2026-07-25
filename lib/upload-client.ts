@@ -34,15 +34,16 @@ export async function uploadFile(
     throw new UploadError(body.error ?? "Could not start the upload.");
   }
 
-  const { signedUrl, storageKey, kind } = (await presignRes.json()) as {
-    signedUrl: string;
+  const { uploadUrl, storageKey, kind } = (await presignRes.json()) as {
+    uploadUrl: string;
     storageKey: string;
     kind: MediaKind;
   };
 
   await new Promise<void>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("PUT", signedUrl, true);
+    xhr.open("PUT", uploadUrl, true);
+    xhr.setRequestHeader("x-ms-blob-type", "BlockBlob");
     xhr.setRequestHeader("content-type", file.type);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));

@@ -1,8 +1,4 @@
-import {
-  getLeaderboard,
-  getLeaderboardCount,
-  getPublishedAssets,
-} from "@/lib/queries";
+import { getLeaderboard, getLeaderboardCount } from "@/lib/queries";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChallengeStrip } from "@/components/assets/challenge-strip";
@@ -20,10 +16,9 @@ export const dynamic = "force-dynamic";
 const LEADERBOARD_LIMIT = 10;
 
 export default async function Home() {
-  const [rows, totalCount, assets] = await Promise.all([
+  const [rows, totalCount] = await Promise.all([
     getLeaderboard({ limit: LEADERBOARD_LIMIT }),
     getLeaderboardCount(),
-    getPublishedAssets(),
   ]);
 
   return (
@@ -92,7 +87,7 @@ export default async function Home() {
       </section>
 
       {/* Section C: shipped asset gallery */}
-      <AssetGallery assets={assets} />
+      <AssetGallery />
 
       {/* Section D: positioning */}
       <Positioning />

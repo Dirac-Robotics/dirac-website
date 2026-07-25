@@ -1,5 +1,8 @@
+import { ArrowRight } from "lucide-react";
+
 import type { LeadInterest } from "@/lib/validation";
-import { LeadForm } from "@/components/contact/lead-form";
+import { SITE } from "@/lib/site";
+import { Button } from "@/components/ui/button";
 
 /**
  * Closing CTA. Every marketing page ends with one, on the same content grid as
@@ -9,8 +12,6 @@ export function CtaSection({
   eyebrow = "Get started",
   headline,
   line,
-  interest,
-  sourcePage,
 }: {
   eyebrow?: string;
   headline: string;
@@ -26,13 +27,17 @@ export function CtaSection({
           {headline}
         </h2>
         <p className="prose-body mt-4">{line}</p>
-        {/* The form keeps a readable width inside the full content grid. */}
-        <div className="mt-8 max-w-xl">
-          <LeadForm
-            variant="compact"
-            presetInterest={interest}
-            sourcePage={sourcePage}
-          />
+        <div className="mt-8">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 gap-2 px-8 text-base font-semibold"
+          >
+            <a href={SITE.calendlyUrl} target="_blank" rel="noopener noreferrer">
+              Book a call
+              <ArrowRight className="size-4" />
+            </a>
+          </Button>
         </div>
       </div>
     </section>

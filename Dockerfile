@@ -30,12 +30,12 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production \
     DATABASE_URL=postgres://build:build@localhost:5432/build \
     AUTH_SECRET=build-time-placeholder \
-    RESEND_API_KEY=build-time-placeholder \
+    ACS_CONNECTION_STRING=endpoint=https://build.communication.azure.com/;accesskey=build \
     EMAIL_FROM=build@example.com \
     ADMIN_NOTIFY_EMAIL=build@example.com \
-    SUPABASE_URL=https://placeholder.supabase.co \
-    SUPABASE_SERVICE_ROLE_KEY=build-time-placeholder \
-    SUPABASE_STORAGE_BUCKET=uploads \
+    AZURE_STORAGE_ACCOUNT=buildplaceholder \
+    AZURE_STORAGE_KEY=YnVpbGQ= \
+    AZURE_STORAGE_CONTAINER=media \
     SITE_URL=http://localhost:3000
 
 RUN npm run build

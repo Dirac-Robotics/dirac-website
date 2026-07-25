@@ -15,9 +15,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { signOutAction } from "@/app/signin/actions";
-
-type NavUser = { email?: string | null; role: "user" | "admin" } | null;
 
 function navLinkClass(active: boolean) {
   // Nav links are body sans, not mono.
@@ -27,31 +24,7 @@ function navLinkClass(active: boolean) {
   );
 }
 
-function AuthArea({ user }: { user: NavUser }) {
-  if (!user) {
-    return (
-      <Button asChild size="sm" variant="outline">
-        <Link href="/signin">Sign in</Link>
-      </Button>
-    );
-  }
-  return (
-    <div className="flex items-center gap-3">
-      {user.role === "admin" ? (
-        <Link href="/admin" className={navLinkClass(false)}>
-          Admin
-        </Link>
-      ) : null}
-      <form action={signOutAction}>
-        <Button type="submit" size="sm" variant="ghost">
-          Sign out
-        </Button>
-      </form>
-    </div>
-  );
-}
-
-export function SiteNav({ user }: { user: NavUser }) {
+export function SiteNav() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
 
@@ -73,10 +46,6 @@ export function SiteNav({ user }: { user: NavUser }) {
           );
         })}
       </nav>
-
-      <div className="hidden md:block">
-        <AuthArea user={user} />
-      </div>
 
       {/* Mobile nav */}
       <div className="md:hidden">
@@ -116,10 +85,6 @@ export function SiteNav({ user }: { user: NavUser }) {
                 );
               })}
             </nav>
-            <div className="hairline" />
-            <div className="px-5 py-4">
-              <AuthArea user={user} />
-            </div>
           </SheetContent>
         </Sheet>
       </div>

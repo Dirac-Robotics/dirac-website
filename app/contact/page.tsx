@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
 
 import { SITE } from "@/lib/site";
 import { PageHeader } from "@/components/marketing/page-header";
-import { LeadForm } from "@/components/contact/lead-form";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -34,8 +35,17 @@ export default function ContactPage() {
           .
         </p>
 
-        <div className="mt-12 max-w-xl">
-          <LeadForm variant="full" sourcePage="/contact" />
+        <div className="mt-10">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 gap-2 px-8 text-base font-semibold"
+          >
+            <a href={SITE.calendlyUrl} target="_blank" rel="noopener noreferrer">
+              Book a call
+              <ArrowRight className="size-4" />
+            </a>
+          </Button>
         </div>
       </section>
     </main>
