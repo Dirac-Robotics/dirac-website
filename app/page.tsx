@@ -5,6 +5,7 @@ import { ChallengeStrip } from "@/components/assets/challenge-strip";
 import { HeroShowcase } from "@/components/assets/hero-showcase";
 import { Leaderboard } from "@/components/assets/leaderboard";
 import { LeaderboardStrip } from "@/components/assets/leaderboard-strip";
+import { LeaderboardVideo } from "@/components/assets/leaderboard-video";
 import { SubmitAssetModal } from "@/components/assets/submit-asset-modal";
 import { AssetGallery } from "@/components/assets/asset-gallery";
 import { Positioning } from "@/components/assets/positioning";
@@ -62,7 +63,16 @@ export default async function Home() {
       </section>
 
       {/* Section B: the leaderboard, kept as the primary focus. */}
-      <section id="leaderboard" className="scroll-mt-24 border-b border-border">
+      <section
+        id="leaderboard"
+        className="relative isolate overflow-hidden scroll-mt-24 border-b border-border"
+      >
+        {/* Looping, darkened ambient video so the board does not read as empty. */}
+        <LeaderboardVideo />
+        <div
+          className="absolute inset-0 -z-10 bg-linear-to-b from-background/90 via-background/75 to-background/95"
+          aria-hidden="true"
+        />
         <div className="mx-auto w-full max-w-3xl px-6 py-16 md:py-20">
           <div className="mb-6 flex items-end justify-between gap-4">
             <div className="min-w-0">
