@@ -1,8 +1,9 @@
 name: Build and push image to ACR
 
-# Builds the container image and pushes it to the `diracwebsite` Azure Container
-# Registry, authenticating with a repository-scoped ACR push token stored in
-# GitHub Actions secrets (ACR_USERNAME / ACR_PASSWORD).
+# Builds the container image, pushes it to the `diracwebsite` Azure Container
+# Registry (repository-scoped push token: ACR_USERNAME / ACR_PASSWORD), then
+# rolls it out to the `dirac-website` Azure Container App via GitHub OIDC
+# (AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID).
 
 on:
   push:
@@ -14,6 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  id-token: write # GitHub OIDC token for azure/login
   contents: read
 
 env:
@@ -56,3 +58,21 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # ── Deploy: roll the freshly-pushed image onto the Container App (main only) ──
+      - name: Azure login (OIDC)
+        if: github.ref == 'refs/heads/main'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Container Apps
+        if: github.ref == 'refs/heads/main'
+        run: |
+          az config set extension.use_dynamic_install=yes_without_prompt
+          az containerapp update \
+            --name ${{ env.IMAGE }} \
+            --resource-group dirac \
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE }}:sha-${{ github.sha }}
