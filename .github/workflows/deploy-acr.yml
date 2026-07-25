@@ -6,7 +6,7 @@ name: Build and push image to ACR
 
 on:
   push:
-    branches: [main, new_changes]
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
