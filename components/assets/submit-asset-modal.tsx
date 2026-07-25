@@ -205,9 +205,9 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-xl">
+      <DialogContent className="max-w-xl sm:max-w-2xl">
         {phase === "success" ? (
-          <SuccessView email={email} onClose={() => setOpen(false)} />
+          <SuccessView onClose={() => setOpen(false)} />
         ) : (
           <>
             <DialogHeader>
@@ -222,7 +222,7 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
 
             <form
               onSubmit={onSubmit}
-              className="flex flex-col gap-4"
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2"
               noValidate
             >
               <Field label="Your name" htmlFor="req-name" error={errors.name}>
@@ -283,6 +283,7 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
                 htmlFor="req-desc"
                 error={errors.description}
                 hint="Describe the object, materials, and how it should behave. Optional if you attach a file below."
+                className="sm:col-span-2"
               >
                 <Textarea
                   id="req-desc"
@@ -293,7 +294,7 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
                 />
               </Field>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 sm:col-span-2">
                 <Label>Media</Label>
                 <p className="ui-text text-[0.8125rem]">
                   A reference photo or video. Optional if you wrote a
@@ -374,7 +375,10 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
               </div>
 
               {formError ? (
-                <p role="alert" className="text-[0.8125rem] text-destructive">
+                <p
+                  role="alert"
+                  className="text-[0.8125rem] text-destructive sm:col-span-2"
+                >
                   {formError}
                 </p>
               ) : null}
@@ -383,7 +387,7 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
                 type="submit"
                 size="lg"
                 disabled={submitting || uploading}
-                className="w-full"
+                className="w-full sm:col-span-2"
               >
                 {submitting
                   ? "Submitting..."
@@ -404,16 +408,18 @@ function Field({
   htmlFor,
   error,
   hint,
+  className,
   children,
 }: {
   label: string;
   htmlFor: string;
   error?: string;
   hint?: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={"flex flex-col gap-2" + (className ? " " + className : "")}>
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {hint && !error ? (
@@ -428,22 +434,15 @@ function Field({
   );
 }
 
-function SuccessView({
-  email,
-  onClose,
-}: {
-  email: string;
-  onClose: () => void;
-}) {
+function SuccessView({ onClose }: { onClose: () => void }) {
   return (
     <div className="flex flex-col gap-4 py-2">
       <DialogHeader>
         <DialogTitle>Request submitted</DialogTitle>
         <DialogDescription>
-          Check your inbox. We sent a confirmation link to{" "}
-          <span className="text-foreground">{email}</span>. Confirm your email
-          to verify your account so your vote counts, and so we can reach you if
-          your request wins.
+          Thanks. Your request is now on the community leaderboard. If it
+          becomes the top-voted asset this cycle, we will build it and give it
+          to you free.
         </DialogDescription>
       </DialogHeader>
       <Button size="lg" onClick={onClose} className="w-full">

@@ -33,7 +33,10 @@ export function LeaderboardVideo() {
       preload="metadata"
       aria-hidden="true"
     >
-      <source src="/background.mp4" type="video/mp4" />
+      <source
+        src="https://diracwebsitemedia.blob.core.windows.net/media/site/background.mp4"
+        type="video/mp4"
+      />
     </video>
   );
 }
