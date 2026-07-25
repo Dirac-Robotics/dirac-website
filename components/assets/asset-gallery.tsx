@@ -43,6 +43,8 @@ const OBJECTS: MeasuredObject[] = [
     name: "Kettle",
     url: "/models/objects/teapot.obj",
     type: "obj",
+    // Source model sits top-down; stand it upright and face the camera.
+    rotation: [-Math.PI / 2, 0, 0],
     specs: [
       { label: "Mass", value: "1.15 ± 0.02 kg" },
       { label: "Material", value: "Stainless steel" },

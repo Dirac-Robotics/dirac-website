@@ -2,6 +2,9 @@
 
 import * as React from "react";
 import dynamic from "next/dynamic";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import type { ShowcaseControls } from "./showcase-canvas";
 
 /**
  * Client wrapper for the 3D showcase. The WebGL canvas cannot server-render, so
@@ -28,10 +31,33 @@ const ShowcaseCanvas = dynamic(() => import("./showcase-canvas"), {
 export function HeroShowcase({ className = "" }: { className?: string }) {
   const [active, setActive] = React.useState(0);
   const [cursor, setCursor] = React.useState("");
+  const controls = React.useRef<ShowcaseControls | null>(null);
 
   return (
     <div className={"relative " + className} style={{ cursor }}>
-      <ShowcaseCanvas onActiveChange={setActive} onCursor={setCursor} />
+      <ShowcaseCanvas
+        onActiveChange={setActive}
+        onCursor={setCursor}
+        controlsRef={controls}
+      />
+
+      {/* Prev / next model. Above the canvas so taps register on mobile. */}
+      <button
+        type="button"
+        aria-label="Previous model"
+        onClick={() => controls.current?.prev()}
+        className="absolute top-1/2 left-2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/50 text-ash backdrop-blur-sm transition-colors hover:border-graphite hover:text-foreground sm:left-4"
+      >
+        <ChevronLeft className="size-5" />
+      </button>
+      <button
+        type="button"
+        aria-label="Next model"
+        onClick={() => controls.current?.next()}
+        className="absolute top-1/2 right-2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-background/50 text-ash backdrop-blur-sm transition-colors hover:border-graphite hover:text-foreground sm:right-4"
+      >
+        <ChevronRight className="size-5" />
+      </button>
 
       {/* Label + interaction hint. Non-interactive so it never blocks the canvas. */}
       <div className="pointer-events-none absolute inset-x-0 bottom-1 flex flex-col items-center gap-1">
@@ -39,7 +65,7 @@ export function HeroShowcase({ className = "" }: { className?: string }) {
           {NAMES[active] ?? ""}
         </span>
         <span className="ui-text text-[0.7rem] text-dim">
-          Drag the center object to rotate
+          Drag to rotate, or use the arrows
         </span>
       </div>
     </div>

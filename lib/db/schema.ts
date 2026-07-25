@@ -89,16 +89,25 @@ export const leadInterest = pgEnum("lead_interest", [
 // Column *property names* below must match what @auth/drizzle-adapter expects.
 // Our extra columns (role, createdAt) have DB defaults so adapter inserts work.
 
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name"),
-  email: text("email").notNull(),
-  emailVerified: timestamp("email_verified", { mode: "date", withTimezone: true }),
-  image: text("image"),
-  // Domain fields:
-  role: userRole("role").notNull().default("user"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-}, (t) => [uniqueIndex("users_email_unique").on(t.email)]);
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: text("name"),
+    email: text("email").notNull(),
+    emailVerified: timestamp("email_verified", {
+      mode: "date",
+      withTimezone: true,
+    }),
+    image: text("image"),
+    // Domain fields:
+    role: userRole("role").notNull().default("user"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [uniqueIndex("users_email_unique").on(t.email)],
+);
 
 export const accounts = pgTable(
   "accounts",
@@ -133,7 +142,10 @@ export const verificationTokens = pgTable(
   {
     identifier: text("identifier").notNull(),
     token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date", withTimezone: true }).notNull(),
+    expires: timestamp("expires", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
   },
   (t) => [primaryKey({ columns: [t.identifier, t.token] })],
 );
@@ -151,11 +163,15 @@ export const assetRequests = pgTable(
     description: text("description"),
     organization: text("organization"),
     status: requestStatus("status").notNull().default("submitted"),
-    moderationState: moderationState("moderation_state").notNull().default("visible"),
+    moderationState: moderationState("moderation_state")
+      .notNull()
+      .default("visible"),
     // Denormalized for sort. Source of truth is the votes table; this is
     // recomputed from votes inside the same transaction on every vote.
     voteScore: integer("vote_score").notNull().default(0),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     // Leaderboard sort: visible rows, highest net score, newest as tiebreak.
@@ -181,7 +197,9 @@ export const assetRequestMedia = pgTable(
     mimeType: text("mime_type").notNull(),
     sizeBytes: bigint("size_bytes", { mode: "number" }).notNull(),
     kind: mediaKind("kind").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [index("asset_request_media_request_idx").on(t.requestId)],
 );
@@ -197,8 +215,12 @@ export const votes = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     value: integer("value").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     // Vote uniqueness enforced at the DB level, not just in app code.
@@ -220,7 +242,9 @@ export const leads = pgTable(
     interest: leadInterest("interest").notNull(),
     message: text("message"),
     sourcePage: text("source_page"),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     index("leads_created_idx").on(t.createdAt.desc()),
@@ -241,9 +265,13 @@ export const assets = pgTable(
     name: text("name").notNull(),
     slug: text("slug").notNull(),
     description: text("description"),
-    physics: jsonb("physics").notNull().default(sql`'{}'::jsonb`),
+    physics: jsonb("physics")
+      .notNull()
+      .default(sql`'{}'::jsonb`),
     published: boolean("published").notNull().default(false),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [
     uniqueIndex("assets_slug_unique").on(t.slug),
@@ -280,7 +308,9 @@ export const rateLimitEvents = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     bucket: text("bucket").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
   (t) => [index("rate_limit_bucket_created_idx").on(t.bucket, t.createdAt)],
 );

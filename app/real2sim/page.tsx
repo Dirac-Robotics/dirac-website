@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { PageHeader } from "@/components/marketing/page-header";
+import { NodeMesh } from "@/components/marketing/node-mesh";
 import { ProseBlocks } from "@/components/marketing/prose-blocks";
 import { SpecStrip, type Spec } from "@/components/marketing/spec-strip";
 import { CtaSection } from "@/components/marketing/cta-section";
@@ -27,7 +28,8 @@ const SPECS: Spec[] = [
 export default function Real2SimPage() {
   return (
     <main id="content" className="relative flex-1">
-      <section className="mx-auto max-w-6xl px-6 py-16 md:py-24">
+      <section className="relative isolate overflow-hidden mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <NodeMesh className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-1/2 lg:block" />
         <PageHeader
           eyebrow="Real2Sim"
           headline="Film your site. Get a scene your robot can actually train in."

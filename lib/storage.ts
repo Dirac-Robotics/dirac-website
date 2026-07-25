@@ -31,7 +31,10 @@ const container = service.getContainerClient(env.AZURE_STORAGE_CONTAINER);
 export function buildUploadKey(prefix: string, filename: string): string {
   const dot = filename.lastIndexOf(".");
   const rawExt = dot >= 0 ? filename.slice(dot + 1) : "";
-  const ext = rawExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 10).toLowerCase();
+  const ext = rawExt
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, 10)
+    .toLowerCase();
   const id = crypto.randomUUID();
   return ext ? `${prefix}/${id}.${ext}` : `${prefix}/${id}`;
 }
@@ -87,7 +90,9 @@ export async function statObject(
   storageKey: string,
 ): Promise<{ sizeBytes: number; mimeType: string } | null> {
   try {
-    const props = await container.getBlockBlobClient(storageKey).getProperties();
+    const props = await container
+      .getBlockBlobClient(storageKey)
+      .getProperties();
     return {
       sizeBytes: props.contentLength ?? 0,
       mimeType: props.contentType ?? "application/octet-stream",

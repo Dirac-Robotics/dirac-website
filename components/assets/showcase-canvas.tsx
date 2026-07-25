@@ -13,6 +13,10 @@ import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 import { ColladaLoader } from "three/examples/jsm/loaders/ColladaLoader.js";
 
+import { useCanvasProfile } from "./canvas-profile";
+
+export type ShowcaseControls = { next: () => void; prev: () => void };
+
 /**
  * Interactive 3D showcase for the hero.
  *
@@ -39,7 +43,13 @@ type ObjDef = {
 const OBJECTS: ObjDef[] = [
   { name: "Eyewear", url: "/models/objects/glasses.dae", type: "dae" },
   { name: "Lounge chair", url: "/models/objects/chair.fbx", type: "fbx" },
-  { name: "Kettle", url: "/models/objects/teapot.obj", type: "obj" },
+  {
+    name: "Kettle",
+    url: "/models/objects/teapot.obj",
+    type: "obj",
+    // Source model sits top-down; stand it upright and face the camera.
+    rotation: [-Math.PI / 2, 0, 0],
+  },
   { name: "Rubber duck", url: "/models/objects/duck.dae", type: "dae" },
 ];
 
@@ -191,9 +201,13 @@ function ShowcaseItem({
 function Scene({
   onActiveChange,
   onCursor,
+  shadows,
+  controlsRef,
 }: {
   onActiveChange: (i: number) => void;
   onCursor: (cursor: string) => void;
+  shadows: boolean;
+  controlsRef?: React.RefObject<ShowcaseControls | null>;
 }) {
   const reduce = !!useReducedMotion();
   const [active, setActive] = React.useState(0);
@@ -254,6 +268,20 @@ function Scene({
     onActiveChange(active);
   }, [active, onActiveChange]);
 
+  // Manual navigation (prev/next arrows). Resets the auto-advance accumulator
+  // so a click does not immediately advance again.
+  const step = React.useCallback((dir: number) => {
+    acc.current = 0;
+    setActive((a) => (a + dir + N) % N);
+  }, []);
+  React.useEffect(() => {
+    if (!controlsRef) return;
+    controlsRef.current = { next: () => step(1), prev: () => step(-1) };
+    return () => {
+      controlsRef.current = null;
+    };
+  }, [controlsRef, step]);
+
   // Auto-advance via a frame accumulator so hover/drag can pause it cleanly.
   useFrame((_, dt) => {
     if (reduce || paused.current) {
@@ -273,7 +301,7 @@ function Scene({
       <directionalLight
         position={[4, 6.5, 5]}
         intensity={2.2}
-        castShadow
+        castShadow={shadows}
         shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0002}
       />
@@ -318,6 +346,7 @@ function Scene({
         blur={2.6}
         far={4.5}
         color="#000000"
+        visible={shadows}
       />
     </>
   );
@@ -326,20 +355,29 @@ function Scene({
 export default function ShowcaseCanvas({
   onActiveChange,
   onCursor,
+  controlsRef,
 }: {
   onActiveChange: (i: number) => void;
   onCursor: (cursor: string) => void;
+  controlsRef?: React.RefObject<ShowcaseControls | null>;
 }) {
+  const { dpr, shadows } = useCanvasProfile();
   return (
     <Canvas
       className="absolute! inset-0"
-      dpr={[1, 2]}
-      shadows
+      style={{ touchAction: "pan-y" }}
+      dpr={dpr}
+      shadows={shadows}
       gl={{ alpha: true, antialias: true }}
       camera={{ position: [0, 0.35, 6.4], fov: 32 }}
       onCreated={({ gl }) => gl.setClearAlpha(0)}
     >
-      <Scene onActiveChange={onActiveChange} onCursor={onCursor} />
+      <Scene
+        onActiveChange={onActiveChange}
+        onCursor={onCursor}
+        shadows={shadows}
+        controlsRef={controlsRef}
+      />
     </Canvas>
   );
 }
