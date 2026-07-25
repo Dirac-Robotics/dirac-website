@@ -49,7 +49,16 @@ yarn-error.log*
 # playwright-cli skill working dir + ad-hoc screenshots from visual review
 /.playwright-cli/
 /.playwright/
+/screenshots/
 /*.png
+
+# Raw 3D source assets (multi-MB OBJ/FBX/DAE/BLEND originals). The web-ready
+# models actually served live in public/models/**. Version these with git-lfs
+# or object storage if you need them, not plain git.
+/objects/
+
+# Scratch / working files (whiteboard sketches, experiments)
+/temp/
 
 # typescript
 *.tsbuildinfo

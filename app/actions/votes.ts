@@ -1,111 +1,63 @@
 "use server";
 
 import { and, eq, sql } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
-import { assetRequests, votes } from "@/lib/db/schema";
-import { voteSchema, type VoteInput } from "@/lib/validation";
-import { getCurrentUser } from "@/lib/session";
+import { assetRequests } from "@/lib/db/schema";
+import { upvoteSchema, type UpvoteInput } from "@/lib/validation";
 import { getClientIp } from "@/lib/request-context";
 import { enforceRateLimits, RATE_LIMITS } from "@/lib/rate-limit";
 
-export type UserVote = -1 | 0 | 1;
-
-export type VoteResult =
-  | { ok: true; score: number; userVote: UserVote }
-  | { ok: false; error: string; needsAuth?: boolean };
+export type UpvoteResult =
+  | { ok: true; score: number; upvoted: boolean }
+  | { ok: false; error: string };
 
 /**
- * Cast, flip, or clear a vote.
- *   - no existing vote      -> insert (userVote = value)
- *   - existing, same value  -> delete (userVote = 0)   [clicking active clears]
- *   - existing, other value -> update (userVote = value) [flip]
+ * Anonymous, localStorage-backed upvoting.
  *
- * The votes table is the source of truth. `vote_score` is recomputed by summing
- * votes inside the SAME transaction, so the denormalized value can never drift.
- * A verified email (a real session) is required to vote.
+ * There is no account and no per-user vote row. The browser remembers whether
+ * it has upvoted a request (a localStorage flag), and this action adjusts the
+ * denormalized `vote_score` by +1 / -1 to match. For anonymous voting the
+ * `vote_score` column is the source of truth. The `greatest(..., 0)` floor
+ * keeps a stray "remove" (e.g. a browser whose flag drifted) from pushing a
+ * score below zero.
+ *
+ * This is deliberately best-effort: someone can clear localStorage and upvote
+ * again. IP rate limiting is the only abuse control, which is acceptable for a
+ * community popularity signal (nothing financial rides on it).
  */
-export async function castVote(input: VoteInput): Promise<VoteResult> {
-  const parsed = voteSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: "Invalid vote." };
-
-  const user = await getCurrentUser();
-  if (!user) {
-    return { ok: false, error: "Sign in to vote.", needsAuth: true };
-  }
+export async function toggleUpvote(input: UpvoteInput): Promise<UpvoteResult> {
+  const parsed = upvoteSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Invalid request." };
 
   const ip = await getClientIp();
   const rl = await enforceRateLimits([
-    { bucket: `vote:acct:${user.id}`, ...RATE_LIMITS.votePerAccount },
     { bucket: `vote:ip:${ip}`, ...RATE_LIMITS.votePerIp },
   ]);
   if (!rl.ok) {
     return { ok: false, error: "You are voting too fast. Slow down a moment." };
   }
 
-  const { requestId, value } = parsed.data;
+  const { requestId, upvote } = parsed.data;
+  const delta = upvote ? 1 : -1;
 
   try {
-    const outcome = await db.transaction(async (tx) => {
-      const [req] = await tx
-        .select({
-          id: assetRequests.id,
-          moderationState: assetRequests.moderationState,
-        })
-        .from(assetRequests)
-        .where(eq(assetRequests.id, requestId))
-        .limit(1);
+    const [row] = await db
+      .update(assetRequests)
+      .set({
+        voteScore: sql`greatest(${assetRequests.voteScore} + ${delta}, 0)`,
+      })
+      .where(
+        and(
+          eq(assetRequests.id, requestId),
+          eq(assetRequests.moderationState, "visible"),
+        ),
+      )
+      .returning({ score: assetRequests.voteScore });
 
-      if (!req || req.moderationState !== "visible") {
-        return { notFound: true as const };
-      }
-
-      const [existing] = await tx
-        .select({ id: votes.id, value: votes.value })
-        .from(votes)
-        .where(and(eq(votes.requestId, requestId), eq(votes.userId, user.id)))
-        .limit(1);
-
-      let userVote: UserVote;
-      if (!existing) {
-        await tx.insert(votes).values({ requestId, userId: user.id, value });
-        userVote = value;
-      } else if (existing.value === value) {
-        await tx.delete(votes).where(eq(votes.id, existing.id));
-        userVote = 0;
-      } else {
-        await tx
-          .update(votes)
-          .set({ value, updatedAt: new Date() })
-          .where(eq(votes.id, existing.id));
-        userVote = value;
-      }
-
-      const [row] = await tx
-        .select({
-          score: sql<number>`coalesce(sum(${votes.value}), 0)::int`,
-        })
-        .from(votes)
-        .where(eq(votes.requestId, requestId));
-
-      const score = row?.score ?? 0;
-      await tx
-        .update(assetRequests)
-        .set({ voteScore: score })
-        .where(eq(assetRequests.id, requestId));
-
-      return { score, userVote };
-    });
-
-    if ("notFound" in outcome) {
-      return { ok: false, error: "That request is not available." };
-    }
-
-    revalidatePath("/");
-    return { ok: true, score: outcome.score, userVote: outcome.userVote };
+    if (!row) return { ok: false, error: "That request is not available." };
+    return { ok: true, score: row.score, upvoted: upvote };
   } catch {
-    // e.g. a concurrent double-submit hitting the unique constraint.
     return { ok: false, error: "Could not record your vote. Try again." };
   }
 }

@@ -37,11 +37,7 @@ type FileItem = {
   mimeType?: string;
 };
 
-export function SubmitAssetModal({
-  trigger,
-}: {
-  trigger: React.ReactNode;
-}) {
+export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
   const [phase, setPhase] = React.useState<"form" | "success">("form");
 
@@ -171,6 +167,15 @@ export function SubmitAssetModal({
       return;
     }
 
+    // Either a description or at least one file is required (mirrors the server
+    // schema). Give immediate feedback instead of a round-trip.
+    if (description.trim().length === 0 && doneMedia.length === 0) {
+      setErrors({
+        description: "Add a description or upload at least one file.",
+      });
+      return;
+    }
+
     setSubmitting(true);
     const res = await submitAssetRequest({
       name,
@@ -205,13 +210,18 @@ export function SubmitAssetModal({
             <DialogHeader>
               <DialogTitle>Request an asset</DialogTitle>
               <DialogDescription>
-                Describe what you need. Upload a photo, a video, or both. The
-                community votes, and the top request gets built. If it is yours,
-                you get it free.
+                Tell us what you need: write a description, attach a reference
+                photo or video, or both. At least one is required. The community
+                votes, and the top request gets built. If it is yours, you get
+                it free.
               </DialogDescription>
             </DialogHeader>
 
-            <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+            <form
+              onSubmit={onSubmit}
+              className="flex flex-col gap-4"
+              noValidate
+            >
               <Field label="Your name" htmlFor="req-name" error={errors.name}>
                 <Input
                   id="req-name"
@@ -254,7 +264,7 @@ export function SubmitAssetModal({
                 label="Description"
                 htmlFor="req-desc"
                 error={errors.description}
-                hint="Describe the object, materials, and how it should behave."
+                hint="Describe the object, materials, and how it should behave. Optional if you attach a file below."
               >
                 <Textarea
                   id="req-desc"
@@ -267,6 +277,10 @@ export function SubmitAssetModal({
 
               <div className="flex flex-col gap-2">
                 <Label>Media</Label>
+                <p className="ui-text text-[0.8125rem]">
+                  A reference photo or video. Optional if you wrote a
+                  description.
+                </p>
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
@@ -409,9 +423,9 @@ function SuccessView({
         <DialogTitle>Request submitted</DialogTitle>
         <DialogDescription>
           Check your inbox. We sent a confirmation link to{" "}
-          <span className="text-foreground">{email}</span>. Confirm your email to
-          verify your account so your vote counts, and so we can reach you if your
-          request wins.
+          <span className="text-foreground">{email}</span>. Confirm your email
+          to verify your account so your vote counts, and so we can reach you if
+          your request wins.
         </DialogDescription>
       </DialogHeader>
       <Button size="lg" onClick={onClose} className="w-full">

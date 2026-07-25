@@ -58,7 +58,8 @@ export const assetRequestSchema = z
     media: z.array(mediaDescriptorSchema).max(6).default([]),
   })
   .refine(
-    (v) => (v.description && v.description.trim().length > 0) || v.media.length > 0,
+    (v) =>
+      (v.description && v.description.trim().length > 0) || v.media.length > 0,
     {
       message: "Add a description or upload at least one file.",
       path: ["description"],
@@ -68,12 +69,16 @@ export type AssetRequestInput = z.infer<typeof assetRequestSchema>;
 
 // ── Votes ────────────────────────────────────────────────────────────────────
 
-export const voteSchema = z.object({
+/**
+ * Anonymous upvote toggle. `upvote: true` adds this browser's upvote, `false`
+ * removes it. The browser tracks its own upvoted state in localStorage; the
+ * server only adjusts the denormalized score and is rate-limited by IP.
+ */
+export const upvoteSchema = z.object({
   requestId: z.uuid(),
-  // Intended direction. Casting the same value again clears the vote.
-  value: z.union([z.literal(1), z.literal(-1)]),
+  upvote: z.boolean(),
 });
-export type VoteInput = z.infer<typeof voteSchema>;
+export type UpvoteInput = z.infer<typeof upvoteSchema>;
 
 // ── Presigned upload requests ────────────────────────────────────────────────
 
@@ -88,7 +93,10 @@ export const presignSchema = z
       const kind = kindForMime(v.mimeType);
       return kind !== null && v.sizeBytes <= maxBytesForKind(kind);
     },
-    { message: "File exceeds the allowed size for its type.", path: ["sizeBytes"] },
+    {
+      message: "File exceeds the allowed size for its type.",
+      path: ["sizeBytes"],
+    },
   );
 export type PresignInput = z.infer<typeof presignSchema>;
 

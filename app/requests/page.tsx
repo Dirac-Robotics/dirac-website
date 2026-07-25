@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getLeaderboard, getLeaderboardCount } from "@/lib/queries";
-import { getCurrentUser } from "@/lib/session";
 import { Leaderboard } from "@/components/assets/leaderboard";
 
 export const metadata: Metadata = { title: "All requests" };
@@ -17,11 +16,9 @@ export default async function RequestsPage({
 }) {
   const { page } = await searchParams;
   const pageNum = Math.max(1, Number(page) || 1);
-  const user = await getCurrentUser();
 
   const [rows, total] = await Promise.all([
     getLeaderboard({
-      currentUserId: user?.id,
       limit: PER_PAGE,
       offset: (pageNum - 1) * PER_PAGE,
     }),
@@ -40,7 +37,6 @@ export default async function RequestsPage({
         {/* totalCount === shownCount suppresses the inline "view all" link. */}
         <Leaderboard
           rows={rows}
-          isAuthed={!!user}
           totalCount={rows.length}
           shownCount={rows.length}
         />
@@ -76,11 +72,7 @@ function PageLink({
   children: React.ReactNode;
 }) {
   if (disabled) {
-    return (
-      <span className="text-[0.8125rem] text-graphite">
-        {children}
-      </span>
-    );
+    return <span className="text-[0.8125rem] text-graphite">{children}</span>;
   }
   return (
     <Link

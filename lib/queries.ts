@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { asc, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import {
@@ -8,11 +8,9 @@ import {
   assetMedia,
   assets,
   users,
-  votes,
 } from "@/lib/db/schema";
 import { getSignedReadUrl } from "@/lib/storage";
 import type { AssetPhysics } from "@/lib/types";
-import type { UserVote } from "@/app/actions/votes";
 
 export type LeaderboardRow = {
   id: string;
@@ -22,7 +20,6 @@ export type LeaderboardRow = {
   voteScore: number;
   requesterFirstName: string;
   thumbnailUrl: string | null;
-  userVote: UserVote;
 };
 
 function firstName(name: string | null): string {
@@ -39,7 +36,6 @@ export async function getLeaderboardCount(): Promise<number> {
 }
 
 export async function getLeaderboard(opts: {
-  currentUserId?: string | null;
   limit?: number;
   offset?: number;
 }): Promise<LeaderboardRow[]> {
@@ -83,21 +79,6 @@ export async function getLeaderboard(opts: {
     }
   }
 
-  // Current user's votes on these requests.
-  const voteByRequest = new Map<string, number>();
-  if (opts.currentUserId) {
-    const userVotes = await db
-      .select({ requestId: votes.requestId, value: votes.value })
-      .from(votes)
-      .where(
-        and(
-          eq(votes.userId, opts.currentUserId),
-          inArray(votes.requestId, ids),
-        ),
-      );
-    for (const v of userVotes) voteByRequest.set(v.requestId, v.value);
-  }
-
   // Sign thumbnails in parallel.
   const signed = await Promise.all(
     rows.map((r) => {
@@ -114,7 +95,6 @@ export async function getLeaderboard(opts: {
     voteScore: r.voteScore,
     requesterFirstName: firstName(r.requesterName),
     thumbnailUrl: signed[i] ?? null,
-    userVote: (voteByRequest.get(r.id) ?? 0) as UserVote,
   }));
 }
 
