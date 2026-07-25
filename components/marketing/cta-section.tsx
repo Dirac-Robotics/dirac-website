@@ -33,7 +33,11 @@ export function CtaSection({
             size="lg"
             className="h-12 gap-2 px-8 text-base font-semibold"
           >
-            <a href={SITE.calendlyUrl} target="_blank" rel="noopener noreferrer">
+            <a
+              href={SITE.calendlyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Book a call
               <ArrowRight className="size-4" />
             </a>

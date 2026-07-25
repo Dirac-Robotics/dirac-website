@@ -29,13 +29,19 @@ export async function POST(req: Request) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   const parsed = presignSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "That file is not allowed.", fieldErrors: fieldErrors(parsed.error) },
+      {
+        error: "That file is not allowed.",
+        fieldErrors: fieldErrors(parsed.error),
+      },
       { status: 400 },
     );
   }

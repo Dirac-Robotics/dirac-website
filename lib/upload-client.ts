@@ -46,7 +46,8 @@ export async function uploadFile(
     xhr.setRequestHeader("x-ms-blob-type", "BlockBlob");
     xhr.setRequestHeader("content-type", file.type);
     xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+      if (e.lengthComputable)
+        onProgress(Math.round((e.loaded / e.total) * 100));
     };
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) resolve();

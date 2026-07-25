@@ -79,7 +79,10 @@ export async function submitAssetRequest(
       if (existing[0]) {
         userId = existing[0].id;
         if (!existing[0].name && data.name) {
-          await tx.update(users).set({ name: data.name }).where(eq(users.id, userId));
+          await tx
+            .update(users)
+            .set({ name: data.name })
+            .where(eq(users.id, userId));
         }
       } else {
         const inserted = await tx
@@ -115,7 +118,10 @@ export async function submitAssetRequest(
       return request!.id;
     });
   } catch {
-    return { ok: false, error: "Could not save your request. Please try again." };
+    return {
+      ok: false,
+      error: "Could not save your request. Please try again.",
+    };
   }
 
   // Side effect (non-fatal): notify the team of the new request.

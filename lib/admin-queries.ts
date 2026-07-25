@@ -55,7 +55,10 @@ export async function getAdminRequests(): Promise<AdminRequestRow[]> {
       .where(inArray(assetRequestMedia.requestId, ids))
       .orderBy(asc(assetRequestMedia.createdAt));
     for (const m of media) {
-      countByRequest.set(m.requestId, (countByRequest.get(m.requestId) ?? 0) + 1);
+      countByRequest.set(
+        m.requestId,
+        (countByRequest.get(m.requestId) ?? 0) + 1,
+      );
       if (m.kind === "image" && !thumbKeyByRequest.has(m.requestId)) {
         thumbKeyByRequest.set(m.requestId, m.storageKey);
       }
