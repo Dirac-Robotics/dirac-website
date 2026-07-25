@@ -1,0 +1,38 @@
+# Dependencies and build output (reinstalled/rebuilt inside the image)
+node_modules
+.next
+out
+build
+
+# VCS and CI
+.git
+.gitignore
+.github
+
+# Secrets and local env — never copy into the image
+.env
+.env.*
+
+# Large raw source assets. The web-ready models live in public/models/**,
+# which IS included; the multi-MB source OBJ/FBX/DAE originals are not needed.
+objects
+temp
+
+# Local review artifacts and tooling
+screenshots
+.playwright
+.playwright-cli
+.claude
+.vscode
+
+# Docs and misc
+README.md
+AGENTS.md
+CLAUDE.md
+*.log
+npm-debug.log*
+.DS_Store
+
+# Docker files themselves
+Dockerfile
+.dockerignore

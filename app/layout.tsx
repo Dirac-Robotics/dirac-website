@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Syne, DM_Mono } from "next/font/google";
+import { Syne, DM_Mono, Inter } from "next/font/google";
+
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { SITE } from "@/lib/site";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 const syne = Syne({
   variable: "--font-syne",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+});
+
+// Body face. Variable, so no weight list. Role assignment lives in globals.css.
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
 });
 
 const dmMono = DM_Mono({
@@ -18,51 +27,43 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://diracrobotics.com"),
   title: {
-    default: "Dirac Robotics -- Real2Sim pipelines for robotics",
-    template: "%s · Dirac Robotics",
+    default: "Dirac Robotics. Measured-physics simulation assets.",
+    template: `%s · ${SITE.name}`,
   },
   description:
-    "Dirac Robotics builds physics-accurate simulation from your real environment, automated. Close the sim-to-real gap.",
+    "Physics-accurate Isaac Sim assets built from real objects, with measured mass, inertia, friction, and joint dynamics. Every value carries stated uncertainty.",
   openGraph: {
-    title: "Dirac Robotics -- Real2Sim pipelines for robotics",
+    title: "Dirac Robotics. Measured-physics simulation assets.",
     description:
-      "Physics-accurate simulation from your real environment. Automated.",
+      "Isaac Sim asset packs with measured physical properties, not guessed ones.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Dirac Robotics",
     description:
-      "Physics-accurate simulation from your real environment. Automated.",
+      "Isaac Sim asset packs with measured physical properties, not guessed ones.",
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className={`${syne.variable} ${dmMono.variable} h-full antialiased`}
+      className={`dark ${syne.variable} ${inter.variable} ${dmMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col bg-background text-foreground">
         <a
-          href="#top"
+          href="#content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:text-primary-foreground"
         >
           Skip to content
         </a>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <SiteHeader />
+        {children}
+        <SiteFooter />
       </body>
     </html>
   );

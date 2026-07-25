@@ -30,16 +30,35 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — NEVER commit. Contains DB URL, service role key, API keys.
+# This intentionally also ignores .env.example (it currently holds real values).
+.env
+.env.*
 
 # vercel
 .vercel
 
+# Claude Code local artifacts (agent worktrees are a full duplicate of the app)
+/.claude/worktrees/
+.claude/settings.local.json
+
+# Large media belongs in object storage (Supabase), not git history.
+# public/Flowers_Video.mp4 (65MB) is left untracked; use Storage or git-lfs if intended.
+/public/*.mp4
+
 # playwright-cli skill working dir + ad-hoc screenshots from visual review
 /.playwright-cli/
 /.playwright/
+/screenshots/
 /*.png
+
+# Raw 3D source assets (multi-MB OBJ/FBX/DAE/BLEND originals). The web-ready
+# models actually served live in public/models/**. Version these with git-lfs
+# or object storage if you need them, not plain git.
+/objects/
+
+# Scratch / working files (whiteboard sketches, experiments)
+/temp/
 
 # typescript
 *.tsbuildinfo

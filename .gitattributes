@@ -1,0 +1,51 @@
+# Line-ending policy for the repo. Git stores text as LF; asset/binary files
+# are never converted or diffed. This is the source of truth so behaviour is
+# identical across machines regardless of each dev's core.autocrlf setting.
+
+# Default: let Git detect text vs binary and normalize text to LF on commit.
+* text=auto
+
+# Source and config — always LF (matches Node/Next tooling and Prettier).
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.js     text eol=lf
+*.mjs    text eol=lf
+*.cjs    text eol=lf
+*.json   text eol=lf
+*.css    text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.sql    text eol=lf
+*.svg    text eol=lf
+*.sh     text eol=lf
+Dockerfile   text eol=lf
+.dockerignore text eol=lf
+
+# 3D models + materials — treat as binary (no EOL conversion, no diffs).
+*.obj   binary
+*.mtl   binary
+*.fbx   binary
+*.dae   binary
+*.3ds   binary
+*.blend binary
+*.glb   binary
+*.gltf  binary
+*.stl   binary
+*.ply   binary
+
+# Images, media, fonts, archives — binary.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.mp4   binary
+*.webm  binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.pdf   binary
+*.zip   binary

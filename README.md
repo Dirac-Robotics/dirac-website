@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dirac Robotics
 
-## Getting Started
+Community asset program, leaderboard, and lead capture for Dirac Robotics.
+Physics-accurate Isaac Sim assets with measured mass, inertia, friction, and
+joint dynamics, each with stated uncertainty.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next.js 16 (App Router, TypeScript, Turbopack), React 19
+- Postgres (Supabase or Neon) via Drizzle ORM, migrations checked in
+- Supabase Storage for uploads (presigned, direct-to-storage, never through the app)
+- Auth.js (NextAuth v5) passwordless email magic link, via Resend
+- Resend for magic links and internal notifications
+- Zod validation shared client and server
+- Deployed on Vercel
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Install dependencies:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   npm install
+   ```
 
-## Learn More
+2. Create `.env` from the template and fill in real values:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   cp .env.example .env
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   See **Environment variables** below for what each key is.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Provision infrastructure:
+   - A Postgres database (Supabase project or Neon). Put the connection string
+     in `DATABASE_URL`. On Vercel + Supabase, use the pooled (transaction mode)
+     string.
+   - A Supabase Storage bucket named `uploads` (private). Put the project URL and
+     service role key in `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`.
+   - A Resend account with a verified sender domain. Put the API key in
+     `RESEND_API_KEY` and the sender in `EMAIL_FROM`.
 
-## Deploy on Vercel
+4. Run migrations, then seed:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run db:migrate
+   npm run db:seed
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. Start the dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+   Open http://localhost:3000.
+
+## Environment variables
+
+Every key is documented in [`.env.example`](./.env.example). Summary:
+
+| Key | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Postgres connection string (pooled on Vercel) |
+| `AUTH_SECRET` | Auth.js session/token secret (`npx auth secret`) |
+| `AUTH_URL` | Optional. Auto-detected on Vercel |
+| `RESEND_API_KEY` | Resend key for magic links and notifications |
+| `EMAIL_FROM` | Verified sender, e.g. `Dirac Robotics <noreply@diracrobotics.com>` |
+| `ADMIN_NOTIFY_EMAIL` | Inbox for new-request / new-lead notifications. Also the seeded admin account |
+| `SUPABASE_URL` | Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only. Mints presigned upload URLs |
+| `SUPABASE_STORAGE_BUCKET` | Storage bucket name (default `uploads`) |
+| `SITE_URL` | Public origin, used in emails and metadata |
+
+Never commit `.env`. `.env*` is gitignored.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | ESLint |
+| `npm run db:generate` | Generate a migration from `lib/db/schema.ts` |
+| `npm run db:migrate` | Apply migrations |
+| `npm run db:push` | Push schema without a migration (dev only) |
+| `npm run db:studio` | Drizzle Studio |
+| `npm run db:seed` | Seed 10 asset requests + votes, 4 catalog assets, sample leads |
+
+## Admin
+
+`/admin` is gated by a server-side role check on every request. The seed script
+gives the account at `ADMIN_NOTIFY_EMAIL` the `admin` role. To sign in, use the
+magic-link flow at `/signin` with that email, then open `/admin`.
+
+To promote another user, set their `users.role` to `admin` in the database.
+
+## How the vote integrity works
+
+- A vote requires a verified email. Sign-in is passwordless magic link; a valid
+  session only exists after confirming the email, so a session implies a
+  verified account. One account per email (unique), one vote per request
+  (unique DB constraint on `(request_id, user_id)`).
+- Anonymous visitors see the leaderboard and controls; clicking prompts sign-in.
+- Submissions, votes, and leads are rate limited per account and per IP
+  (Postgres-backed; see `lib/rate-limit.ts`).
+- Vote timestamps are stored for after-the-fact auditing (`/admin` vote audit).
+- `asset_requests.vote_score` is denormalized for sorting but recomputed from the
+  `votes` table inside the same transaction on every vote. The votes table is the
+  source of truth.
+- Requests carry a `moderation_state` so spam can be hidden without deleting the
+  record.
+
+## Payments seam (Phase 2, not built)
+
+Selling asset packs, entitlements, and gated Evals access are deferred but not
+architected out. Future payment tables join on the stable UUIDs `users.id` and
+`assets.id`, so they slot in with new tables only, no migration of core tables.
+The seams are marked in:
+
+- `lib/db/schema.ts` (PHASE 2 SEAM block describing the planned tables)
+- `lib/entitlements/index.ts` (`canDownloadAsset`, `canAccessEvals`)
+- The 3D-viewer seam in `components/assets/asset-gallery.tsx`
+
+## Notes
+
+- The brand logo file was not provided. `components/logo.tsx` renders the
+  `dirac.` wordmark as a placeholder and documents the one-line swap to
+  `public/logo.svg`.

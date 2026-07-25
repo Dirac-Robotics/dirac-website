@@ -7,7 +7,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-dm-mono);
+  --color-body: var(--text-body);
+  --color-dim: var(--text-dim);
+  --color-ash: var(--ash);
+  --color-graphite: var(--graphite);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-dm-mono);
   --font-serif: var(--font-syne);
   --font-heading: var(--font-syne);
@@ -39,52 +43,73 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Brand tokens */
+/*
+ * Brand: Ghost White monochrome on near-black. High contrast, technical.
+ * No gradients, no pills, no stock-startup styling.
+ *
+ * TYPE ROLES. Assigned here and nowhere else. Components pick a role class
+ * from the utilities layer below; they must not set font-family themselves.
+ *   --font-display  Syne     headings only (h1..h6, applied in @layer base)
+ *   --font-body     Inter    all prose, labels, buttons, nav, any sentence
+ *   --font-data     DM Mono  data and short labels only, never a sentence
+ */
 :root {
-  --white: #FFFFFF;
-  --chalk: #E8E6E0;
-  --ash: #C8C5BC;
-  --flint: #6A6E7A;
-  --graphite: #3A3C44;
-  --carbon: #1A1C24;
-  --obsidian: #0D0F14;
+  --font-display: var(--font-syne);
+  --font-body: var(--font-inter);
+  --font-data: var(--font-dm-mono);
+
+  /* Text colors. Tuned so body prose clears WCAG AA on the near-black page. */
+  --text-primary: #e8e6e0;
+  --text-body: #b4b4b4;
+  --text-dim: #8a8a8a;
+
+  /*
+   * Prose measure. `ch` is the width of "0", which is wider than Inter's
+   * average glyph, so 65ch renders ~81 characters. 52ch measures out to the
+   * ~65 characters per line we actually want.
+   */
+  --measure: 52ch;
+  --tracking-data: 0.06em;
+  --tracking-eyebrow: 0.1em;
+
+  --white: #ffffff;
+  --chalk: #e8e6e0;
+  --ash: #c8c5bc;
+  --flint: #8a8a8a;
+  --graphite: #3a3c44;
+  --carbon: #1a1c24;
+  --obsidian: #0d0f14;
   --void: #050508;
-  --line-1: #14161C;
-  --line-2: #181B26;
-  --line-3: #242636;
 
   --background: #050508;
-  --foreground: #E8E6E0;
-  --card: #0D0F18;
-  --card-foreground: #E8E6E0;
-  --popover: #0A0C14;
-  --popover-foreground: #E8E6E0;
-  --primary: #E8E6E0;
+  --foreground: #e8e6e0;
+  --card: #0b0d13;
+  --card-foreground: #e8e6e0;
+  --popover: #0a0c14;
+  --popover-foreground: #e8e6e0;
+  --primary: #e8e6e0;
   --primary-foreground: #050508;
-  --secondary: #0D0F18;
-  --secondary-foreground: #C8C5BC;
-  --muted: #1C1E2A;
-  --muted-foreground: #6A6E7A;
-  --accent: #0A0C14;
-  --accent-foreground: #E8E6E0;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #181B26;
-  --input: #1C1E2A;
-  --ring: #3A3C44;
-  --radius: 0.5rem;
-  --sidebar: #0A0C14;
-  --sidebar-foreground: #E8E6E0;
-  --sidebar-primary: #E8E6E0;
+  --secondary: #0d0f18;
+  --secondary-foreground: #c8c5bc;
+  --muted: #12141c;
+  --muted-foreground: #8a8a8a;
+  --accent: #0d0f18;
+  --accent-foreground: #e8e6e0;
+  --destructive: #e5484d;
+  --border: #1c1f2a;
+  --input: #1c1f2a;
+  --ring: #3a3c44;
+  --radius: 0.375rem;
+  --sidebar: #0a0c14;
+  --sidebar-foreground: #e8e6e0;
+  --sidebar-primary: #e8e6e0;
   --sidebar-primary-foreground: #050508;
-  --sidebar-accent: #0D0F18;
-  --sidebar-accent-foreground: #C8C5BC;
-  --sidebar-border: #181B26;
-  --sidebar-ring: #3A3C44;
+  --sidebar-accent: #0d0f18;
+  --sidebar-accent-foreground: #c8c5bc;
+  --sidebar-border: #1c1f2a;
+  --sidebar-ring: #3a3c44;
 }
 
 @layer base {
@@ -93,67 +118,115 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-body);
   }
   html {
     @apply font-sans;
+  }
+  /* Syne is a heading face and only a heading face. Nothing else opts in. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 }
 
 @layer utilities {
   .font-serif {
-    font-family: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* ── Body prose (Inter) ───────────────────────────────────────────────
+     Every paragraph and every sentence longer than four words uses one of
+     these. 16px floor, 1.6 leading, measure capped so lines stay readable. */
+  .prose-body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    letter-spacing: 0;
+    color: var(--text-body);
+    max-width: var(--measure);
+  }
+  /* Standfirst: the line under a page headline. Brightest prose on the page. */
+  .prose-standfirst {
+    font-family: var(--font-body);
+    font-size: 1.25rem;
+    line-height: 1.55;
+    color: var(--ash);
+    max-width: 46ch;
+  }
+  /* Hero and section leads. Same role, one step up in size. */
+  .prose-lead {
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--text-body);
+    max-width: var(--measure);
+  }
+  /* Sans UI copy: hints, inline status, helper text. Not display prose. */
+  .ui-text {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-dim);
+  }
+
+  /* ── Data and labels (DM Mono) ────────────────────────────────────────
+     Metadata values, scores, ranks, badges, eyebrows, step numbers. Never a
+     sentence. Tracking is deliberately tighter than the old 0.18em. */
+  .data {
+    font-family: var(--font-data);
+    letter-spacing: var(--tracking-data);
+    font-variant-numeric: tabular-nums;
+  }
+  .label {
+    font-family: var(--font-data);
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-data);
+    text-transform: uppercase;
+    color: var(--text-dim);
   }
   .eyebrow {
-    font-family: var(--font-dm-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.18em;
+    font-family: var(--font-data);
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
-    color: #3A3D50;
+    color: var(--text-dim);
   }
-
-  /* Subtle dot-grid background */
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.032) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
-    background-size: 72px 72px;
+  .mono {
+    font-family: var(--font-data);
+    letter-spacing: var(--tracking-data);
   }
-
-  /* Radial fade to kill grid at edges */
-  .bg-vignette::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse 90% 75% at 50% 50%, transparent 30%, var(--background) 100%);
-    pointer-events: none;
-  }
-
-  /* Ambient glow blob — position with Tailwind absolute/translate utilities */
-  .glow-blob {
-    border-radius: 9999px;
-    filter: blur(110px);
-    pointer-events: none;
-  }
-
-  /* Elevated card with subtle inner highlight */
-  .card-glow {
-    background: var(--card);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.03),
-      0 8px 32px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-
-  /* Gradient-edge horizontal rule */
-  .rule-fade {
+  /* Solid hairline rule. No gradient. */
+  .hairline {
     height: 1px;
-    background: linear-gradient(
-      to right,
-      transparent,
-      rgba(255, 255, 255, 0.08) 20%,
-      rgba(255, 255, 255, 0.08) 80%,
-      transparent
-    );
+    width: 100%;
+    background: var(--border);
+  }
+  /* Flat technical card. Border only, no shadow glow, no gradient. */
+  .card-flat {
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+  .card-flat:hover {
+    border-color: var(--graphite);
+  }
+  /*
+   * Flat scrim over the hero video. Legibility beats video visibility.
+   * Measured against the footage: at the 95th-percentile bright pixel, 0.86
+   * keeps body prose at 8.4:1 and the mono eyebrow at 5.0:1, both clear of
+   * AA. 0.65 left the eyebrow at 3.3:1. Solid alpha, no gradient.
+   */
+  .hero-scrim {
+    background: rgba(5, 5, 8, 0.86);
+  }
+  /* Panels that sit over the hero video stay opaque so rows stay readable. */
+  .panel-solid {
+    background: var(--obsidian);
   }
 }
