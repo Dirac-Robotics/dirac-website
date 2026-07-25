@@ -17,9 +17,11 @@ const serverSchema = z.object({
   // Optional on Vercel (auto-detected); set for local/preview if needed.
   AUTH_URL: z.url().optional(),
 
-  // Resend — used for BOTH magic-link delivery and internal notifications.
-  RESEND_API_KEY: z.string().min(1),
-  // Verified sender, e.g. "Dirac Robotics <noreply@diracrobotics.com>".
+  // Azure Communication Services (ACS) Email — magic-link delivery + team
+  // notifications. Connection string from the ACS resource's keys.
+  ACS_CONNECTION_STRING: z.string().min(1),
+  // ACS sender address on the linked (Azure-managed) domain, e.g.
+  // "DoNotReply@<id>.azurecomm.net".
   EMAIL_FROM: z.string().min(1),
   // Where new-request / new-lead notifications are sent.
   ADMIN_NOTIFY_EMAIL: z.email(),

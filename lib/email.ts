@@ -1,14 +1,28 @@
 /**
- * Transactional email via Resend. Server-only.
+ * Transactional email via Azure Communication Services (ACS) Email. Server-only.
  * Two uses: magic-link delivery (called from the Auth.js provider) and internal
  * notifications to the team. Copy follows the brand voice. No em dashes.
  */
 import "server-only";
-import { Resend } from "resend";
+import { EmailClient } from "@azure/communication-email";
 
 import { env } from "@/lib/env";
 
-const resend = new Resend(env.RESEND_API_KEY);
+const client = new EmailClient(env.ACS_CONNECTION_STRING);
+
+/** Queue one email through ACS. Throws if ACS rejects the request. */
+async function send(opts: {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+}): Promise<void> {
+  await client.beginSend({
+    senderAddress: env.EMAIL_FROM,
+    content: { subject: opts.subject, html: opts.html, plainText: opts.text },
+    recipients: { to: [{ address: opts.to }] },
+  });
+}
 
 const shell = (title: string, body: string) => `
 <div style="background:#050508;color:#E8E6E0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;padding:32px">
@@ -21,8 +35,7 @@ const shell = (title: string, body: string) => `
 
 /** Called by the Auth.js Resend provider's sendVerificationRequest override. */
 export async function sendMagicLink(to: string, url: string): Promise<void> {
-  await resend.emails.send({
-    from: env.EMAIL_FROM,
+  await send({
     to,
     subject: "Confirm your email to vote",
     html: shell(
@@ -47,8 +60,7 @@ export async function notifyNewAssetRequest(input: {
   requestId: string;
 }): Promise<void> {
   const link = `${env.SITE_URL}/admin`;
-  await resend.emails.send({
-    from: env.EMAIL_FROM,
+  await send({
     to: env.ADMIN_NOTIFY_EMAIL,
     subject: `New asset request: ${input.title}`,
     html: shell(
@@ -71,8 +83,7 @@ export async function notifyNewLead(input: {
   interest: string;
   sourcePage?: string | null;
 }): Promise<void> {
-  await resend.emails.send({
-    from: env.EMAIL_FROM,
+  await send({
     to: env.ADMIN_NOTIFY_EMAIL,
     subject: `New lead (${input.interest}): ${input.name}`,
     html: shell(
