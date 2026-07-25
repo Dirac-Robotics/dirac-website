@@ -3,7 +3,6 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-import { signIn } from "@/auth";
 import { db } from "@/lib/db";
 import { users, assetRequests, assetRequestMedia } from "@/lib/db/schema";
 import {
@@ -12,7 +11,7 @@ import {
   type AssetRequestInput,
 } from "@/lib/validation";
 import { maxBytesForKind } from "@/lib/upload-constants";
-import { statObject } from "@/lib/storage";
+import { publicUrlFor, statObject } from "@/lib/storage";
 import { getClientIp } from "@/lib/request-context";
 import { enforceRateLimits, RATE_LIMITS } from "@/lib/rate-limit";
 import { notifyNewAssetRequest } from "@/lib/email";
@@ -96,6 +95,7 @@ export async function submitAssetRequest(
           userId,
           title: data.title,
           description: data.description?.trim() || null,
+          organization: data.organization?.trim() || null,
         })
         .returning({ id: assetRequests.id });
 
@@ -104,6 +104,7 @@ export async function submitAssetRequest(
           data.media.map((m) => ({
             requestId: request!.id,
             storageKey: m.storageKey,
+            url: publicUrlFor(m.storageKey),
             mimeType: m.mimeType,
             sizeBytes: m.sizeBytes,
             kind: m.kind,
@@ -117,12 +118,7 @@ export async function submitAssetRequest(
     return { ok: false, error: "Could not save your request. Please try again." };
   }
 
-  // Side effects (non-fatal): magic link to the requester, notify the team.
-  try {
-    await signIn("resend", { email, redirect: false, redirectTo: "/" });
-  } catch {
-    // Request is saved; requester can still sign in later from /signin.
-  }
+  // Side effect (non-fatal): notify the team of the new request.
   try {
     await notifyNewAssetRequest({
       title: data.title,

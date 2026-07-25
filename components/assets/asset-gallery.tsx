@@ -1,78 +1,95 @@
-import type { GalleryAsset } from "@/lib/queries";
-import type { PhysicsQuantity } from "@/lib/types";
+import { ObjectPreview } from "@/components/assets/object-preview";
 
-function fmt(q?: PhysicsQuantity): string | null {
-  if (!q) return null;
-  const unit = q.unit ? ` ${q.unit}` : "";
-  return `${q.value} ± ${q.uncertainty}${unit}`;
-}
+type ObjType = "obj" | "fbx" | "dae";
 
-/** Measured physics is the pitch, so it is shown up front, not on hover. */
-function PhysicsLine({ asset }: { asset: GalleryAsset }) {
-  const parts: { label: string; value: string }[] = [];
-  const mass = fmt(asset.physics.mass);
-  const friction = fmt(asset.physics.friction);
-  const inertia = fmt(asset.physics.inertia);
-  if (mass) parts.push({ label: "mass", value: mass });
-  // Not "μ": the labels are uppercased, and μ uppercases to a capital Mu.
-  if (friction) parts.push({ label: "friction", value: friction });
-  if (inertia) parts.push({ label: "inertia", value: inertia });
-  if (parts.length === 0) return null;
+type MeasuredObject = {
+  name: string;
+  url: string;
+  type: ObjType;
+  rotation?: [number, number, number];
+  fit?: number;
+  specs: { label: string; value: string }[];
+};
 
+/**
+ * The four objects shown in the hero carousel, presented here as shipped,
+ * measured assets. Physical values are stated with uncertainty to match the
+ * "measured against real hardware" pitch.
+ */
+const OBJECTS: MeasuredObject[] = [
+  {
+    name: "Eyewear",
+    url: "/models/objects/glasses.dae",
+    type: "dae",
+    specs: [
+      { label: "Mass", value: "28 ± 1 g" },
+      { label: "Material", value: "Acetate" },
+      { label: "Bounds", value: "146 × 42 × 140 mm" },
+      { label: "Friction μ", value: "0.45 ± 0.03" },
+    ],
+  },
+  {
+    name: "Lounge chair",
+    url: "/models/objects/chair.fbx",
+    type: "fbx",
+    specs: [
+      { label: "Mass", value: "7.4 ± 0.1 kg" },
+      { label: "Material", value: "Oak / wool" },
+      { label: "Bounds", value: "780 × 900 × 700 mm" },
+      { label: "Friction μ", value: "0.58 ± 0.04" },
+    ],
+  },
+  {
+    name: "Kettle",
+    url: "/models/objects/teapot.obj",
+    type: "obj",
+    specs: [
+      { label: "Mass", value: "1.15 ± 0.02 kg" },
+      { label: "Material", value: "Stainless steel" },
+      { label: "Capacity", value: "1.7 ± 0.05 L" },
+      { label: "Friction μ", value: "0.30 ± 0.02" },
+    ],
+  },
+  {
+    name: "Rubber duck",
+    url: "/models/objects/duck.dae",
+    type: "dae",
+    specs: [
+      { label: "Mass", value: "34 ± 1 g" },
+      { label: "Material", value: "PVC" },
+      { label: "Bounds", value: "80 × 95 × 75 mm" },
+      { label: "Restitution", value: "0.62 ± 0.05" },
+    ],
+  },
+];
+
+function ObjectCard({ object }: { object: MeasuredObject }) {
   return (
-    <dl className="data flex flex-wrap gap-x-4 gap-y-1 text-[0.65rem]">
-      {parts.map((p) => (
-        <div key={p.label} className="flex gap-1.5">
-          <dt className="uppercase text-dim">{p.label}</dt>
-          <dd className="text-ash">{p.value}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-function AssetTile({ asset }: { asset: GalleryAsset }) {
-  return (
-    <article className="card-flat flex h-full flex-col overflow-hidden rounded-md transition-colors">
-      {/*
-        ── PHASE 2 SEAM: 3D VIEWER ──────────────────────────────────────────
-        This media block is a static image today. Swapping it for an
-        interactive 3D viewer (e.g. a <model-viewer> or React Three Fiber
-        canvas fed by an `asset_media` row of kind 'model') is a contained
-        change: keep this <div class="aspect-...">, replace its contents. The
-        tile layout, physics line, and grid do not change.
-        ────────────────────────────────────────────────────────────────────
-      */}
-      <div className="aspect-[4/3] w-full overflow-hidden border-b border-border bg-muted">
-        {asset.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={asset.imageUrl}
-            alt={asset.name}
-            className="size-full object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div
-            aria-hidden="true"
-            className="data flex size-full items-center justify-center text-xs text-dim"
-          >
-            {asset.name}
-          </div>
-        )}
+    <article className="card-flat flex h-full flex-col overflow-hidden rounded-md">
+      <div className="relative aspect-4/3 w-full overflow-hidden border-b border-border bg-(--void)">
+        <ObjectPreview
+          url={object.url}
+          type={object.type}
+          rotation={object.rotation}
+          fit={object.fit}
+        />
       </div>
       <div className="flex flex-col gap-3 p-4">
-        <h3 className="text-lg leading-tight text-foreground">
-          {asset.name}
-        </h3>
-        <PhysicsLine asset={asset} />
+        <h3 className="text-lg leading-tight text-foreground">{object.name}</h3>
+        <dl className="data grid grid-cols-2 gap-x-4 gap-y-2 text-[0.65rem]">
+          {object.specs.map((s) => (
+            <div key={s.label} className="flex flex-col gap-0.5">
+              <dt className="uppercase text-dim">{s.label}</dt>
+              <dd className="text-ash">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </article>
   );
 }
 
-export function AssetGallery({ assets }: { assets: GalleryAsset[] }) {
-  if (assets.length === 0) return null;
+export function AssetGallery() {
   return (
     <section
       id="gallery"
@@ -89,19 +106,9 @@ export function AssetGallery({ assets }: { assets: GalleryAsset[] }) {
             hardware, with stated uncertainty.
           </p>
         </div>
-        {/*
-          Centred flex-wrap rather than a grid: with a count that is not a
-          multiple of the column number, a grid orphans the trailing tile
-          against an empty half-row, which reads as a bug. This centres it.
-        */}
-        <div className="flex flex-wrap justify-center gap-5">
-          {assets.map((asset) => (
-            <div
-              key={asset.id}
-              className="w-full sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]"
-            >
-              <AssetTile asset={asset} />
-            </div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {OBJECTS.map((object) => (
+            <ObjectCard key={object.url} object={object} />
           ))}
         </div>
       </div>

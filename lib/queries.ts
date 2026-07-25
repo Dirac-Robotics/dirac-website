@@ -9,7 +9,7 @@ import {
   assets,
   users,
 } from "@/lib/db/schema";
-import { getSignedReadUrl } from "@/lib/storage";
+import { getReadUrl } from "@/lib/storage";
 import type { AssetPhysics } from "@/lib/types";
 
 export type LeaderboardRow = {
@@ -83,7 +83,7 @@ export async function getLeaderboard(opts: {
   const signed = await Promise.all(
     rows.map((r) => {
       const key = thumbKeyByRequest.get(r.id);
-      return key ? getSignedReadUrl(key) : Promise.resolve(null);
+      return key ? getReadUrl(key) : Promise.resolve(null);
     }),
   );
 
@@ -137,7 +137,7 @@ export async function getPublishedAssets(): Promise<GalleryAsset[]> {
   const signed = await Promise.all(
     rows.map((r) => {
       const key = imageKeyByAsset.get(r.id);
-      return key ? getSignedReadUrl(key) : Promise.resolve(null);
+      return key ? getReadUrl(key) : Promise.resolve(null);
     }),
   );
 

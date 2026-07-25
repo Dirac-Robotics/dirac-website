@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils";
  */
 
 const SIZES = {
-  sm: { img: "h-7 w-7", text: "text-[1.05rem]" },
-  md: { img: "h-9 w-9", text: "text-[1.35rem]" },
+  sm: { img: "h-8 w-8", text: "text-[1.1rem]" },
+  md: { img: "h-10 w-10", text: "text-[1.35rem]" },
 } as const;
 
 export function Logo({

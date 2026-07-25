@@ -45,8 +45,8 @@ export async function POST(req: Request) {
   const key = buildUploadKey("requests", filename);
 
   try {
-    const { signedUrl, storageKey, token } = await createSignedUpload(key);
-    return NextResponse.json({ signedUrl, storageKey, token, kind });
+    const { uploadUrl, storageKey } = await createSignedUpload(key);
+    return NextResponse.json({ uploadUrl, storageKey, kind });
   } catch {
     return NextResponse.json(
       { error: "Could not create an upload URL. Try again." },

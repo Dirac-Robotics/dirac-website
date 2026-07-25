@@ -7,7 +7,6 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import type { LeaderboardRow } from "@/lib/queries";
 import { toggleUpvote } from "@/app/actions/votes";
 import { UpvoteButton } from "@/components/assets/vote-control";
-import { StatusBadge } from "@/components/assets/status-badge";
 
 const STORAGE_PREFIX = "dirac:upvoted:";
 
@@ -228,12 +227,6 @@ export function Leaderboard({
                 <p className="truncate text-base leading-tight text-foreground">
                   {row.title}
                 </p>
-                <div className="mt-1 flex flex-wrap items-center gap-2">
-                  <span className="data text-[0.68rem] text-dim">
-                    by {row.requesterFirstName}
-                  </span>
-                  <StatusBadge status={row.status} />
-                </div>
               </div>
 
               <UpvoteButton

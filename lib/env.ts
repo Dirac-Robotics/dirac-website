@@ -26,11 +26,12 @@ const serverSchema = z.object({
   // Where new-request / new-lead notifications are sent.
   ADMIN_NOTIFY_EMAIL: z.email(),
 
-  // Supabase Storage (object storage for uploads). Service role key is
-  // server-only and used to mint short-lived presigned upload URLs.
-  SUPABASE_URL: z.url(),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  SUPABASE_STORAGE_BUCKET: z.string().min(1).default("uploads"),
+  // Azure Blob Storage (object storage for uploads). The account key is
+  // server-only and used to mint short-lived write SAS upload URLs. The
+  // container has anonymous blob read, so stored URLs render directly.
+  AZURE_STORAGE_ACCOUNT: z.string().min(1),
+  AZURE_STORAGE_KEY: z.string().min(1),
+  AZURE_STORAGE_CONTAINER: z.string().min(1).default("media"),
 
   // Public origin, e.g. https://diracrobotics.com. Used in emails + metadata.
   SITE_URL: z.url().default("http://localhost:3000"),

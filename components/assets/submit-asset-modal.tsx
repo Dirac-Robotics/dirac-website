@@ -43,6 +43,7 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
 
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
+  const [organization, setOrganization] = React.useState("");
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [files, setFiles] = React.useState<FileItem[]>([]);
@@ -56,6 +57,7 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
     setPhase("form");
     setName("");
     setEmail("");
+    setOrganization("");
     setTitle("");
     setDescription("");
     setFiles([]);
@@ -180,6 +182,7 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
     const res = await submitAssetRequest({
       name,
       email,
+      organization,
       title,
       description,
       media: doneMedia.map((f) => ({
@@ -242,6 +245,21 @@ export function SubmitAssetModal({ trigger }: { trigger: React.ReactNode }) {
                   autoComplete="email"
                   required
                   aria-invalid={errors.email ? true : undefined}
+                />
+              </Field>
+
+              <Field
+                label="Organisation / University name"
+                htmlFor="req-org"
+                error={errors.organization}
+                hint="Optional. Where are you requesting from?"
+              >
+                <Input
+                  id="req-org"
+                  value={organization}
+                  onChange={(e) => setOrganization(e.target.value)}
+                  autoComplete="organization"
+                  aria-invalid={errors.organization ? true : undefined}
                 />
               </Field>
 

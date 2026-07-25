@@ -24,7 +24,7 @@ export async function requestMagicLink(
   }
 
   // signIn throws a redirect to the verifyRequest page on success.
-  await signIn("resend", {
+  await signIn("email", {
     email: parsed.data.email,
     redirectTo: parsed.data.next || "/",
   });

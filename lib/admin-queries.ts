@@ -9,7 +9,7 @@ import {
   users,
   votes,
 } from "@/lib/db/schema";
-import { getSignedReadUrl } from "@/lib/storage";
+import { getReadUrl } from "@/lib/storage";
 
 export type AdminRequestRow = {
   id: string;
@@ -65,7 +65,7 @@ export async function getAdminRequests(): Promise<AdminRequestRow[]> {
   const signed = await Promise.all(
     rows.map((r) => {
       const key = thumbKeyByRequest.get(r.id);
-      return key ? getSignedReadUrl(key) : Promise.resolve(null);
+      return key ? getReadUrl(key) : Promise.resolve(null);
     }),
   );
 
