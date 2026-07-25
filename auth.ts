@@ -1,13 +1,13 @@
 /**
- * Auth.js (NextAuth v5) — passwordless email magic link via Resend, with a
- * Drizzle/Postgres adapter and database-backed sessions.
+ * Auth.js (NextAuth v5) — passwordless email magic link via Azure Communication
+ * Services (ACS) Email, with a Drizzle/Postgres adapter and database-backed
+ * sessions.
  *
  * Why database sessions: a valid session only exists after the user clicks the
  * magic link, which also sets `users.email_verified`. So "has a session" is
  * equivalent to "verified email", which is exactly the vote-integrity gate.
  */
 import NextAuth, { type DefaultSession } from "next-auth";
-import Resend from "next-auth/providers/resend";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
 import { db } from "@/lib/db";
@@ -38,14 +38,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verifyRequest: "/signin/check-email",
   },
   providers: [
-    Resend({
-      apiKey: env.RESEND_API_KEY,
+    // Custom email provider: Auth.js persists the verification token via the
+    // Drizzle adapter; we deliver the branded magic link through ACS Email.
+    {
+      id: "email",
+      type: "email",
+      name: "Email",
       from: env.EMAIL_FROM,
-      // Deliver our own branded email instead of the default template.
+      maxAge: 24 * 60 * 60,
       async sendVerificationRequest({ identifier, url }) {
         await sendMagicLink(identifier, url);
       },
-    }),
+      options: {},
+    },
   ],
   callbacks: {
     // Database strategy: `user` is the full DB row, so role is present.

@@ -1,5 +1,9 @@
 "use client";
 
+/* eslint-disable react-hooks/immutability -- This is an R3F <Canvas>: three.js
+   scene objects (transforms, materials, visibility) are mutated imperatively in
+   the useFrame render loop by design, which the React Compiler flags. */
+
 import * as React from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { ContactShadows, Preload } from "@react-three/drei";
