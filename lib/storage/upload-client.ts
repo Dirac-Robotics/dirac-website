@@ -4,7 +4,7 @@
  *   2. PUT the file straight to object storage, reporting progress via XHR
  * The file never passes through the app server.
  */
-import type { MediaKind } from "@/lib/upload-constants";
+import type { MediaKind } from "@/lib/storage/upload-constants";
 
 export type UploadResult = {
   storageKey: string;

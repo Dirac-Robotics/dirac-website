@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
-import { requireAdmin } from "@/lib/session";
+import { requireAdmin } from "@/lib/auth/session";
 import {
   getAdminRequests,
   getAdminLeads,
   getVoteAudit,
-} from "@/lib/admin-queries";
+} from "@/lib/data/admin-queries";
 import { RequestRowActions } from "@/components/admin/request-row-actions";
 
 export const metadata: Metadata = {

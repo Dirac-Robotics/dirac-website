@@ -8,6 +8,7 @@ import { CtaSection } from "@/components/marketing/cta-section";
 
 export const metadata: Metadata = {
   title: "Deployments",
+  alternates: { canonical: "/deployments" },
   description:
     "A robot doing its job in your building, every day, through whatever that day brings. Validated before launch and re-validated as the site changes.",
 };

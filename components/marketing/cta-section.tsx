@@ -1,7 +1,7 @@
 import { ArrowRight } from "lucide-react";
 
 import type { LeadInterest } from "@/lib/validation";
-import { SITE } from "@/lib/site";
+import { SITE } from "@/lib/config/site";
 import { Button } from "@/components/ui/button";
 
 /**

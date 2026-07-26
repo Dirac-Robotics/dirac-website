@@ -12,7 +12,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
 import { db } from "@/lib/db";
 import { users, accounts, sessions, verificationTokens } from "@/lib/db/schema";
-import { env } from "@/lib/env";
+import { env } from "@/lib/config/env";
 import { sendMagicLink } from "@/lib/email";
 
 declare module "next-auth" {

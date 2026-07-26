@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/db";
 import { assetRequests } from "@/lib/db/schema";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser } from "@/lib/auth/session";
 import { updateRequestStatusSchema, updateModerationSchema } from "@/lib/validation";
 
 async function assertAdmin() {

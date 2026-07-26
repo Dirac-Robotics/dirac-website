@@ -1,4 +1,6 @@
-import { getLeaderboard, getLeaderboardCount } from "@/lib/queries";
+import type { Metadata } from "next";
+
+import { getLeaderboard, getLeaderboardCount } from "@/lib/data/queries";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChallengeStrip } from "@/components/assets/challenge-strip";
@@ -10,6 +12,10 @@ import { SubmitAssetModal } from "@/components/assets/submit-asset-modal";
 import { AssetGallery } from "@/components/assets/asset-gallery";
 import { Positioning } from "@/components/assets/positioning";
 import { Team } from "@/components/assets/team";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 // Reads live vote scores on every request.
 export const dynamic = "force-dynamic";

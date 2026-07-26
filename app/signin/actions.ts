@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-import { signIn, signOut } from "@/auth";
+import { signIn, signOut } from "@/lib/auth";
 
 const schema = z.object({
   email: z.email(),

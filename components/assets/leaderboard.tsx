@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-import type { LeaderboardRow } from "@/lib/queries";
+import type { LeaderboardRow } from "@/lib/data/queries";
 import { toggleUpvote } from "@/app/actions/votes";
 import { UpvoteButton } from "@/components/assets/vote-control";
 

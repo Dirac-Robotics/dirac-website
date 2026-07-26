@@ -7,6 +7,7 @@ import { CtaSection } from "@/components/marketing/cta-section";
 
 export const metadata: Metadata = {
   title: "About",
+  alternates: { canonical: "/about" },
   description:
     "A deployment company that happens to build simulation. Reconstruct the site, evaluate the policy against it, keep both current as the site moves.",
 };

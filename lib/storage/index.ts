@@ -15,7 +15,7 @@ import {
   StorageSharedKeyCredential,
 } from "@azure/storage-blob";
 
-import { env } from "@/lib/env";
+import { env } from "@/lib/config/env";
 
 const credential = new StorageSharedKeyCredential(
   env.AZURE_STORAGE_ACCOUNT,

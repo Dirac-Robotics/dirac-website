@@ -3,6 +3,9 @@
 export const SITE = {
   name: "Dirac Robotics",
   domain: "diracrobotics.com",
+  url: "https://diracrobotics.com",
+  description:
+    "Physics-accurate Isaac Sim assets built from real objects, with measured mass, inertia, friction, and joint dynamics. Every value carries stated uncertainty.",
   calendlyUrl: "https://calendly.com/9i-divyansh/15-min-catchup",
   contactEmail: "hello@diracrobotics.com",
 } as const;
