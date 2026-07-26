@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 
-import { SITE } from "@/lib/site";
+import { SITE } from "@/lib/config/site";
 import { PageHeader } from "@/components/marketing/page-header";
 import { NodeMesh } from "@/components/marketing/node-mesh";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Contact",
+  alternates: { canonical: "/contact" },
   description: "Talk to Dirac Robotics about Real2Sim, Evals, and asset packs.",
 };
 

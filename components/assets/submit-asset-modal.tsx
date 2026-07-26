@@ -9,8 +9,8 @@ import {
   kindForMime,
   maxBytesForKind,
   type MediaKind,
-} from "@/lib/upload-constants";
-import { uploadFile } from "@/lib/upload-client";
+} from "@/lib/storage/upload-constants";
+import { uploadFile } from "@/lib/storage/upload-client";
 import { submitAssetRequest } from "@/app/actions/asset-requests";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

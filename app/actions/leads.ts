@@ -3,8 +3,8 @@
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
 import { leadSchema, fieldErrors } from "@/lib/validation";
-import { getClientIp } from "@/lib/request-context";
-import { enforceRateLimits, RATE_LIMITS } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/http/request-context";
+import { enforceRateLimits, RATE_LIMITS } from "@/lib/http/rate-limit";
 import { notifyNewLead } from "@/lib/email";
 
 export type LeadFormState =

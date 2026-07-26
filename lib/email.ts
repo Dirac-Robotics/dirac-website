@@ -6,7 +6,7 @@
 import "server-only";
 import { EmailClient } from "@azure/communication-email";
 
-import { env } from "@/lib/env";
+import { env } from "@/lib/config/env";
 
 const client = new EmailClient(env.ACS_CONNECTION_STRING);
 

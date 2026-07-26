@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { SITE } from "@/lib/site";
-import { Logo } from "@/components/logo";
+import { SITE } from "@/lib/config/site";
+import { Logo } from "@/components/layout/logo";
 
 // Footer links read as nav, so they are body sans. Only the meta line is mono.
 const linkClass =

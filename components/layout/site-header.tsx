@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { Logo } from "@/components/logo";
-import { SiteNav } from "@/components/site-nav";
+import { Logo } from "@/components/layout/logo";
+import { SiteNav } from "@/components/layout/site-nav";
 
 /** Header appears on every page (rendered from the root layout). */
 export function SiteHeader() {

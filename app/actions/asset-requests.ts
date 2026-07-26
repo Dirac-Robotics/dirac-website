@@ -10,10 +10,10 @@ import {
   fieldErrors,
   type AssetRequestInput,
 } from "@/lib/validation";
-import { maxBytesForKind } from "@/lib/upload-constants";
+import { maxBytesForKind } from "@/lib/storage/upload-constants";
 import { publicUrlFor, statObject } from "@/lib/storage";
-import { getClientIp } from "@/lib/request-context";
-import { enforceRateLimits, RATE_LIMITS } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/http/request-context";
+import { enforceRateLimits, RATE_LIMITS } from "@/lib/http/rate-limit";
 import { notifyNewAssetRequest } from "@/lib/email";
 
 export type SubmitRequestResult =

@@ -1,12 +1,20 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://diracrobotics.com";
+import { SITE } from "@/lib/config/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/real2sim", "/evals", "/deployments", "/about", "/contact"];
+  const routes = [
+    "",
+    "/real2sim",
+    "/evals",
+    "/deployments",
+    "/about",
+    "/contact",
+    "/requests",
+  ];
   const now = new Date();
   return routes.map((path) => ({
-    url: `${SITE_URL}${path}`,
+    url: `${SITE.url}${path}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: path === "" ? 1 : 0.6,

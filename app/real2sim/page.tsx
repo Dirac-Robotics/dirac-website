@@ -8,6 +8,7 @@ import { CtaSection } from "@/components/marketing/cta-section";
 
 export const metadata: Metadata = {
   title: "Real2Sim",
+  alternates: { canonical: "/real2sim" },
   description:
     "Point a camera at the space where your robot will work. We send back a physics-accurate USD scene in hours, not weeks.",
 };

@@ -9,7 +9,7 @@ import {
   MAX_VIDEO_BYTES,
   kindForMime,
   maxBytesForKind,
-} from "@/lib/upload-constants";
+} from "@/lib/storage/upload-constants";
 
 // ── Primitives ───────────────────────────────────────────────────────────────
 

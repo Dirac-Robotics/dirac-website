@@ -2,7 +2,7 @@ import { desc } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { leads } from "@/lib/db/schema";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser } from "@/lib/auth/session";
 
 /** CSV export of all leads. Admin-only, checked on the server. */
 export async function GET() {

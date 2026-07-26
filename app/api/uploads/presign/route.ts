@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { presignSchema, fieldErrors } from "@/lib/validation";
-import { kindForMime } from "@/lib/upload-constants";
+import { kindForMime } from "@/lib/storage/upload-constants";
 import { buildUploadKey, createSignedUpload } from "@/lib/storage";
-import { getClientIp } from "@/lib/request-context";
-import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/http/request-context";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/http/rate-limit";
 
 /**
  * Issue a presigned URL so the browser uploads directly to object storage,

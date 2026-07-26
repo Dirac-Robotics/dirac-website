@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getLeaderboard, getLeaderboardCount } from "@/lib/queries";
+import { getLeaderboard, getLeaderboardCount } from "@/lib/data/queries";
 import { Leaderboard } from "@/components/assets/leaderboard";
 
-export const metadata: Metadata = { title: "All requests" };
+export const metadata: Metadata = {
+  title: "All requests",
+  alternates: { canonical: "/requests" },
+};
 export const dynamic = "force-dynamic";
 
 const PER_PAGE = 25;

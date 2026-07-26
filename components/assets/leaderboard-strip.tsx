@@ -4,7 +4,7 @@ import * as React from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ChevronUp } from "lucide-react";
 
-import type { LeaderboardRow } from "@/lib/queries";
+import type { LeaderboardRow } from "@/lib/data/queries";
 
 /**
  * Horizontal leaderboard ticker for the bottom of the hero. Presentational: it

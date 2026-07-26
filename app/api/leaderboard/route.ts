@@ -1,4 +1,4 @@
-import { getLeaderboard } from "@/lib/queries";
+import { getLeaderboard } from "@/lib/data/queries";
 
 // Read live scores on every request; never cache the snapshot.
 export const dynamic = "force-dynamic";

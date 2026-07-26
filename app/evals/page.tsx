@@ -8,6 +8,7 @@ import { CtaSection } from "@/components/marketing/cta-section";
 
 export const metadata: Metadata = {
   title: "Evals",
+  alternates: { canonical: "/evals" },
   description:
     "Regression testing for robots. We build an evaluation suite for your deployment and run it before the robot touches your floor.",
 };
