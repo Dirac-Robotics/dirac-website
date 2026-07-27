@@ -32,6 +32,12 @@ const serverSchema = z.object({
   AZURE_STORAGE_ACCOUNT: z.string().min(1),
   AZURE_STORAGE_KEY: z.string().min(1),
   AZURE_STORAGE_CONTAINER: z.string().min(1).default("media"),
+  // Private container for simulation ZIPs. Unlike the public media container,
+  // bundles are read only through short-lived SAS URLs.
+  AZURE_ASSET_BUNDLE_CONTAINER: z
+    .string()
+    .min(1)
+    .default("asset-bundles"),
 
   // Public origin, e.g. https://diracrobotics.com. Used in emails + metadata.
   SITE_URL: z.url().default("http://localhost:3000"),

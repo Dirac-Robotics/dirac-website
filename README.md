@@ -86,6 +86,52 @@ Never commit `.env`. `.env*` is gitignored.
 | `npm run db:push` | Push schema without a migration (dev only) |
 | `npm run db:studio` | Drizzle Studio |
 | `npm run db:seed` | Seed 10 asset requests + votes, 4 catalog assets, sample leads |
+| `npm run asset-pack:upload -- /path/to/bundles` | Upload the four release ZIPs to private Azure storage |
+
+## Asset pack route
+
+The evaluation-beta asset gallery is available at `/asset-pack`. It is kept out
+of the primary navigation and sitemap, and is marked `noindex` while it is under
+review. Browser previews are public, while simulation ZIPs are served from a
+private Azure container through 15-minute signed links.
+
+The checked-in public manifest currently runs in showcase-only mode with
+downloads and server analytics disabled. The gallery, GLB previews, and physics
+tracks therefore have no database or Azure runtime dependency. Set both
+capabilities to `true` only after completing the storage and migration steps
+below.
+
+Asset pack download setup requires `AZURE_STORAGE_ACCOUNT` and
+`AZURE_STORAGE_KEY`. `AZURE_ASSET_BUNDLE_CONTAINER` optionally changes the
+private container name from its `asset-bundles` default.
+
+Before enabling downloads in an environment:
+
+1. Apply the checked-in database migration:
+
+   ```bash
+   npm run db:migrate
+   ```
+
+2. Put the four release ZIPs in one directory using these exact names:
+
+   ```text
+   purple-chair-0.1.0-beta.1.zip
+   table-0.1.0-beta.1.zip
+   hammer-v2-0.1.0-beta.1.zip
+   all-assets-0.1.0-beta.1.zip
+   ```
+
+3. Upload them to the private container:
+
+   ```bash
+   npm run asset-pack:upload -- /absolute/path/to/bundles
+   ```
+
+The uploader processes files sequentially, keeps the container private, records
+each SHA-256 digest as blob metadata, and verifies the uploaded byte count. The
+download API resolves fixed bundle IDs server-side and never accepts an Azure
+storage path from the client.
 
 ## Admin
 

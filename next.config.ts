@@ -23,6 +23,22 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Cache-Control", value: IMMUTABLE }],
       },
       {
+        source: "/asset-pack/models/:path*",
+        headers: [{ key: "Cache-Control", value: IMMUTABLE }],
+      },
+      {
+        source: "/asset-pack/posters/:path*",
+        headers: [{ key: "Cache-Control", value: IMMUTABLE }],
+      },
+      {
+        source: "/asset-pack/tracks/:path*",
+        headers: [{ key: "Cache-Control", value: IMMUTABLE }],
+      },
+      {
+        source: "/asset-pack/basis/:path*",
+        headers: [{ key: "Cache-Control", value: IMMUTABLE }],
+      },
+      {
         source: "/Logo.png",
         headers: [{ key: "Cache-Control", value: IMMUTABLE }],
       },

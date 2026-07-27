@@ -252,6 +252,66 @@ export const leads = pgTable(
   ],
 );
 
+export const assetPackDownloads = pgTable(
+  "asset_pack_downloads",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: text("email").notNull(),
+    name: text("name"),
+    company: text("company"),
+    bundleId: text("bundle_id").notNull(),
+    termsVersion: text("terms_version").notNull(),
+    termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    marketingConsent: boolean("marketing_consent").notNull().default(false),
+    marketingConsentAt: timestamp("marketing_consent_at", {
+      withTimezone: true,
+    }),
+    retentionExpiresAt: timestamp("retention_expires_at", {
+      withTimezone: true,
+    }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    index("asset_pack_downloads_created_idx").on(t.createdAt.desc()),
+    index("asset_pack_downloads_email_idx").on(t.email),
+    index("asset_pack_downloads_bundle_idx").on(t.bundleId),
+    index("asset_pack_downloads_retention_idx").on(t.retentionExpiresAt),
+    check(
+      "asset_pack_downloads_bundle_check",
+      sql`${t.bundleId} IN ('purple-chair', 'table', 'hammer-v2', 'all-assets')`,
+    ),
+  ],
+);
+
+export const assetPackEvents = pgTable(
+  "asset_pack_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    event: text("event").notNull(),
+    sessionId: uuid("session_id").notNull(),
+    path: text("path").notNull(),
+    assetSlug: text("asset_slug"),
+    bundleId: text("bundle_id"),
+    experimentId: text("experiment_id"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    index("asset_pack_events_created_idx").on(t.createdAt.desc()),
+    index("asset_pack_events_event_idx").on(t.event),
+    index("asset_pack_events_session_idx").on(t.sessionId),
+    check(
+      "asset_pack_events_event_check",
+      sql`${t.event} IN ('viewer_open', 'proof_play', 'proof_scrub', 'download_gate_open', 'download_unlocked', 'experiment_select')`,
+    ),
+  ],
+);
+
 /**
  * Physics metadata is the whole pitch: measured, with stated uncertainty.
  * Shape (see lib/types.ts `AssetPhysics`):

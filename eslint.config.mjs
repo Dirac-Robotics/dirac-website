@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Third-party Basis Universal runtime copied verbatim for KTX2 decoding.
+    "public/asset-pack/basis/**",
   ]),
 ]);
 

@@ -1,0 +1,520 @@
+{
+  "allAssetsBundle": {
+    "bundleId": "all-assets",
+    "size": "42.5 MB"
+  },
+  "assets": [
+    {
+      "bundleId": "purple-chair",
+      "compatibility": [
+        {
+          "detail": "Bounded import and smoke simulation passed.",
+          "label": "Newton 1.4",
+          "status": "verified"
+        },
+        {
+          "detail": "OpenUSD-compatible; dedicated import smoke test not yet run.",
+          "label": "Isaac Sim",
+          "status": "not-verified"
+        },
+        {
+          "detail": "Companion caches supplied; qualification gaps are disclosed.",
+          "label": "Layered Newton",
+          "status": "experimental"
+        }
+      ],
+      "description": "A high-fidelity velvet chair with a portable rigid profile and an experimental layered shell/foam/core response.",
+      "dimensions": "0.69 × 0.69 × 0.86 m",
+      "disclosure": "Image-space deformation timing and footprint are observed. Metric force, held-out displacement, and cross-solver deformation are not qualified.",
+      "evidence": [
+        {
+          "label": "Rigid mass",
+          "provenance": "prior-driven",
+          "uncertainty": "not weighed",
+          "value": "14.0 kg"
+        },
+        {
+          "label": "Deformation timing",
+          "provenance": "measured",
+          "value": "video tracked"
+        },
+        {
+          "label": "Metric press force",
+          "provenance": "unvalidated",
+          "value": "not qualified"
+        },
+        {
+          "label": "PCA reconstruction",
+          "provenance": "fitted",
+          "value": "< 1 mm RMSE"
+        }
+      ],
+      "evidenceTier": "experimental",
+      "experiments": [
+        {
+          "description": "Choose a tracked hotspot and scrub the distilled layered response. Depth is normalized because exact applied force was not captured.",
+          "id": "press",
+          "kind": "pca-deformation",
+          "presets": [
+            {
+              "disclosure": "Eight-or-fewer-mode PCA reconstruction of the offline layered cache; normalized press depth is not a force measurement.",
+              "id": "seat",
+              "label": "Seat",
+              "metrics": [
+                {
+                  "label": "Press depth",
+                  "provenance": "prior-driven",
+                  "value": "normalized 0–1"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/chair-seat.json"
+            },
+            {
+              "disclosure": "Eight-or-fewer-mode PCA reconstruction of the offline layered cache; normalized press depth is not a force measurement.",
+              "id": "backrest",
+              "label": "Backrest",
+              "metrics": [
+                {
+                  "label": "Press depth",
+                  "provenance": "prior-driven",
+                  "value": "normalized 0–1"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/chair-backrest.json"
+            },
+            {
+              "disclosure": "Eight-or-fewer-mode PCA reconstruction of the offline layered cache; normalized press depth is not a force measurement.",
+              "id": "side",
+              "label": "Side",
+              "metrics": [
+                {
+                  "label": "Press depth",
+                  "provenance": "prior-driven",
+                  "value": "normalized 0–1"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/chair-side.json"
+            }
+          ],
+          "title": "Press & release"
+        }
+      ],
+      "files": [
+        {
+          "format": "GLB",
+          "label": "Fidelity appearance",
+          "role": "download visual",
+          "size": "40.7 MB"
+        },
+        {
+          "format": "GLB",
+          "label": "Optimized preview",
+          "role": "meshopt + KTX2",
+          "size": "2.0 MB"
+        },
+        {
+          "format": "OpenUSD",
+          "label": "Rigid compatibility stage",
+          "role": "default physics",
+          "size": "4 KB"
+        },
+        {
+          "format": "ZIP",
+          "label": "Evaluation bundle",
+          "role": "gated download",
+          "size": "41.1 MB"
+        }
+      ],
+      "mass": "14.0 kg estimate",
+      "posterUrl": "/asset-pack/posters/purple-chair.webp",
+      "preview": {
+        "cameraPosition": [
+          1.4,
+          1.1,
+          1.4
+        ],
+        "canonicalTransform": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "gridSize": 2,
+        "target": [
+          -0.636,
+          0.43,
+          -0.855
+        ]
+      },
+      "previewGlbUrl": "/asset-pack/models/purple-chair-preview.glb",
+      "slug": "purple-chair",
+      "title": "Purple chair",
+      "version": "0.1.0-beta.1"
+    },
+    {
+      "bundleId": "table",
+      "compatibility": [
+        {
+          "detail": "Bounded import and smoke simulation passed.",
+          "label": "Newton 1.4",
+          "status": "verified"
+        },
+        {
+          "detail": "OpenUSD-compatible; dedicated import smoke test not yet run.",
+          "label": "Isaac Sim",
+          "status": "not-verified"
+        }
+      ],
+      "description": "A low-poly glass-and-metal table with compound support colliders and a validated robot pull trajectory.",
+      "dimensions": "0.86 × 0.86 × 0.45 m",
+      "disclosure": "Mass and friction are visually calibrated priors rather than measurements. The Newton rollout is valid for those disclosed assumptions.",
+      "evidence": [
+        {
+          "label": "Total mass",
+          "provenance": "prior-driven",
+          "uncertainty": "10–28 kg 90% interval",
+          "value": "14.0 kg"
+        },
+        {
+          "label": "Static floor friction",
+          "provenance": "prior-driven",
+          "uncertainty": "0.45–0.80",
+          "value": "0.62"
+        },
+        {
+          "label": "Maximum penetration",
+          "provenance": "fitted",
+          "value": "0.299 mm"
+        },
+        {
+          "label": "Pull trajectory",
+          "provenance": "fitted",
+          "value": "Newton 1.4"
+        }
+      ],
+      "evidenceTier": "calibrated-estimate",
+      "experiments": [
+        {
+          "description": "Compare low, medium, and high stages from the validated ramped robot pull; inspect translation, tilt, force, and penetration.",
+          "id": "pull",
+          "kind": "rigid-transform",
+          "presets": [
+            {
+              "disclosure": "This is a solver-generated prefix of one validated ramped pull, not an interpolated browser force or an independent load case.",
+              "id": "low",
+              "label": "35 N stage",
+              "metrics": [
+                {
+                  "label": "Force stage",
+                  "provenance": "fitted",
+                  "value": "35 N"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/table-pull-low.json"
+            },
+            {
+              "disclosure": "This is a solver-generated prefix of one validated ramped pull, not an interpolated browser force or an independent load case.",
+              "id": "medium",
+              "label": "70 N stage",
+              "metrics": [
+                {
+                  "label": "Force stage",
+                  "provenance": "fitted",
+                  "value": "70 N"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/table-pull-medium.json"
+            },
+            {
+              "disclosure": "This is a solver-generated prefix of one validated ramped pull, not an interpolated browser force or an independent load case.",
+              "id": "high",
+              "label": "105 N stage",
+              "metrics": [
+                {
+                  "label": "Force stage",
+                  "provenance": "fitted",
+                  "value": "105 N"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/table-pull-high.json"
+            }
+          ],
+          "title": "Horizontal pull"
+        }
+      ],
+      "files": [
+        {
+          "format": "GLB",
+          "label": "Appearance",
+          "role": "download visual",
+          "size": "65 KB"
+        },
+        {
+          "format": "GLB",
+          "label": "Optimized preview",
+          "role": "meshopt",
+          "size": "16 KB"
+        },
+        {
+          "format": "OpenUSD",
+          "label": "Rigid physics stage",
+          "role": "34 colliders",
+          "size": "5 KB"
+        },
+        {
+          "format": "ZIP",
+          "label": "Evaluation bundle",
+          "role": "gated download",
+          "size": "81 KB"
+        }
+      ],
+      "mass": "14.0 kg estimate",
+      "posterUrl": "/asset-pack/posters/table.webp",
+      "preview": {
+        "cameraPosition": [
+          1.7,
+          1.2,
+          1.5
+        ],
+        "canonicalTransform": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "gridSize": 2,
+        "target": [
+          0.6,
+          0.225,
+          -0.65
+        ]
+      },
+      "previewGlbUrl": "/asset-pack/models/table-preview.glb",
+      "slug": "table",
+      "title": "Glass side table",
+      "version": "0.1.0-beta.1"
+    },
+    {
+      "bundleId": "hammer-v2",
+      "compatibility": [
+        {
+          "detail": "Bounded import and smoke simulation passed.",
+          "label": "Newton 1.4",
+          "status": "verified"
+        },
+        {
+          "detail": "OpenUSD-compatible; dedicated import smoke test not yet run.",
+          "label": "Isaac Sim",
+          "status": "not-verified"
+        }
+      ],
+      "description": "A repaired steel-and-hickory composite with five collision proxies and quantitative balance, pendulum, and force-plate evidence.",
+      "dimensions": "0.33 m overall",
+      "disclosure": "Physics consistency is validated against analytic predictions. Scale, part masses, and contact material values are category priors, not specimen measurements.",
+      "evidence": [
+        {
+          "label": "Steel head",
+          "provenance": "prior-driven",
+          "value": "0.454 kg"
+        },
+        {
+          "label": "Hickory handle",
+          "provenance": "prior-driven",
+          "value": "0.200 kg"
+        },
+        {
+          "label": "Center of mass",
+          "provenance": "fitted",
+          "value": "0.239 m from butt"
+        },
+        {
+          "label": "Angular impulse closure",
+          "provenance": "fitted",
+          "value": "within 5%"
+        }
+      ],
+      "evidenceTier": "quantitative",
+      "experiments": [
+        {
+          "description": "Compare part-aware mass distribution against the same geometry and total mass with one uniform density.",
+          "id": "balance",
+          "kind": "comparison",
+          "presets": [
+            {
+              "disclosure": "Composite and uniform models share geometry, colliders, and total mass; only density distribution changes.",
+              "id": "balance",
+              "label": "Balance",
+              "metrics": [
+                {
+                  "label": "COM station",
+                  "provenance": "fitted",
+                  "value": "0.239 m"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/hammer-balance.json"
+            },
+            {
+              "disclosure": "Periods are checked against the analytic physical-pendulum model.",
+              "id": "pendulum",
+              "label": "Pendulum",
+              "metrics": [
+                {
+                  "label": "Period error",
+                  "provenance": "fitted",
+                  "value": "< 2%"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/hammer-pendulum.json"
+            }
+          ],
+          "title": "Balance / pendulum"
+        },
+        {
+          "description": "Choose a precomputed impact-energy preset and inspect force, impulse, angular velocity, and energy at 60 Hz.",
+          "id": "strike",
+          "kind": "rigid-transform",
+          "presets": [
+            {
+              "disclosure": "Passive Newton revolute swing with no animation curve or scripted slowdown after initialization. Peak force remains solver-dependent.",
+              "id": "1j",
+              "label": "1 J",
+              "metrics": [
+                {
+                  "label": "Configured energy",
+                  "provenance": "prior-driven",
+                  "value": "1 J"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/hammer-strike-1j.json"
+            },
+            {
+              "disclosure": "Passive Newton revolute swing with no animation curve or scripted slowdown after initialization. Peak force remains solver-dependent.",
+              "id": "2j",
+              "label": "2 J",
+              "metrics": [
+                {
+                  "label": "Configured energy",
+                  "provenance": "prior-driven",
+                  "value": "2 J"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/hammer-strike-2j.json"
+            },
+            {
+              "disclosure": "Passive Newton revolute swing with no animation curve or scripted slowdown after initialization. Peak force remains solver-dependent.",
+              "id": "3j",
+              "label": "3 J",
+              "metrics": [
+                {
+                  "label": "Configured energy",
+                  "provenance": "prior-driven",
+                  "value": "3 J"
+                }
+              ],
+              "trackUrl": "/asset-pack/tracks/hammer-strike-3j.json"
+            }
+          ],
+          "title": "Force plate"
+        }
+      ],
+      "files": [
+        {
+          "format": "GLB",
+          "label": "Appearance",
+          "role": "download visual",
+          "size": "1.1 MB"
+        },
+        {
+          "format": "GLB",
+          "label": "Optimized preview",
+          "role": "meshopt",
+          "size": "194 KB"
+        },
+        {
+          "format": "OpenUSD",
+          "label": "Composite physics stage",
+          "role": "five proxies",
+          "size": "512 KB"
+        },
+        {
+          "format": "ZIP",
+          "label": "Evaluation bundle",
+          "role": "gated download",
+          "size": "1.4 MB"
+        }
+      ],
+      "mass": "0.654 kg",
+      "posterUrl": "/asset-pack/posters/hammer.webp",
+      "preview": {
+        "cameraPosition": [
+          0.6,
+          0.4,
+          0.6
+        ],
+        "canonicalTransform": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          -1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "gridSize": 1,
+        "target": [
+          0.165,
+          0.016,
+          0
+        ]
+      },
+      "previewGlbUrl": "/asset-pack/models/hammer-preview.glb",
+      "slug": "hammer",
+      "title": "Claw hammer",
+      "version": "0.1.0-beta.1"
+    }
+  ],
+  "generatedAt": "2026-07-27T14:55:59.884102+00:00",
+  "headline": "Simulation-ready assets with disclosed physical assumptions and validation evidence.",
+  "capabilities": {
+    "downloads": false,
+    "serverAnalytics": false,
+    "contactUrl": "/contact"
+  },
+  "releaseStatus": "evaluation-only-beta",
+  "schema": "asset-pack.web.v1",
+  "termsVersion": "evaluation-beta-v1",
+  "version": "0.1.0-beta.1"
+}

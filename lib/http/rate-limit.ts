@@ -26,6 +26,9 @@ export const RATE_LIMITS = {
   votePerIp: { limit: 120, windowMs: 60 * 60 * 1000 },
   leadPerIp: { limit: 6, windowMs: 60 * 60 * 1000 },
   leadPerEmail: { limit: 3, windowMs: 24 * 60 * 60 * 1000 },
+  assetDownloadPerIp: { limit: 8, windowMs: 60 * 60 * 1000 },
+  assetDownloadPerEmail: { limit: 8, windowMs: 60 * 60 * 1000 },
+  assetEventPerIp: { limit: 180, windowMs: 60 * 60 * 1000 },
   presignPerIp: { limit: 40, windowMs: 60 * 60 * 1000 },
 } as const;
 
