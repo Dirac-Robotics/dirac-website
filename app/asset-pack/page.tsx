@@ -10,10 +10,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+export const revalidate = 0;
+
 export default function AssetPackPage() {
   return (
     <main id="content" className="relative flex-1 bg-background">
-      <AssetPackRoute manifestUrl="/asset-pack/manifest.json" />
+      <AssetPackRoute manifestUrl="/asset-pack/manifest.json?v=0.1.0-beta.2" />
     </main>
   );
 }

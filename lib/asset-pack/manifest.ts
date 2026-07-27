@@ -3,7 +3,7 @@ import type { AssetPackManifest } from "@/lib/asset-pack/types";
 export async function fetchAssetPackManifest(
   manifestUrl: string,
 ): Promise<AssetPackManifest> {
-  const response = await fetch(manifestUrl, { cache: "force-cache" });
+  const response = await fetch(manifestUrl, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Asset manifest request failed (${response.status}).`);
   }

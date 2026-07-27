@@ -5,46 +5,24 @@ import * as React from "react";
 
 import { AssetViewer } from "@/components/asset-pack/asset-viewer";
 import { EvidenceDrawer } from "@/components/asset-pack/evidence-drawer";
+import { HammerGravityProof } from "@/components/asset-pack/hammer-gravity-proof";
 import { TrajectoryPlayer } from "@/components/asset-pack/trajectory-player";
 import { recordAssetPackEvent } from "@/lib/asset-pack/analytics";
 import type {
   AssetRecord,
   TransformTrack,
-  ViewerComparison,
   ViewerPose,
 } from "@/lib/asset-pack/types";
 
-const HAMMER_BALANCE_PIVOT = [
-  0.2388560182163568,
-  0.010498220113394668,
-  -0.00030231248636543073,
-] as const;
-const HAMMER_GRIP_PIVOT = [0.08, 0, 0] as const;
-
-function hammerPoseAroundPivot(
-  angle: number,
-  laneOffsetY: number,
-  pivot: readonly [number, number, number],
-): { pose: ViewerPose; pivot: [number, number, number] } {
-  const [pivotX, pivotY, pivotZ] = pivot;
-  const cosine = Math.cos(angle);
-  const sine = Math.sin(angle);
-  const rotatedPivotX = cosine * pivotX - sine * pivotY;
-  const rotatedPivotY = sine * pivotX + cosine * pivotY;
-  return {
-    pose: {
-      position: [
-        pivotX - rotatedPivotX,
-        pivotY - rotatedPivotY + laneOffsetY,
-        pivotZ,
-      ],
-      quaternion: [0, 0, Math.sin(angle / 2), Math.cos(angle / 2)],
-    },
-    pivot: [pivotX, pivotY + laneOffsetY, pivotZ],
-  };
+export function PhysicsProof({ asset }: { asset: AssetRecord }) {
+  return asset.slug === "hammer" ? (
+    <HammerGravityProof asset={asset} />
+  ) : (
+    <TrackedPhysicsProof asset={asset} />
+  );
 }
 
-export function PhysicsProof({ asset }: { asset: AssetRecord }) {
+function TrackedPhysicsProof({ asset }: { asset: AssetRecord }) {
   const [experimentId, setExperimentId] = React.useState(
     asset.experiments[0]?.id ?? "",
   );
@@ -58,48 +36,13 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
     experiment?.presets.find((item) => item.id === presetId) ??
     experiment?.presets[0];
   const [pose, setPose] = React.useState<ViewerPose | undefined>();
-  const [comparison, setComparison] = React.useState<
-    ViewerComparison | undefined
-  >();
-  const [deformation, setDeformation] = React.useState<
-    { track: TransformTrack; frame: number } | undefined
-  >();
   const [parts, setParts] = React.useState<Record<string, boolean>>({
-    steel: true,
-    wood: true,
     glass: true,
     metal: true,
   });
 
   const onFrame = React.useCallback(
     (frame: number, track: TransformTrack | null) => {
-      if (asset.slug === "hammer" && track?.comparison) {
-        const values = track.comparison.values[frame] ?? [0, 0];
-        const isPendulum = preset?.id === "pendulum";
-        const pivot = isPendulum
-          ? HAMMER_GRIP_PIVOT
-          : HAMMER_BALANCE_PIVOT;
-        const partAware = hammerPoseAroundPivot(values[0] ?? 0, 0.2, pivot);
-        const uniform = hammerPoseAroundPivot(values[1] ?? 0, -0.2, pivot);
-        const labels: [string, string] = [
-          track.comparison.labels[0] ?? "part-aware composite",
-          track.comparison.labels[1] ?? "same-mass uniform",
-        ];
-        setComparison({
-          labels,
-          poses: [partAware.pose, uniform.pose],
-          pivots: [partAware.pivot, uniform.pivot],
-          pivotLabel: isPendulum
-            ? "Shared pivot at the measured grip station (0.08 m)"
-            : "Shared pivot at the fitted part-aware center of mass",
-        });
-        setPose(undefined);
-        setDeformation(undefined);
-        return;
-      }
-
-      setComparison(undefined);
-      setDeformation(track?.pca ? { track, frame } : undefined);
       if (!track?.transform) {
         setPose(undefined);
         return;
@@ -112,14 +55,13 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
         | undefined;
       if (position && quaternion) setPose({ position, quaternion });
     },
-    [asset.slug, preset?.id],
+    [],
   );
 
-  const partOptions = React.useMemo(() => {
-    if (asset.slug === "hammer") return ["steel", "wood"];
-    if (asset.slug === "table") return ["glass", "metal"];
-    return [];
-  }, [asset.slug]);
+  const partOptions = React.useMemo(
+    () => (asset.slug === "table" ? ["glass", "metal"] : []),
+    [asset.slug],
+  );
 
   if (!experiment || !preset) {
     return (
@@ -202,9 +144,8 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
           <div className="mt-6 flex gap-3 border border-border p-3 text-sm leading-5 text-body">
             <Layers3 className="mt-0.5 size-4 shrink-0 text-ash" />
             <span>
-              The purple surface shows the PCA deformation field projected
-              onto the chair shell. The original PBR mesh remains visible
-              beneath it.
+              The original chair is shown without a proxy mesh overlay. The
+              response track below remains available for quantitative review.
             </span>
           </div>
         )}
@@ -222,13 +163,7 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
 
       <div className="grid min-w-0 gap-3">
         <div className="overflow-hidden border border-border">
-          <AssetViewer
-            asset={asset}
-            pose={pose}
-            visibleParts={parts}
-            deformation={deformation}
-            comparison={comparison}
-          />
+          <AssetViewer asset={asset} pose={pose} visibleParts={parts} />
         </div>
         <TrajectoryPlayer
           assetSlug={asset.slug}

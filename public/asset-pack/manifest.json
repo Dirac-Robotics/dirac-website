@@ -126,7 +126,7 @@
         }
       ],
       "mass": "14.0 kg estimate",
-      "posterUrl": "/asset-pack/posters/purple-chair.webp",
+      "posterUrl": "/asset-pack/posters/purple-chair-beta2.webp",
       "preview": {
         "cameraPosition": [
           -0.636,
@@ -161,7 +161,7 @@
       "previewGlbUrl": "/asset-pack/models/purple-chair-preview.glb",
       "slug": "purple-chair",
       "title": "Purple chair",
-      "version": "0.1.0-beta.1"
+      "version": "0.1.0-beta.2"
     },
     {
       "bundleId": "table",
@@ -281,7 +281,7 @@
         }
       ],
       "mass": "14.0 kg estimate",
-      "posterUrl": "/asset-pack/posters/table.webp",
+      "posterUrl": "/asset-pack/posters/table-beta2.webp",
       "preview": {
         "cameraPosition": [
           0.6,
@@ -316,7 +316,7 @@
       "previewGlbUrl": "/asset-pack/models/table-preview.glb",
       "slug": "table",
       "title": "Glass side table",
-      "version": "0.1.0-beta.1"
+      "version": "0.1.0-beta.2"
     },
     {
       "bundleId": "hammer-v2",
@@ -332,7 +332,7 @@
           "status": "not-verified"
         }
       ],
-      "description": "A repaired steel-and-hickory composite with five collision proxies and quantitative balance and pendulum evidence.",
+      "description": "A repaired steel-and-hickory composite with fitted mass properties and an interactive gravity-driven pendulum proof.",
       "dimensions": "0.33 m overall",
       "disclosure": "Physics consistency is validated against analytic predictions. Scale, part masses, and contact material values are category priors, not specimen measurements.",
       "evidence": [
@@ -360,38 +360,11 @@
       "evidenceTier": "quantitative",
       "experiments": [
         {
-          "description": "Scrub two same-mass hammers about a shared pivot at the fitted COM station. Amber is the part-aware steel-and-wood model; cyan is the uniform-density control.",
-          "id": "balance",
-          "kind": "comparison",
-          "presets": [
-            {
-              "disclosure": "Composite and uniform models share geometry, colliders, total mass, and pivot. Only density distribution changes; the uniform model rotates away while the fitted composite balances.",
-              "id": "balance",
-              "label": "Balance",
-              "metrics": [
-                {
-                  "label": "COM station",
-                  "provenance": "fitted",
-                  "value": "0.239 m"
-                }
-              ],
-              "trackUrl": "/asset-pack/tracks/hammer-balance.json"
-            },
-            {
-              "disclosure": "Both models release from the same angle at the same grip pivot. Their phase divergence comes only from different COM and inertia; periods are checked analytically.",
-              "id": "pendulum",
-              "label": "Pendulum",
-              "metrics": [
-                {
-                  "label": "Period error",
-                  "provenance": "fitted",
-                  "value": "< 2%"
-                }
-              ],
-              "trackUrl": "/asset-pack/tracks/hammer-pendulum.json"
-            }
-          ],
-          "title": "Balance / pendulum"
+          "description": "Choose the release angle and rotation point, then let 9.81 m/s² gravity act on the fitted composite COM and inertia.",
+          "id": "gravity-pendulum",
+          "kind": "interactive-pendulum",
+          "presets": [],
+          "title": "Gravity pendulum"
         }
       ],
       "files": [
@@ -421,7 +394,7 @@
         }
       ],
       "mass": "0.654 kg",
-      "posterUrl": "/asset-pack/posters/hammer.webp",
+      "posterUrl": "/asset-pack/posters/hammer-beta2.webp",
       "preview": {
         "cameraPosition": [
           0.165,
@@ -456,10 +429,10 @@
       "previewGlbUrl": "/asset-pack/models/hammer-preview.glb",
       "slug": "hammer",
       "title": "Claw hammer",
-      "version": "0.1.0-beta.1"
+      "version": "0.1.0-beta.2"
     }
   ],
-  "generatedAt": "2026-07-27T14:55:59.884102+00:00",
+  "generatedAt": "2026-07-27T19:03:00Z",
   "headline": "Simulation-ready assets with disclosed physical assumptions and validation evidence.",
   "capabilities": {
     "downloads": false,
@@ -469,5 +442,5 @@
   "releaseStatus": "evaluation-only-beta",
   "schema": "asset-pack.web.v1",
   "termsVersion": "evaluation-beta-v1",
-  "version": "0.1.0-beta.1"
+  "version": "0.1.0-beta.2"
 }

@@ -29,7 +29,11 @@ export type ExperimentDefinition = {
   id: string;
   title: string;
   description: string;
-  kind: "rigid-transform" | "comparison" | "pca-deformation";
+  kind:
+    | "rigid-transform"
+    | "comparison"
+    | "pca-deformation"
+    | "interactive-pendulum";
   presets: ExperimentPreset[];
 };
 
@@ -115,9 +119,9 @@ export type ViewerPose = {
   quaternion: [number, number, number, number];
 };
 
-export type ViewerComparison = {
-  labels: [string, string];
-  poses: [ViewerPose, ViewerPose];
-  pivots: [[number, number, number], [number, number, number]];
-  pivotLabel: string;
+export type ViewerMarker = {
+  color: string;
+  kind: "pivot" | "com";
+  label: string;
+  position: [number, number, number];
 };

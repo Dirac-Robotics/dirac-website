@@ -10,13 +10,6 @@ import {
 import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { Expand, Grid3X3, RotateCcw, SunMedium } from "lucide-react";
 import * as React from "react";
-import {
-  BufferAttribute,
-  BufferGeometry,
-  Color,
-  DoubleSide,
-  type Material,
-} from "three";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
@@ -24,131 +17,18 @@ import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 import { recordAssetPackEvent } from "@/lib/asset-pack/analytics";
 import type {
   AssetRecord,
-  TransformTrack,
-  ViewerComparison,
+  ViewerMarker,
   ViewerPose,
 } from "@/lib/asset-pack/types";
 
-function PcaDeformation({
-  track,
-  frame,
-}: {
-  track: TransformTrack;
-  frame: number;
-}) {
-  const geometry = React.useMemo(() => {
-    const next = new BufferGeometry();
-    if (!track.pca) return next;
-    next.setAttribute(
-      "position",
-      new BufferAttribute(new Float32Array(track.pca.rest), 3),
-    );
-    const faces = track.pca.displayAlignment
-      ? track.pca.faces.flatMap((_, faceOffset, sourceFaces) => {
-          if (faceOffset % 3 !== 0) return [];
-          const first = sourceFaces[faceOffset] * 3;
-          const second = sourceFaces[faceOffset + 1] * 3;
-          const third = sourceFaces[faceOffset + 2] * 3;
-          const rest = track.pca?.rest ?? [];
-          const edgeSquared = (left: number, right: number) => {
-            const deltaX = rest[left] - rest[right];
-            const deltaY = rest[left + 1] - rest[right + 1];
-            const deltaZ = rest[left + 2] - rest[right + 2];
-            return deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
-          };
-          const firstX = rest[second] - rest[first];
-          const firstY = rest[second + 1] - rest[first + 1];
-          const firstZ = rest[second + 2] - rest[first + 2];
-          const secondX = rest[third] - rest[first];
-          const secondY = rest[third + 1] - rest[first + 1];
-          const secondZ = rest[third + 2] - rest[first + 2];
-          const crossX = firstY * secondZ - firstZ * secondY;
-          const crossY = firstZ * secondX - firstX * secondZ;
-          const crossZ = firstX * secondY - firstY * secondX;
-          const areaSquared =
-            crossX * crossX + crossY * crossY + crossZ * crossZ;
-          const maxEdgeSquared = 0.035 ** 2;
-          const valid =
-            areaSquared > 1e-16 &&
-            edgeSquared(first, second) <= maxEdgeSquared &&
-            edgeSquared(second, third) <= maxEdgeSquared &&
-            edgeSquared(third, first) <= maxEdgeSquared;
-          return valid
-            ? sourceFaces.slice(faceOffset, faceOffset + 3)
-            : [];
-        })
-      : track.pca.faces;
-    next.setIndex(faces);
-    next.computeVertexNormals();
-    return next;
-  }, [track]);
-
-  React.useEffect(() => () => geometry.dispose(), [geometry]);
-
-  React.useEffect(() => {
-    if (!track.pca) return;
-    const position = geometry.getAttribute("position") as BufferAttribute;
-    const weights =
-      track.pca.weights[Math.min(frame, track.pca.weights.length - 1)] ?? [];
-    const values = position.array as Float32Array;
-    for (let index = 0; index < track.pca.rest.length; index += 1) {
-      let value = track.pca.rest[index];
-      for (let mode = 0; mode < track.pca.modeCount; mode += 1) {
-        value += (weights[mode] ?? 0) * track.pca.modes[mode][index];
-      }
-      values[index] = value;
-    }
-    position.needsUpdate = true;
-    geometry.computeVertexNormals();
-  }, [frame, geometry, track]);
-
-  if (!track.pca) return null;
-  return (
-    <mesh geometry={geometry}>
-      <meshStandardMaterial
-        color="#b794f4"
-        emissive="#6b46c1"
-        emissiveIntensity={0.35}
-        roughness={0.72}
-        side={DoubleSide}
-        transparent
-        opacity={0.3}
-        depthWrite={false}
-        polygonOffset
-        polygonOffsetFactor={-1}
-        polygonOffsetUnits={-1}
-      />
-    </mesh>
-  );
-}
-
-type ModelTone = "standard" | "comparison";
-
-function styleComparisonMaterial(material: Material): Material {
-  const next = material.clone() as Material & {
-    color?: Color;
-    emissive?: Color;
-    emissiveIntensity?: number;
-  };
-  next.color?.lerp(new Color("#55c7f3"), 0.58);
-  next.emissive?.set("#123f56");
-  if (typeof next.emissiveIntensity === "number") {
-    next.emissiveIntensity = Math.max(next.emissiveIntensity, 0.3);
-  }
-  next.transparent = true;
-  next.opacity = Math.min(next.opacity, 0.78);
-  return next;
-}
 function Model({
   url,
   pose,
   visibleParts,
-  tone = "standard",
 }: {
   url: string;
   pose?: ViewerPose;
   visibleParts?: Record<string, boolean>;
-  tone?: ModelTone;
 }) {
   const renderer = useThree((state) => state.gl);
   const { scene } = useLoader(GLTFLoader, url, (loader) => {
@@ -158,19 +38,7 @@ function Model({
     loader.setKTX2Loader(ktx2);
     loader.setMeshoptDecoder(MeshoptDecoder);
   });
-  const copy = React.useMemo(() => {
-    const next = scene.clone(true);
-    if (tone === "comparison") {
-      next.traverse((object) => {
-        const mesh = object as { material?: Material | Material[] };
-        if (!mesh.material) return;
-        mesh.material = Array.isArray(mesh.material)
-          ? mesh.material.map(styleComparisonMaterial)
-          : styleComparisonMaterial(mesh.material);
-      });
-    }
-    return next;
-  }, [scene, tone]);
+  const copy = React.useMemo(() => scene.clone(true), [scene]);
 
   React.useEffect(() => {
     copy.traverse((object) => {
@@ -218,23 +86,23 @@ function Model({
   );
 }
 
-function PivotMarker({
-  position,
-  color,
-}: {
-  position: [number, number, number];
-  color: string;
-}) {
+function Marker({ marker }: { marker: ViewerMarker }) {
   return (
-    <group position={position}>
+    <group position={marker.position}>
       <mesh>
-        <sphereGeometry args={[0.012, 20, 20]} />
-        <meshStandardMaterial color={color} emissive={color} />
+        <sphereGeometry args={[marker.kind === "com" ? 0.014 : 0.01, 20, 20]} />
+        <meshStandardMaterial
+          color={marker.color}
+          emissive={marker.color}
+          emissiveIntensity={0.8}
+        />
       </mesh>
-      <mesh>
-        <torusGeometry args={[0.025, 0.0025, 10, 32]} />
-        <meshBasicMaterial color={color} />
-      </mesh>
+      {marker.kind === "pivot" ? (
+        <mesh>
+          <torusGeometry args={[0.027, 0.003, 10, 32]} />
+          <meshBasicMaterial color={marker.color} />
+        </mesh>
+      ) : null}
     </group>
   );
 }
@@ -246,8 +114,8 @@ function Scene({
   grid,
   resetToken,
   visibleParts,
-  deformation,
-  comparison,
+  markers,
+  target,
 }: {
   asset: AssetRecord;
   pose?: ViewerPose;
@@ -255,8 +123,8 @@ function Scene({
   grid: boolean;
   resetToken: number;
   visibleParts?: Record<string, boolean>;
-  deformation?: { track: TransformTrack; frame: number };
-  comparison?: ViewerComparison;
+  markers?: ViewerMarker[];
+  target?: [number, number, number];
 }) {
   const controls = React.useRef<{ reset: () => void } | null>(null);
   React.useEffect(() => controls.current?.reset(), [resetToken]);
@@ -303,43 +171,20 @@ function Scene({
         />
       </Environment>
       <React.Suspense fallback={null}>
-        <Bounds fit clip observe margin={comparison ? 1.75 : 1.35}>
-          {comparison ? (
-            <>
-              <Model
-                url={asset.previewGlbUrl}
-                pose={comparison.poses[0]}
-                visibleParts={visibleParts}
-              />
-              <PivotMarker position={comparison.pivots[0]} color="#ffbd59" />
-              <Model
-                url={asset.previewGlbUrl}
-                pose={comparison.poses[1]}
-                visibleParts={visibleParts}
-                tone="comparison"
-              />
-              <PivotMarker position={comparison.pivots[1]} color="#55c7f3" />
-            </>
-          ) : (
-            <>
-              <Model
-                url={asset.previewGlbUrl}
-                pose={pose}
-                visibleParts={visibleParts}
-              />
-              {deformation ? (
-                <PcaDeformation
-                  track={deformation.track}
-                  frame={deformation.frame}
-                />
-              ) : null}
-            </>
-          )}
+        <Bounds fit clip observe margin={markers?.length ? 1.65 : 1.35}>
+          <Model
+            url={asset.previewGlbUrl}
+            pose={pose}
+            visibleParts={visibleParts}
+          />
+          {markers?.map((marker) => (
+            <Marker marker={marker} key={marker.label} />
+          ))}
         </Bounds>
       </React.Suspense>
       {grid ? (
         <Grid
-          position={[0, comparison ? -0.45 : -0.001, 0]}
+          position={[0, -0.001, 0]}
           args={[asset.preview.gridSize, asset.preview.gridSize]}
           cellSize={0.1}
           cellThickness={0.6}
@@ -354,7 +199,7 @@ function Scene({
       <OrbitControls
         ref={controls as React.MutableRefObject<never>}
         makeDefault
-        target={asset.preview.target}
+        target={target ?? asset.preview.target}
         minDistance={0.08}
         maxDistance={12}
         enableDamping
@@ -367,14 +212,14 @@ export function AssetViewer({
   asset,
   pose,
   visibleParts,
-  deformation,
-  comparison,
+  markers,
+  target,
 }: {
   asset: AssetRecord;
   pose?: ViewerPose;
   visibleParts?: Record<string, boolean>;
-  deformation?: { track: TransformTrack; frame: number };
-  comparison?: ViewerComparison;
+  markers?: ViewerMarker[];
+  target?: [number, number, number];
 }) {
   const shell = React.useRef<HTMLDivElement>(null);
   const [grid, setGrid] = React.useState(true);
@@ -435,8 +280,8 @@ export function AssetViewer({
               grid={grid}
               resetToken={resetToken}
               visibleParts={visibleParts}
-              deformation={deformation}
-              comparison={comparison}
+              markers={markers}
+              target={target}
             />
           </Canvas>
         ) : (
@@ -448,19 +293,17 @@ export function AssetViewer({
           />
         )}
 
-        {comparison ? (
+        {markers?.length ? (
           <div className="data absolute top-3 left-3 z-10 grid gap-1.5 bg-black/75 p-3 text-[0.58rem] uppercase text-white/80">
-            <div className="flex items-center gap-2">
-              <span className="size-2 bg-[#ffbd59]" />
-              {comparison.labels[0]}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="size-2 bg-[#55c7f3]" />
-              {comparison.labels[1]}
-            </div>
-            <small className="mt-1 max-w-44 normal-case leading-4 text-white/55">
-              {comparison.pivotLabel}
-            </small>
+            {markers.map((marker) => (
+              <div className="flex items-center gap-2" key={marker.label}>
+                <span
+                  className="size-2"
+                  style={{ backgroundColor: marker.color }}
+                />
+                {marker.label}
+              </div>
+            ))}
           </div>
         ) : null}
 
