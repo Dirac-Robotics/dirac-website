@@ -15,7 +15,7 @@ export const revalidate = 0;
 export default function AssetPackPage() {
   return (
     <main id="content" className="relative flex-1 bg-background">
-      <AssetPackRoute manifestUrl="/asset-pack/manifest.json?v=0.1.0-beta.2" />
+      <AssetPackRoute manifestUrl="/asset-pack/manifest.json?v=0.1.0-beta.3" />
     </main>
   );
 }

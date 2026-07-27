@@ -4,6 +4,7 @@ import { Layers3, ScanLine } from "lucide-react";
 import * as React from "react";
 
 import { AssetViewer } from "@/components/asset-pack/asset-viewer";
+import { ChairPressProof } from "@/components/asset-pack/chair-press-proof";
 import { EvidenceDrawer } from "@/components/asset-pack/evidence-drawer";
 import { HammerGravityProof } from "@/components/asset-pack/hammer-gravity-proof";
 import { TrajectoryPlayer } from "@/components/asset-pack/trajectory-player";
@@ -15,11 +16,11 @@ import type {
 } from "@/lib/asset-pack/types";
 
 export function PhysicsProof({ asset }: { asset: AssetRecord }) {
-  return asset.slug === "hammer" ? (
-    <HammerGravityProof asset={asset} />
-  ) : (
-    <TrackedPhysicsProof asset={asset} />
-  );
+  if (asset.slug === "hammer") return <HammerGravityProof asset={asset} />;
+  if (asset.slug === "purple-chair") {
+    return <ChairPressProof asset={asset} />;
+  }
+  return <TrackedPhysicsProof asset={asset} />;
 }
 
 function TrackedPhysicsProof({ asset }: { asset: AssetRecord }) {

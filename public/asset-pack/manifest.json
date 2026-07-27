@@ -23,9 +23,9 @@
           "status": "experimental"
         }
       ],
-      "description": "A high-fidelity velvet chair with a portable rigid profile and an experimental layered shell/foam/core response.",
+      "description": "A high-fidelity velvet chair with a localized memory-foam seat response and a portable rigid profile.",
       "dimensions": "0.69 × 0.69 × 0.86 m",
-      "disclosure": "Image-space deformation timing and footprint are observed. Metric force, held-out displacement, and cross-solver deformation are not qualified.",
+      "disclosure": "Seat contact location is interactive. Memory-foam locality, stiffness, and recovery are prior-driven; exact force-depth calibration and side/back motion are not yet qualified.",
       "evidence": [
         {
           "label": "Rigid mass",
@@ -39,9 +39,10 @@
           "value": "video tracked"
         },
         {
-          "label": "Metric press force",
-          "provenance": "unvalidated",
-          "value": "not qualified"
+          "label": "Force-depth response",
+          "provenance": "prior-driven",
+          "uncertainty": "not load-cell calibrated",
+          "value": "2.2 kN/m effective stiffness"
         },
         {
           "label": "PCA reconstruction",
@@ -52,51 +53,11 @@
       "evidenceTier": "experimental",
       "experiments": [
         {
-          "description": "Choose a tracked hotspot and scrub the distilled layered response. Depth is normalized because exact applied force was not captured.",
-          "id": "press",
-          "kind": "pca-deformation",
-          "presets": [
-            {
-              "disclosure": "Eight-or-fewer-mode PCA reconstruction of the offline layered cache; normalized press depth is not a force measurement.",
-              "id": "seat",
-              "label": "Seat",
-              "metrics": [
-                {
-                  "label": "Press depth",
-                  "provenance": "prior-driven",
-                  "value": "normalized 0–1"
-                }
-              ],
-              "trackUrl": "/asset-pack/tracks/chair-seat.json"
-            },
-            {
-              "disclosure": "Eight-or-fewer-mode PCA reconstruction of the offline layered cache; normalized press depth is not a force measurement.",
-              "id": "backrest",
-              "label": "Backrest",
-              "metrics": [
-                {
-                  "label": "Press depth",
-                  "provenance": "prior-driven",
-                  "value": "normalized 0–1"
-                }
-              ],
-              "trackUrl": "/asset-pack/tracks/chair-backrest.json"
-            },
-            {
-              "disclosure": "Eight-or-fewer-mode PCA reconstruction of the offline layered cache; normalized press depth is not a force measurement.",
-              "id": "side",
-              "label": "Side",
-              "metrics": [
-                {
-                  "label": "Press depth",
-                  "provenance": "prior-driven",
-                  "value": "normalized 0–1"
-                }
-              ],
-              "trackUrl": "/asset-pack/tracks/chair-side.json"
-            }
-          ],
-          "title": "Press & release"
+          "description": "Choose any upward-facing point on the memory-foam seat, set the applied force, then hold and release to inspect localized compression and slow recovery.",
+          "id": "seat-point-press",
+          "kind": "interactive-press",
+          "presets": [],
+          "title": "Localized seat press"
         }
       ],
       "files": [
@@ -161,7 +122,7 @@
       "previewGlbUrl": "/asset-pack/models/purple-chair-preview.glb",
       "slug": "purple-chair",
       "title": "Purple chair",
-      "version": "0.1.0-beta.2"
+      "version": "0.1.0-beta.3"
     },
     {
       "bundleId": "table",
@@ -432,7 +393,7 @@
       "version": "0.1.0-beta.2"
     }
   ],
-  "generatedAt": "2026-07-27T19:03:00Z",
+  "generatedAt": "2026-07-27T19:41:08Z",
   "headline": "Simulation-ready assets with disclosed physical assumptions and validation evidence.",
   "capabilities": {
     "downloads": false,
@@ -442,5 +403,5 @@
   "releaseStatus": "evaluation-only-beta",
   "schema": "asset-pack.web.v1",
   "termsVersion": "evaluation-beta-v1",
-  "version": "0.1.0-beta.2"
+  "version": "0.1.0-beta.3"
 }

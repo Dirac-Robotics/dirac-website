@@ -33,7 +33,8 @@ export type ExperimentDefinition = {
     | "rigid-transform"
     | "comparison"
     | "pca-deformation"
-    | "interactive-pendulum";
+    | "interactive-pendulum"
+    | "interactive-press";
   presets: ExperimentPreset[];
 };
 
@@ -124,4 +125,17 @@ export type ViewerMarker = {
   kind: "pivot" | "com";
   label: string;
   position: [number, number, number];
+};
+
+export type ViewerSeatPress = {
+  appliedForceN: number;
+  depthM: number;
+  point: [number, number, number];
+  radiusM: number;
+  selectionBounds: {
+    min: [number, number, number];
+    max: [number, number, number];
+  };
+  onInvalidPoint: () => void;
+  onPointSelect: (point: [number, number, number]) => void;
 };
