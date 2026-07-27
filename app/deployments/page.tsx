@@ -1,16 +1,24 @@
 import type { Metadata } from "next";
 
+import { socialMetadata } from "@/lib/config/site";
 import { PageHeader } from "@/components/marketing/page-header";
 import { NodeMesh } from "@/components/marketing/node-mesh";
 import { ProseBlocks } from "@/components/marketing/prose-blocks";
 import { SpecStrip, type Spec } from "@/components/marketing/spec-strip";
 import { CtaSection } from "@/components/marketing/cta-section";
 
+const DESCRIPTION =
+  "A robot doing its job in your building, every day, through whatever that day brings. Validated before launch and re-validated as the site changes.";
+
 export const metadata: Metadata = {
   title: "Deployments",
   alternates: { canonical: "/deployments" },
-  description:
-    "A robot doing its job in your building, every day, through whatever that day brings. Validated before launch and re-validated as the site changes.",
+  description: DESCRIPTION,
+  ...socialMetadata({
+    title: "Deployments · Dirac Robotics",
+    description: DESCRIPTION,
+    path: "/deployments",
+  }),
 };
 
 const BLOCKS = [

@@ -1,16 +1,24 @@
 import type { Metadata } from "next";
 
+import { socialMetadata } from "@/lib/config/site";
 import { PageHeader } from "@/components/marketing/page-header";
 import { NodeMesh } from "@/components/marketing/node-mesh";
 import { ProseBlocks } from "@/components/marketing/prose-blocks";
 import { SpecStrip, type Spec } from "@/components/marketing/spec-strip";
 import { CtaSection } from "@/components/marketing/cta-section";
 
+const DESCRIPTION =
+  "Regression testing for robots. We build an evaluation suite for your deployment and run it before the robot touches your floor.";
+
 export const metadata: Metadata = {
   title: "Evals",
   alternates: { canonical: "/evals" },
-  description:
-    "Regression testing for robots. We build an evaluation suite for your deployment and run it before the robot touches your floor.",
+  description: DESCRIPTION,
+  ...socialMetadata({
+    title: "Evals · Dirac Robotics",
+    description: DESCRIPTION,
+    path: "/evals",
+  }),
 };
 
 const BLOCKS = [

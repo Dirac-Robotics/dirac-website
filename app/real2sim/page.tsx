@@ -1,28 +1,36 @@
 import type { Metadata } from "next";
 
+import { socialMetadata } from "@/lib/config/site";
 import { PageHeader } from "@/components/marketing/page-header";
 import { NodeMesh } from "@/components/marketing/node-mesh";
 import { ProseBlocks } from "@/components/marketing/prose-blocks";
 import { SpecStrip, type Spec } from "@/components/marketing/spec-strip";
 import { CtaSection } from "@/components/marketing/cta-section";
 
+const DESCRIPTION =
+  "Point a camera at the space where your robot will work. We send back a physics-accurate USD scene in hours, not weeks.";
+
 export const metadata: Metadata = {
   title: "Real2Sim",
   alternates: { canonical: "/real2sim" },
-  description:
-    "Point a camera at the space where your robot will work. We send back a physics-accurate USD scene in hours, not weeks.",
+  description: DESCRIPTION,
+  ...socialMetadata({
+    title: "Real2Sim · Dirac Robotics",
+    description: DESCRIPTION,
+    path: "/real2sim",
+  }),
 };
 
 const BLOCKS = [
   "Robots are trained in scenes that do not exist. A generic warehouse, a generic shelf, a generic object. Then they get deployed into your building, with your lighting, your floor, your bins, and performance drops. The gap between the training scene and the deployment scene is where most deployments quietly fail.",
-  "We close it by making the training scene the deployment scene. A single-camera video is enough input. We reconstruct the geometry, then we measure the physics rather than infer it: mass, inertia, friction, joint dynamics, each with stated uncertainty. It arrives as USD, ready for Isaac Sim.",
-  "Geometry alone tells you what a scene looks like. It does not tell you how an object behaves when a gripper closes on it. A mug that renders correctly but slips at the wrong coefficient teaches your policy the wrong lesson. We measure against real hardware so what the policy learns in simulation still holds when it meets the real object.",
+  "We close it by making the training scene the deployment scene. A single-camera video is enough input. We reconstruct the geometry, then the pipeline resolves the physics automatically: mass, inertia, friction, joint dynamics, each with stated confidence. It arrives as USD, ready for Isaac Sim.",
+  "Geometry alone tells you what a scene looks like. It does not tell you how an object behaves when a gripper closes on it. A mug that renders correctly but slips at the wrong coefficient teaches your policy the wrong lesson. Our pipeline is validated against real hardware, so what the policy learns in simulation still holds when it meets the real object.",
 ];
 
 const SPECS: Spec[] = [
   { label: "Input", value: "Single-camera video" },
   { label: "Output", value: "USD scene, Isaac Sim ready" },
-  { label: "Physics", value: "Measured, uncertainty stated" },
+  { label: "Physics", value: "Predicted automatically, confidence stated" },
   { label: "Turnaround", value: "Hours" },
 ];
 

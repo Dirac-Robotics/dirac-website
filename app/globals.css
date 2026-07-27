@@ -218,7 +218,7 @@
   }
   /*
    * Flat scrim over the hero video. Legibility beats video visibility.
-   * Measured against the footage: at the 95th-percentile bright pixel, 0.86
+   * Sampled against the footage: at the 95th-percentile bright pixel, 0.86
    * keeps body prose at 8.4:1 and the mono eyebrow at 5.0:1, both clear of
    * AA. 0.65 left the eyebrow at 3.3:1. Solid alpha, no gradient.
    */

@@ -1,6 +1,6 @@
 /**
  * Upload limits and allowed types. Shared between client (to pre-validate and
- * show caps) and server (which re-validates — the client is assumed hostile).
+ * show caps) and server (which re-validates, since the client is assumed hostile).
  */
 
 export const IMAGE_MIME_TYPES = [

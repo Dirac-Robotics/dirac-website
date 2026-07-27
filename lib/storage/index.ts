@@ -3,7 +3,7 @@
  *
  * Uploads never pass through the app server. The client asks for a short-lived
  * write SAS URL (`createSignedUpload`) and PUTs the file straight to the blob.
- * We never store binaries in Postgres — only the `storageKey` and public `url`.
+ * We never store binaries in Postgres, only the `storageKey` and public `url`.
  * The container has anonymous blob read, so stored URLs render directly.
  */
 import "server-only";

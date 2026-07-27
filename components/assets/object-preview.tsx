@@ -6,11 +6,9 @@ import dynamic from "next/dynamic";
 /**
  * Client wrapper for a single-object gallery preview. The WebGL canvas cannot
  * server-render, so it loads lazily (ssr: false) behind a light placeholder,
- * and only once the card scrolls near the viewport — so the four gallery
- * canvases are not all created up front (a real cost on mobile GPUs).
+ * and only once the card scrolls near the viewport, so the gallery canvases are
+ * not all created up front (a real cost on mobile GPUs).
  */
-
-type ObjType = "obj" | "fbx" | "dae";
 
 function Placeholder() {
   return (
@@ -28,12 +26,7 @@ const ObjectCardCanvas = dynamic(() => import("./object-card-canvas"), {
   loading: () => <Placeholder />,
 });
 
-export function ObjectPreview(props: {
-  url: string;
-  type: ObjType;
-  rotation?: [number, number, number];
-  fit?: number;
-}) {
+export function ObjectPreview(props: { url: string; fit?: number }) {
   const ref = React.useRef<HTMLDivElement>(null);
   const [show, setShow] = React.useState(false);
 

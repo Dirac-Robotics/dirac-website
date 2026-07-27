@@ -2,11 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { getLeaderboard, getLeaderboardCount } from "@/lib/data/queries";
+import { socialMetadata } from "@/lib/config/site";
 import { Leaderboard } from "@/components/assets/leaderboard";
+
+const DESCRIPTION =
+  "TThe top 20 get built. The top 5 ship free to everyone.";
 
 export const metadata: Metadata = {
   title: "All requests",
   alternates: { canonical: "/requests" },
+  description: DESCRIPTION,
+  ...socialMetadata({
+    title: "All requests · Dirac Robotics",
+    description: DESCRIPTION,
+    path: "/requests",
+  }),
 };
 export const dynamic = "force-dynamic";
 

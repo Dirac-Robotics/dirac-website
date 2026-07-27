@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 # The committed lockfile resolves tarballs against an internal Microsoft npm
 # proxy (ms-feed-*.pkgs.visualstudio.com/.../npm/registry/...) that CI cannot
-# reach. Rewrite those URLs to the public registry — the package versions and
+# reach. Rewrite those URLs to the public registry. The package versions and
 # integrity hashes are identical, so `npm ci` stays deterministic.
 RUN sed -i -E 's#https://[^"]+/npm/registry/#https://registry.npmjs.org/#g' package-lock.json \
   && npm config set registry https://registry.npmjs.org/ \
@@ -23,7 +23,7 @@ COPY . .
 
 # lib/env.ts validates required env at import time and throws if anything is
 # missing, which would fail `next build`. The home/leaderboard pages are
-# force-dynamic, so no real DB/network access happens during the build — these
+# force-dynamic, so no real DB/network access happens during the build. These
 # placeholders only satisfy the schema. Real values are supplied at RUNTIME by
 # the container host and are NOT baked into the image (no NEXT_PUBLIC_* here).
 ENV NEXT_TELEMETRY_DISABLED=1 \

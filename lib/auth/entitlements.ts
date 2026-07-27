@@ -1,5 +1,5 @@
 /**
- * ── PHASE 2 SEAM — ENTITLEMENTS ──────────────────────────────────────────────
+ * ── PHASE 2 SEAM: ENTITLEMENTS ───────────────────────────────────────────────
  * Today the shipped catalog is public: anyone may view a published asset and
  * (later) download its files. When payments land, entitlement checks move here
  * and read from a NEW `entitlements` table keyed by (user_id, asset_id). No

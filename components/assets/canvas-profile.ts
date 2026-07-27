@@ -4,7 +4,7 @@ import * as React from "react";
 
 /**
  * Device-aware render profile for the R3F canvases. Computed once, synchronously,
- * at mount — these canvases are client-only (ssr:false), so `window` is available
+ * at mount. These canvases are client-only (ssr:false), so `window` is available
  * on first render and the value never flips mid-session (avoids re-creating the
  * WebGL context). Low-power devices (touch, small screens, few cores) drop the
  * pixel ratio and shadows, which are the two biggest costs on mobile GPUs.

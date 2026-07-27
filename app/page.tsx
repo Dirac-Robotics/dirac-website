@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { getLeaderboard, getLeaderboardCount } from "@/lib/data/queries";
+import { socialMetadata } from "@/lib/config/site";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChallengeStrip } from "@/components/assets/challenge-strip";
@@ -15,6 +16,12 @@ import { Team } from "@/components/assets/team";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  ...socialMetadata({
+    title: "Dirac Robotics. Physics-accurate simulation assets.",
+    description:
+      "Request a physics-accurate object for Isaac Sim and vote on what we build next. Our first library ships with 20 assets, and the leaderboard decides which ones.",
+    path: "/",
+  }),
 };
 
 // Reads live vote scores on every request.
@@ -42,14 +49,19 @@ export default async function Home() {
           </h1>
           <p className="prose-lead mx-auto mt-4">
             Request a photoreal, physics-accurate object for Isaac Sim, rally
-            the community to upvote it, and the top pick each cycle gets built
-            and shipped free.
+            the community to upvote it, and the leaderboard decides what we
+            build next.
           </p>
 
           {/* Interactive 3D object carousel. Flexes to fill the hero height. */}
           <HeroShowcase className="mt-2 min-h-80 w-full flex-1" />
 
-          <div className="mt-2">
+          {/* Program rules, stated right before the ask so they cannot be missed. */}
+          <p className="prose-body mx-auto mt-4">
+            The top 20 get built. The top 5 ship free to everyone.
+          </p>
+
+          <div className="mt-4">
             <SubmitAssetModal
               trigger={
                 <Button

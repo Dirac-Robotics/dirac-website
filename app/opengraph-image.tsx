@@ -4,7 +4,7 @@ import { SITE } from "@/lib/config/site";
 
 // Social share image, generated at request time. Applies to every route via
 // the Next.js file convention (og:image + twitter:image fallback).
-export const alt = "Dirac Robotics — measured-physics simulation assets";
+export const alt = "Dirac Robotics, physics-accurate simulation assets";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -47,11 +47,11 @@ export default function OpengraphImage() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ fontSize: 76, lineHeight: 1.05, fontWeight: 700 }}>
-            Measured-physics simulation assets.
+            Physics-accurate simulation assets.
           </div>
           <div style={{ fontSize: 32, color: "#b4b4b4", maxWidth: 900 }}>
-            Physics-accurate Isaac Sim assets from real objects: measured mass,
-            inertia, friction, and joint dynamics.
+            Isaac Sim assets from real objects. Our Real2Sim pipeline predicts
+            mass, inertia, friction, and joint dynamics automatically.
           </div>
         </div>
 

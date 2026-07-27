@@ -5,90 +5,49 @@
    render loop by design, which the React Compiler flags. */
 
 import * as React from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { ContactShadows, Preload } from "@react-three/drei";
 import { useReducedMotion } from "motion/react";
 import * as THREE from "three";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
-import { ColladaLoader } from "three/examples/jsm/loaders/ColladaLoader.js";
 
 import { useCanvasProfile } from "./canvas-profile";
+import {
+  cloneForDisplay,
+  StudioRig,
+  useAssetGlb,
+  useDisposeMaterials,
+} from "./glb-display";
 
 /**
- * A single measured object rendered in the same Ghost-White studio material as
- * the hero carousel, so the gallery reads as the same cohesive set. It auto-
- * rotates slowly when idle and can be grabbed to spin (mouse or touch). Honors
+ * A single asset-pack object, rendered from the same preview GLB the asset pack
+ * serves so the gallery card matches the asset page. It auto-rotates slowly
+ * when idle and can be grabbed to spin (mouse or touch). Honors
  * prefers-reduced-motion and drops shadows / pixel ratio on low-power devices.
  */
-
-type ObjType = "obj" | "fbx" | "dae";
-
-function loaderFor(type: ObjType) {
-  if (type === "dae") return ColladaLoader;
-  if (type === "fbx") return FBXLoader;
-  return OBJLoader;
-}
-
-const STUDIO_COLOR = new THREE.Color("#cdcac2");
 
 type SpinRef = React.RefObject<{ x: number; y: number }>;
 
 function Model({
   url,
-  type,
-  rotation,
   fit,
   reduce,
   spin,
   active,
 }: {
   url: string;
-  type: ObjType;
-  rotation?: [number, number, number];
   fit?: number;
   reduce: boolean;
   spin: SpinRef;
   active: React.RefObject<boolean>;
 }) {
-  const loaded = useLoader(loaderFor(type), url);
+  const scene = useAssetGlb(url);
   const spinner = React.useRef<THREE.Group>(null);
 
-  const material = React.useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: STUDIO_COLOR.clone(),
-        roughness: 0.52,
-        metalness: 0.16,
-      }),
-    [],
+  const { model, materials } = React.useMemo(
+    () => cloneForDisplay(scene, { fit }),
+    [scene, fit],
   );
-
-  // Clone, re-material, center and fit-to-unit. Mirrors the hero showcase.
-  const model = React.useMemo(() => {
-    const raw = (
-      type === "dae" ? (loaded as { scene: THREE.Object3D }).scene : loaded
-    ) as THREE.Object3D;
-    const obj = raw.clone(true);
-    obj.traverse((child) => {
-      const mesh = child as THREE.Mesh;
-      if (mesh.isMesh) {
-        mesh.material = material;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-      }
-    });
-    const box = new THREE.Box3().setFromObject(obj);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    const inner = new THREE.Group();
-    obj.position.set(-center.x, -center.y, -center.z);
-    inner.add(obj);
-    inner.scale.setScalar(((fit ?? 1) * 2.3) / maxDim);
-    if (rotation) inner.rotation.set(...rotation);
-    return inner;
-  }, [loaded, material, type, rotation, fit]);
+  useDisposeMaterials(materials);
 
   useFrame((_, dt) => {
     const g = spinner.current;
@@ -108,15 +67,11 @@ function Model({
 
 function Scene({
   url,
-  type,
-  rotation,
   fit,
   shadows,
   onCursor,
 }: {
   url: string;
-  type: ObjType;
-  rotation?: [number, number, number];
   fit?: number;
   shadows: boolean;
   onCursor: (cursor: string) => void;
@@ -156,20 +111,10 @@ function Scene({
 
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <directionalLight
-        position={[4, 6.5, 5]}
-        intensity={2.2}
-        castShadow={shadows}
-        shadow-mapSize={[1024, 1024]}
-        shadow-bias={-0.0002}
-      />
-      <directionalLight position={[-5, 2, -3]} intensity={0.45} />
+      <StudioRig shadows={shadows} />
       <React.Suspense fallback={null}>
         <Model
           url={url}
-          type={type}
-          rotation={rotation}
           fit={fit}
           reduce={reduce}
           spin={spin}
@@ -215,13 +160,9 @@ function Scene({
 
 export default function ObjectCardCanvas({
   url,
-  type,
-  rotation,
   fit,
 }: {
   url: string;
-  type: ObjType;
-  rotation?: [number, number, number];
   fit?: number;
 }) {
   const { dpr, shadows } = useCanvasProfile();
@@ -234,16 +175,13 @@ export default function ObjectCardCanvas({
       shadows={shadows}
       gl={{ alpha: true, antialias: true }}
       camera={{ position: [0, 0.4, 6], fov: 30 }}
-      onCreated={({ gl }) => gl.setClearAlpha(0)}
+      onCreated={({ gl }) => {
+        gl.setClearAlpha(0);
+        // Matches the asset-pack viewer, so the same GLB reads the same here.
+        gl.toneMappingExposure = 1.25;
+      }}
     >
-      <Scene
-        url={url}
-        type={type}
-        rotation={rotation}
-        fit={fit}
-        shadows={shadows}
-        onCursor={setCursor}
-      />
+      <Scene url={url} fit={fit} shadows={shadows} onCursor={setCursor} />
     </Canvas>
   );
 }

@@ -9,7 +9,7 @@ build
 .gitignore
 .github
 
-# Secrets and local env — never copy into the image
+# Secrets and local env: never copy into the image
 .env
 .env.*
 

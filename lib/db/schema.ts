@@ -7,7 +7,7 @@
  *   3. Ops tables (rate_limit_events)
  *
  * ─────────────────────────────────────────────────────────────────────────────
- * PHASE 2 SEAM — PAYMENTS & ENTITLEMENTS (do not build now)
+ * PHASE 2 SEAM: PAYMENTS & ENTITLEMENTS (do not build now)
  * ─────────────────────────────────────────────────────────────────────────────
  * Selling asset packs, purchase history, and gated Evals access are deferred.
  * They are designed to slot in WITHOUT migrating any table below, because the
@@ -313,7 +313,7 @@ export const assetPackEvents = pgTable(
 );
 
 /**
- * Physics metadata is the whole pitch: measured, with stated uncertainty.
+ * Physics metadata is the whole pitch: predicted, with stated confidence.
  * Shape (see lib/types.ts `AssetPhysics`):
  *   { mass, friction, inertia, ...each { value, uncertainty, unit } }
  * Stored as JSONB so the shape can evolve without a migration.

@@ -30,7 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files — NEVER commit. Contains DB URL, service role key, API keys.
+# env files: NEVER commit. Contains DB URL, service role key, API keys.
 # This intentionally also ignores .env.example (it currently holds real values).
 .env
 .env.*
