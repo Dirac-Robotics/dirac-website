@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 
-import { SITE } from "@/lib/config/site";
+import { SITE, socialMetadata } from "@/lib/config/site";
 import { PageHeader } from "@/components/marketing/page-header";
 import { NodeMesh } from "@/components/marketing/node-mesh";
 import { Button } from "@/components/ui/button";
 
+const DESCRIPTION =
+  "Talk to Dirac Robotics about Real2Sim, Evals, and asset packs. Send us the site and the task, and we will tell you what we can do and how fast.";
+
 export const metadata: Metadata = {
   title: "Contact",
   alternates: { canonical: "/contact" },
-  description: "Talk to Dirac Robotics about Real2Sim, Evals, and asset packs.",
+  description: DESCRIPTION,
+  ...socialMetadata({
+    title: "Contact · Dirac Robotics",
+    description: DESCRIPTION,
+    path: "/contact",
+  }),
 };
 
 export default function ContactPage() {
@@ -28,7 +36,7 @@ export default function ContactPage() {
           and the task, and we will tell you what we can do and how fast. You
           can also{" "}
           <a
-            href={SITE.calendlyUrl}
+            href={SITE.bookingUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-foreground underline underline-offset-4"
@@ -45,7 +53,7 @@ export default function ContactPage() {
             className="h-12 gap-2 px-8 text-base font-semibold"
           >
             <a
-              href={SITE.calendlyUrl}
+              href={SITE.bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
             >

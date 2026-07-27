@@ -17,7 +17,7 @@ export function SiteFooter() {
           </Link>
           <div className="flex flex-wrap items-center gap-6">
             <a
-              href={SITE.calendlyUrl}
+              href={SITE.bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
               className={linkClass}
@@ -38,9 +38,6 @@ export function SiteFooter() {
         <div className="mt-6 flex items-center justify-between">
           <span className="data text-[0.65rem] uppercase text-dim">
             © {new Date().getFullYear()} {SITE.name}
-          </span>
-          <span className="data text-[0.65rem] uppercase text-dim">
-            {SITE.domain}
           </span>
         </div>
       </div>

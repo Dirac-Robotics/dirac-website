@@ -5,7 +5,7 @@
 # Default: let Git detect text vs binary and normalize text to LF on commit.
 * text=auto
 
-# Source and config — always LF (matches Node/Next tooling and Prettier).
+# Source and config: always LF (matches Node/Next tooling and Prettier).
 *.ts     text eol=lf
 *.tsx    text eol=lf
 *.js     text eol=lf
@@ -22,7 +22,7 @@
 Dockerfile   text eol=lf
 .dockerignore text eol=lf
 
-# 3D models + materials — treat as binary (no EOL conversion, no diffs).
+# 3D models + materials: treat as binary (no EOL conversion, no diffs).
 *.obj   binary
 *.mtl   binary
 *.fbx   binary
@@ -34,7 +34,7 @@ Dockerfile   text eol=lf
 *.stl   binary
 *.ply   binary
 
-# Images, media, fonts, archives — binary.
+# Images, media, fonts, archives: binary.
 *.png   binary
 *.jpg   binary
 *.jpeg  binary

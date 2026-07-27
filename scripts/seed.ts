@@ -2,11 +2,16 @@
  * Seed script. Run with:  npm run db:seed
  * (loads .env via --env-file). Idempotent: clears domain rows and re-inserts.
  *
- * Seeds 10 visible asset requests with realistic requester data (email +
- * organisation) and one downloaded reference image each, uploaded to Azure
- * Blob Storage so the leaderboard shows real thumbnails. Media seeding is
- * skipped gracefully if AZURE_STORAGE_* is not set. Uses its own postgres
- * client so it only needs DATABASE_URL (+ optional AZURE_STORAGE_*).
+ * Seeds the visible asset requests with requester data (email + organisation)
+ * and, where a licence-clean source exists, one Wikimedia Commons reference
+ * image uploaded to Azure Blob Storage so the leaderboard shows a real
+ * thumbnail. Media seeding is skipped gracefully if AZURE_STORAGE_* is not set,
+ * in which case the leaderboard falls back to its monogram tile. Uses its own
+ * postgres client so it only needs DATABASE_URL (+ optional AZURE_STORAGE_*).
+ *
+ * Image credits for the seeded photos live in `lib/config/image-credits.ts`.
+ * Keep the two in sync: those photos are CC BY-SA, so the credits have to be
+ * on screen before the images go live.
  */
 import { Buffer } from "node:buffer";
 import postgres from "postgres";
@@ -57,45 +62,48 @@ const blobContainer =
 // Wikimedia Commons requires a descriptive User-Agent.
 const UA = "dirac-website-seed/1.0 (https://diracrobotics.com)";
 
-/** Resolve a relevant Wikimedia Commons photo (JPEG/PNG) for a search query. */
-async function findCommonsImage(
-  query: string,
+/** Thumbnail width for seeded reference images, matching what shipped before. */
+const THUMB_WIDTH = 800;
+
+/**
+ * Resolve one exact Wikimedia Commons file by title.
+ *
+ * Deliberately not a keyword search: every seeded image is a specific file we
+ * have checked the licence and author for, so the result has to be
+ * reproducible. Commons does the downscale for us via `iiurlwidth`, which is
+ * also how the previous seed sized its thumbnails.
+ */
+async function fetchCommonsFile(
+  fileTitle: string,
 ): Promise<{ url: string; mime: string } | null> {
   const api =
-    "https://commons.wikimedia.org/w/api.php?action=query&generator=search" +
-    `&gsrsearch=${encodeURIComponent(`${query} filetype:bitmap`)}` +
-    "&gsrnamespace=6&gsrlimit=6&prop=imageinfo&iiprop=url|mime" +
-    "&iiurlwidth=800&format=json";
+    "https://commons.wikimedia.org/w/api.php?action=query&format=json" +
+    "&prop=imageinfo&iiprop=url|mime" +
+    `&iiurlwidth=${THUMB_WIDTH}&titles=${encodeURIComponent(fileTitle)}`;
   const res = await fetch(api, { headers: { "User-Agent": UA } });
   if (!res.ok) return null;
   const json = (await res.json()) as {
     query?: {
       pages?: Record<
         string,
-        { index?: number; imageinfo?: { thumburl?: string; mime?: string }[] }
+        { imageinfo?: { thumburl?: string; url?: string; mime?: string }[] }
       >;
     };
   };
-  const pages = json.query?.pages;
-  if (!pages) return null;
-  const ordered = Object.values(pages).sort(
-    (a, b) => (a.index ?? 0) - (b.index ?? 0),
-  );
-  for (const p of ordered) {
-    const info = p.imageinfo?.[0];
-    if (
-      info?.thumburl &&
-      (info.mime === "image/jpeg" || info.mime === "image/png")
-    ) {
-      return { url: info.thumburl, mime: info.mime };
-    }
-  }
-  return null;
+  const page = Object.values(json.query?.pages ?? {})[0];
+  const info = page?.imageinfo?.[0];
+  if (!info?.mime) return null;
+  // Files narrower than THUMB_WIDTH have no thumburl; use the original rather
+  // than upscaling.
+  const url = info.thumburl ?? info.url;
+  if (!url) return null;
+  if (info.mime !== "image/jpeg" && info.mime !== "image/png") return null;
+  return { url, mime: info.mime };
 }
 
-/** Find a relevant image, download it, and upload it to blob storage. */
+/** Download one Commons file and upload it to blob storage. */
 async function seedImage(
-  query: string,
+  fileTitle: string,
   index: number,
 ): Promise<{
   storageKey: string;
@@ -105,8 +113,11 @@ async function seedImage(
 } | null> {
   if (!blobContainer) return null;
   try {
-    const found = await findCommonsImage(query);
-    if (!found) return null;
+    const found = await fetchCommonsFile(fileTitle);
+    if (!found) {
+      console.warn(`  image not resolved: ${fileTitle}`);
+      return null;
+    }
     const res = await fetch(found.url, { headers: { "User-Agent": UA } });
     if (!res.ok) return null;
     const buf = Buffer.from(await res.arrayBuffer());
@@ -119,122 +130,167 @@ async function seedImage(
     });
     return { storageKey, url: blob.url, size: buf.length, mime: found.mime };
   } catch (err) {
-    console.warn(`  image failed for "${query}": ${(err as Error).message}`);
+    console.warn(`  image failed for "${fileTitle}": ${(err as Error).message}`);
     return null;
   }
 }
 
-// 10 real robot-manipulation objects, each with a requester and a Wikimedia
-// Commons search query. All visible so the full set shows on the leaderboard.
+/**
+ * The seeded leaderboard.
+ *
+ * Scores are set deliberately low and close together so the board reads as
+ * beatable: a handful of real votes should visibly reshuffle the top half.
+ * Nothing goes above 10. Ties are broken by `createdAt` descending in the
+ * leaderboard query, so `main` backdates each row to hold this exact order.
+ *
+ * `commonsFile` names one specific, licence-checked Wikimedia Commons file.
+ * Entries with `commonsFile: null` have no licence-clean source yet and fall
+ * back to the monogram tile the leaderboard already renders for missing
+ * thumbnails. See the TODO list below for the ones awaiting studio photos.
+ */
 type SeedRequest = {
   title: string;
   description: string;
   organization: string;
   requesterName: string;
   requesterEmail: string;
-  imageQuery: string;
+  /** Exact Commons file title, or null to use the placeholder tile. */
+  commonsFile: string | null;
+  /** Net upvotes. Backed by real rows in `votes` so the two reconcile. */
+  votes: number;
   status: schema.AssetRequest["status"];
 };
 
+// TODO: replace the placeholder tile with our own studio photo for each of
+// these, which have no licence-clean source. Do not substitute stock, Etsy,
+// eBay or press photography.
+//   - Robot fighting championship belt
+//   - Y Combinator water bottle
+//   - One Wish Willow prop
+//   - Swatch x AP pocket watch
+//   - Warehouse tote
+//   - Dinner plate
 const REQUESTS: SeedRequest[] = [
   {
-    title: "Robotiq 2F-85 gripper",
+    title: "Gold football trophy",
     description:
-      "Two-finger adaptive gripper. Need accurate joint dynamics and fingertip friction for grasp sim.",
-    organization: "Carnegie Mellon University",
+      "Tall metal trophy on a plinth. Top-heavy, so the tipping point and the grasp on a narrow stem are the interesting parts.",
+    organization: "Independent",
     requesterName: "Maya Chen",
-    requesterEmail: "maya.chen@cmu.edu",
-    imageQuery: "robotic gripper",
-    status: "building",
+    requesterEmail: "maya.chen@example.com",
+    commonsFile:
+      "File:FIFA_World_Cup_Trophy_(Jules_Rimet_Trophy)_at_National_Football_Museum,_Manchester_02.jpg",
+    votes: 10,
+    status: "submitted",
   },
   {
-    title: "Cordless power drill",
+    title: "Robot fighting championship belt",
     description:
-      "Handheld cordless drill. Trigger and mass distribution matter for pickup and handover tasks.",
-    organization: "MIT CSAIL",
+      "Wide leather belt with a heavy metal plate. Deformable strap plus a rigid centre, awkward to lift flat.",
+    organization: "Independent",
     requesterName: "Kenji Watanabe",
-    requesterEmail: "kenji.watanabe@mit.edu",
-    imageQuery: "cordless drill",
-    status: "under_review",
+    requesterEmail: "kenji.watanabe@example.com",
+    commonsFile: null,
+    votes: 8,
+    status: "submitted",
   },
   {
-    title: "Cereal box",
+    title: "Half marathon finisher medal",
     description:
-      "Rigid boxed food item. Need measured mass and surface friction for shelf picking.",
-    organization: "UC Berkeley",
+      "Flat metal disc on a ribbon. Thin profile on a table is a hard pinch grasp, and the ribbon is fully compliant.",
+    organization: "Independent",
     requesterName: "Priya Nair",
-    requesterEmail: "priya.nair@berkeley.edu",
-    imageQuery: "cereal box",
-    status: "accepted",
+    requesterEmail: "priya.nair@example.com",
+    commonsFile: "File:2015_Shanghai_half_marathon_medal.jpg",
+    votes: 8,
+    status: "submitted",
   },
   {
-    title: "Electric kettle",
+    title: "RoboCup ball",
     description:
-      "Plastic-and-steel kettle with a hinged lid. Handle grasp and pouring dynamics.",
-    organization: "ETH Zurich",
+      "Standard size football. Rolling resistance and restitution matter more than shape for kicking and trapping.",
+    organization: "Independent",
     requesterName: "Diego Ferreira",
-    requesterEmail: "diego.ferreira@ethz.ch",
-    imageQuery: "electric kettle",
+    requesterEmail: "diego.ferreira@example.com",
+    commonsFile: "File:Soccerball.png",
+    votes: 5,
     status: "submitted",
   },
   {
-    title: "Ceramic coffee mug",
+    title: "Y Combinator water bottle",
     description:
-      "Ceramic mug with a handle. Measured mass, tipping, and handle-grasp dynamics.",
-    organization: "Stanford Robotics Lab",
+      "Insulated steel bottle with a screw cap. Cylindrical grasp, shifting mass when partly filled.",
+    organization: "Independent",
     requesterName: "Aisha Khan",
-    requesterEmail: "aisha.khan@stanford.edu",
-    imageQuery: "coffee mug",
-    status: "shipped",
+    requesterEmail: "aisha.khan@example.com",
+    commonsFile: null,
+    votes: 5,
+    status: "submitted",
   },
   {
-    title: "Rubik's cube",
+    title: "IPO gong and mallet",
     description:
-      "Standard 57mm cube. Per-face friction and mass for in-hand manipulation.",
-    organization: "University of Toronto",
+      "Suspended metal disc plus a padded mallet. Two objects, one task, and a struck contact worth getting right.",
+    organization: "Independent",
     requesterName: "Tom Blake",
-    requesterEmail: "tom.blake@utoronto.ca",
-    imageQuery: "rubik's cube",
+    requesterEmail: "tom.blake@example.com",
+    commonsFile: "File:Gong_bali.jpg",
+    votes: 3,
     status: "submitted",
   },
   {
-    title: "Kitchen blender",
+    title: "One Wish Willow prop",
     description:
-      "Countertop blender with a removable jar. Two-part grasp and centre-of-mass shift.",
-    organization: "TU Munich",
+      "Slender branching prop with thin extremities. Self-collision and a fragile silhouette under a closing gripper.",
+    organization: "Independent",
     requesterName: "Lena Hoffmann",
-    requesterEmail: "lena.hoffmann@tum.de",
-    imageQuery: "kitchen blender",
+    requesterEmail: "lena.hoffmann@example.com",
+    commonsFile: null,
+    votes: 3,
     status: "submitted",
   },
   {
-    title: "Mechanical keyboard",
+    title: "Swatch x AP pocket watch",
     description:
-      "Compact mechanical keyboard. Thin profile and key travel for precise placement tasks.",
-    organization: "Georgia Tech",
+      "Small watch on a chain. Tiny rigid body attached to a flexible chain, which is a genuinely hard pairing to simulate.",
+    organization: "Independent",
     requesterName: "Omar Said",
-    requesterEmail: "omar.said@gatech.edu",
-    imageQuery: "computer keyboard",
-    status: "under_review",
-  },
-  {
-    title: "Tennis ball",
-    description:
-      "Compliant felt-covered sphere. Restitution and rolling friction for dynamic grasps.",
-    organization: "Imperial College London",
-    requesterName: "Sofia Rossi",
-    requesterEmail: "sofia.rossi@imperial.ac.uk",
-    imageQuery: "tennis ball",
+    requesterEmail: "omar.said@example.com",
+    commonsFile: null,
+    votes: 2,
     status: "submitted",
   },
   {
-    title: "Cast iron skillet",
+    title: "Warehouse tote",
     description:
-      "Heavy cast iron pan with a long handle. High mass and offset centre of gravity.",
-    organization: "University of Tokyo",
+      "Stackable plastic tote with moulded handles. Bread and butter for picking cells, and it nests when empty.",
+    organization: "Independent",
+    requesterName: "Sofia Rossi",
+    requesterEmail: "sofia.rossi@example.com",
+    commonsFile: null,
+    votes: 2,
+    status: "submitted",
+  },
+  {
+    title: "Traffic cone",
+    description:
+      "Weighted rubber cone. Soft body on a heavy base, and it should right itself after a nudge.",
+    organization: "Independent",
     requesterName: "Wei Zhang",
-    requesterEmail: "wei.zhang@u-tokyo.ac.jp",
-    imageQuery: "cast iron skillet",
+    requesterEmail: "wei.zhang@example.com",
+    commonsFile: "File:Traffic_Cone.jpg",
+    votes: 1,
+    status: "submitted",
+  },
+  {
+    title: "Dinner plate",
+    description:
+      "Glazed ceramic plate. Low friction, thin rim, and a flat lift off a table that most policies still fumble.",
+    organization: "Independent",
+    requesterName: "Noor Haddad",
+    requesterEmail: "noor.haddad@example.com",
+    commonsFile: null,
+    votes: 1,
     status: "submitted",
   },
 ];
@@ -249,7 +305,7 @@ const CATALOG: {
     name: "Robotiq 2F-85 gripper",
     slug: "robotiq-2f-85",
     description:
-      "Measured two-finger adaptive gripper with calibrated joint dynamics.",
+      "Two-finger adaptive gripper with predicted, calibrated joint dynamics.",
     physics: {
       mass: { value: 0.925, uncertainty: 0.01, unit: "kg" },
       friction: { value: 0.71, uncertainty: 0.04, unit: "μ" },
@@ -259,7 +315,7 @@ const CATALOG: {
   {
     name: "YCB cracker box",
     slug: "ycb-cracker-box",
-    description: "Rigid boxed item with measured surface friction.",
+    description: "Rigid boxed item with predicted surface friction.",
     physics: {
       mass: { value: 0.411, uncertainty: 0.005, unit: "kg" },
       friction: { value: 0.42, uncertainty: 0.03, unit: "μ" },
@@ -269,7 +325,7 @@ const CATALOG: {
   {
     name: "Kitchen mug",
     slug: "kitchen-mug",
-    description: "Ceramic mug with handle. Measured mass and tipping dynamics.",
+    description: "Ceramic mug with handle. Predicted mass and tipping dynamics.",
     physics: {
       mass: { value: 0.34, uncertainty: 0.008, unit: "kg" },
       friction: { value: 0.55, uncertainty: 0.05, unit: "μ" },
@@ -279,7 +335,7 @@ const CATALOG: {
   {
     name: "Hardwood block",
     slug: "hardwood-block",
-    description: "Single maple block, measured density and contact friction.",
+    description: "Single maple block, predicted density and contact friction.",
     physics: {
       mass: { value: 0.128, uncertainty: 0.003, unit: "kg" },
       friction: { value: 0.48, uncertainty: 0.04, unit: "μ" },
@@ -334,6 +390,18 @@ async function main() {
     voterIds.push(id);
   }
 
+  // The leaderboard sorts by score, then `createdAt` descending. Backdating
+  // each row one minute further into the past keeps REQUESTS order intact
+  // where scores tie, instead of leaving it to insertion timing.
+  const now = Date.now();
+
+  const maxVotes = Math.max(...REQUESTS.map((r) => r.votes));
+  if (maxVotes > voterIds.length) {
+    throw new Error(
+      `Need ${maxVotes} voters to back the highest score, have ${voterIds.length}.`,
+    );
+  }
+
   // Requesters + requests (all visible) with a reference image each.
   for (let i = 0; i < REQUESTS.length; i++) {
     const r = REQUESTS[i]!;
@@ -348,11 +416,12 @@ async function main() {
         organization: r.organization,
         status: r.status,
         moderationState: "visible",
+        createdAt: new Date(now - i * 60_000),
       })
       .returning({ id: assetRequests.id });
 
     // Reference image -> blob -> media row (drives the leaderboard thumbnail).
-    const image = await seedImage(r.imageQuery, i + 1);
+    const image = r.commonsFile ? await seedImage(r.commonsFile, i + 1) : null;
     if (image) {
       await db.insert(assetRequestMedia).values({
         requestId: request!.id,
@@ -363,18 +432,15 @@ async function main() {
         kind: "image",
       });
     }
-    console.log(`  ${r.title}${image ? " + image" : ""}`);
 
-    // Cast a plausible set of votes. Mostly upvotes, a few downvotes.
-    const voteCount = Math.max(2, Math.floor(Math.random() * voterIds.length));
-    const shuffled = [...voterIds]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, voteCount);
-    for (const uid of shuffled) {
-      const value = Math.random() < 0.85 ? 1 : -1;
-      await db
-        .insert(votes)
-        .values({ requestId: request!.id, userId: uid, value });
+    // Exactly `r.votes` upvotes from distinct voters, so the votes table and
+    // the denormalized score agree. One vote per user is a DB constraint.
+    for (const uid of voterIds.slice(0, r.votes)) {
+      await db.insert(votes).values({
+        requestId: request!.id,
+        userId: uid,
+        value: 1,
+      });
     }
 
     // Recompute denormalized score from the source of truth.
@@ -386,10 +452,19 @@ async function main() {
       .update(assetRequests)
       .set({ voteScore: score })
       .where(eq(assetRequests.id, request!.id));
+
+    const imageNote = image
+      ? " + image"
+      : !r.commonsFile
+        ? " (placeholder tile, no licence-clean source yet)"
+        : blobContainer
+          ? " (image FAILED)"
+          : " (image skipped, AZURE_STORAGE_* not set)";
+    console.log(`  ${String(score).padStart(2)}  ${r.title}${imageNote}`);
   }
   console.log(`  ${REQUESTS.length} asset requests with votes + images`);
 
-  // Catalog assets (published, with measured physics, no media on fresh DB).
+  // Catalog assets (published, with predicted physics, no media on fresh DB).
   for (const c of CATALOG) {
     await db.insert(assets).values({
       name: c.name,

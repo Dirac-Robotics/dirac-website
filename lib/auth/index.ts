@@ -1,5 +1,5 @@
 /**
- * Auth.js (NextAuth v5) — passwordless email magic link via Azure Communication
+ * Auth.js (NextAuth v5). Passwordless email magic link via Azure Communication
  * Services (ACS) Email, with a Drizzle/Postgres adapter and database-backed
  * sessions.
  *

@@ -34,7 +34,7 @@ export function CtaSection({
             className="h-12 gap-2 px-8 text-base font-semibold"
           >
             <a
-              href={SITE.calendlyUrl}
+              href={SITE.bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
             >

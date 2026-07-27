@@ -53,7 +53,7 @@ export const assetRequestSchema = z
     name: z.string().trim().min(1, "Your name is required.").max(120),
     email,
     organization: z.string().trim().max(200).optional().or(z.literal("")),
-    // The asset being requested — shown as the leaderboard row title.
+    // The asset being requested, shown as the leaderboard row title.
     title: shortText,
     description: z.string().trim().max(5000).optional().or(z.literal("")),
     media: z.array(mediaDescriptorSchema).max(6).default([]),

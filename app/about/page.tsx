@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
 
+import { socialMetadata } from "@/lib/config/site";
 import { PageHeader } from "@/components/marketing/page-header";
 import { NodeMesh } from "@/components/marketing/node-mesh";
 import { ProseBlocks } from "@/components/marketing/prose-blocks";
 import { CtaSection } from "@/components/marketing/cta-section";
 
+const DESCRIPTION =
+  "Specificity is the unlock for robot deployment. Dirac is the infrastructure company that makes it cheap: reconstruct the site, evaluate the policy against it, keep both current as the site moves.";
+
 export const metadata: Metadata = {
   title: "About",
   alternates: { canonical: "/about" },
-  description:
-    "A deployment company that happens to build simulation. Reconstruct the site, evaluate the policy against it, keep both current as the site moves.",
+  description: DESCRIPTION,
+  ...socialMetadata({
+    title: "About · Dirac Robotics",
+    description: DESCRIPTION,
+    path: "/about",
+  }),
 };
 
 const BLOCKS = [
   "The industry is optimizing for coverage. Bigger general models, bigger asset libraries, headline counts in the hundreds of thousands. It is an impressive number to put on a slide.",
   "But nobody deploys a headline count. Deployment happens in one building, with one robot, one set of objects, and one set of tasks that has to work on Tuesday morning. Generality is a research goal. Specificity is what ships.",
-  "So we work backwards from the deployment. If a robot has to work in your building, then the scene has to be your building, the physics has to be measured rather than guessed, the policy has to be tested where it will actually run, and all of it has to survive the site changing next month.",
-  "That is the whole company. Reconstruct the site. Evaluate the policy against it. Keep both current as the site moves. Three products, one loop, each one existing because the deployment needs it.",
-  "We build this on demand, per deployment. Not a library you buy and then adapt. The specific thing you need, for the place you need it.",
+  "We think that is the actual unlock. A robot works when the software knows this robot, this room, these objects, and this task, precisely. Not approximately, and not on average across a benchmark. The reason deployments stall is almost never ambition. It is that nobody can produce that specificity fast enough or cheaply enough to be worth it.",
+  "So we build the infrastructure that makes it cheap. Reconstruct the site. Evaluate the policy against it. Keep both current as the site moves. Three products, one loop, each one existing because the deployment needs it.",
+  "We are an infrastructure company. We do not deploy your robot and we do not sell you a library to adapt. We build the specific thing you need, for the place you need it, and we keep it true as that place changes.",
 ];
 
 export default function AboutPage() {
@@ -27,7 +35,7 @@ export default function AboutPage() {
         <NodeMesh className="pointer-events-none absolute inset-y-0 right-0 -z-10 hidden w-1/2 lg:block" />
         <PageHeader
           eyebrow="About"
-          headline="We are a deployment company that happens to build simulation."
+          headline="Specificity is the unlock. We build the infrastructure for it."
         />
         <div className="mt-12">
           <ProseBlocks blocks={BLOCKS} spacing="wide" />
@@ -40,9 +48,11 @@ export default function AboutPage() {
         <div className="mt-14">
           <div className="eyebrow mb-4">The team</div>
           <p className="prose-body">
-            Engineers from CMU and Microsoft, with backgrounds in deep learning
-            research and autonomous vehicle software. Founders who have shipped
-            before.
+            Two founders out of CMU, Microsoft, and frontier AI research labs.
+            Divyansh shipped AI products at GitHub Copilot and M365 and has
+            founded three companies before this one. Harsha has spent nine years
+            in deep learning, from autonomous vehicle perception to
+            brain-inspired research on cognition and causal learning.
           </p>
         </div>
       </section>

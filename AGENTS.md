@@ -1,7 +1,7 @@
 # Dirac Robotics — website
 
 Marketing site and community "asset request" app for Dirac Robotics
-(measured-physics Isaac Sim assets). Next.js App Router on React 19, deployed as
+(physics-accurate Isaac Sim assets). Next.js App Router on React 19, deployed as
 a standalone container to Azure Container Apps.
 
 ## Commands

@@ -3,7 +3,7 @@
  * `process.env` directly on the server so a missing/typo'd key fails loudly
  * at startup rather than at the first request.
  *
- * Server-only. Do NOT import from a Client Component — client code only ever
+ * Server-only. Do NOT import from a Client Component. Client code only ever
  * needs `NEXT_PUBLIC_*` values, which Next inlines at build time.
  */
 import { z } from "zod";
@@ -17,7 +17,7 @@ const serverSchema = z.object({
   // Optional on Vercel (auto-detected); set for local/preview if needed.
   AUTH_URL: z.url().optional(),
 
-  // Azure Communication Services (ACS) Email — magic-link delivery + team
+  // Azure Communication Services (ACS) Email: magic-link delivery + team
   // notifications. Connection string from the ACS resource's keys.
   ACS_CONNECTION_STRING: z.string().min(1),
   // ACS sender address on the linked (Azure-managed) domain, e.g.

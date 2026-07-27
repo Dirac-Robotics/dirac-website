@@ -4,6 +4,7 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { SHOWCASE_ASSETS } from "./asset-showcase-data";
 import type { ShowcaseControls } from "./showcase-canvas";
 
 /**
@@ -12,9 +13,9 @@ import type { ShowcaseControls } from "./showcase-canvas";
  * centered model's name and a one-line interaction hint.
  */
 
-// Kept in sync with OBJECTS order in showcase-canvas.tsx. Duplicated here so the
-// server/client wrapper does not pull three.js into its own chunk.
-const NAMES = ["Eyewear", "Lounge chair", "Kettle", "Rubber duck"];
+// Read from the shared asset list rather than three.js, so this wrapper does
+// not pull the 3D chunk in just to label the centered model.
+const NAMES = SHOWCASE_ASSETS.map((asset) => asset.name);
 
 const ShowcaseCanvas = dynamic(() => import("./showcase-canvas"), {
   ssr: false,

@@ -1,8 +1,8 @@
 const STEPS = [
   { n: "01", label: "Request" },
   { n: "02", label: "Vote" },
-  { n: "03", label: "We build it" },
-  { n: "04", label: "Winner gets it free" },
+  { n: "03", label: "Top 20 get built" },
+  { n: "04", label: "Top 5 ship free" },
 ];
 
 /**

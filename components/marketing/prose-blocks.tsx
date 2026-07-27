@@ -1,5 +1,5 @@
 /**
- * Body copy: plain paragraphs on the prose measure, generously spaced.
+ * Body copy: plain paragraphs on the prose line length, generously spaced.
  * Deliberately not cards, boxes, or a grid. `spacing="wide"` is for narrative
  * pages (About) that should breathe more than the product pages.
  */

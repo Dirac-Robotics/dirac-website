@@ -1,8 +1,8 @@
 # Dirac Robotics
 
 Community asset program, leaderboard, and lead capture for Dirac Robotics.
-Physics-accurate Isaac Sim assets with measured mass, inertia, friction, and
-joint dynamics, each with stated uncertainty.
+Physics-accurate Isaac Sim assets. The Real2Sim pipeline predicts mass, inertia,
+friction, and joint dynamics automatically, each with stated confidence.
 
 ## Stack
 

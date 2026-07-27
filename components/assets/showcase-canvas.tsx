@@ -5,65 +5,39 @@
    the useFrame render loop by design, which the React Compiler flags. */
 
 import * as React from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { ContactShadows, Preload } from "@react-three/drei";
 import { useReducedMotion } from "motion/react";
 import * as THREE from "three";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
-import { ColladaLoader } from "three/examples/jsm/loaders/ColladaLoader.js";
 
 import { useCanvasProfile } from "./canvas-profile";
+import {
+  cloneForDisplay,
+  StudioRig,
+  useAssetGlb,
+  useDisposeMaterials,
+} from "./glb-display";
+import { SHOWCASE_ASSETS, type ShowcaseAsset } from "./asset-showcase-data";
 
 export type ShowcaseControls = { next: () => void; prev: () => void };
 
 /**
  * Interactive 3D showcase for the hero.
  *
- * A cover-flow of measured-object models (glasses, chair, kettle) rendered in a
- * uniform Ghost-White studio material so they read as one cohesive set on the
- * near-black page. The center model auto-advances every few seconds; hovering
- * it pauses the rotation and lets you drag to spin it. Honors
+ * A cover-flow of the three shipped asset-pack objects (chair, table, hammer),
+ * rendered from the same preview GLBs the asset pack uses so the hero shows the
+ * real assets rather than stand-ins. The center model auto-advances every few
+ * seconds; hovering it pauses the rotation and lets you drag to spin it. Honors
  * prefers-reduced-motion (no auto-advance, no idle float).
  */
 
-type ObjType = "obj" | "fbx" | "dae";
-
-type ObjDef = {
-  name: string;
-  url: string;
-  type: ObjType;
-  /** Base orientation so the model sits upright and faces the camera. */
-  rotation?: [number, number, number];
-  /** Fine size nudge after fit-to-unit normalization. */
-  fit?: number;
-};
-
-// Order chosen so the cleanest silhouette opens centered.
-const OBJECTS: ObjDef[] = [
-  { name: "Eyewear", url: "/models/objects/glasses.dae", type: "dae" },
-  { name: "Lounge chair", url: "/models/objects/chair.fbx", type: "fbx" },
-  {
-    name: "Kettle",
-    url: "/models/objects/teapot.obj",
-    type: "obj",
-    // Source model sits top-down; stand it upright and face the camera.
-    rotation: [-Math.PI / 2, 0, 0],
-  },
-  { name: "Rubber duck", url: "/models/objects/duck.dae", type: "dae" },
-];
-
+const OBJECTS = SHOWCASE_ASSETS;
 const INTERVAL_S = 3;
 const N = OBJECTS.length;
 
-const CENTER_COLOR = new THREE.Color("#cdcac2");
+/** Flanks are tinted toward the page background so the center reads as subject. */
 const FLANK_COLOR = new THREE.Color("#5c5e68");
-
-function loaderFor(type: ObjType) {
-  if (type === "dae") return ColladaLoader;
-  if (type === "fbx") return FBXLoader;
-  return OBJLoader;
-}
+const FLANK_TINT = 0.6;
 
 /** Shortest signed distance from `active` on the ring (…-1, 0, 1…). */
 function relativeIndex(i: number, active: number) {
@@ -96,54 +70,23 @@ function ShowcaseItem({
   paused,
   reduce,
 }: {
-  def: ObjDef;
+  def: ShowcaseAsset;
   index: number;
   active: number;
   spin: SpinRef;
   paused: React.RefObject<boolean>;
   reduce: boolean;
 }) {
-  const loaded = useLoader(loaderFor(def.type), def.url);
+  const scene = useAssetGlb(def.url);
   const outer = React.useRef<THREE.Group>(null);
   const spinG = React.useRef<THREE.Group>(null);
 
-  // One material per item so flanks can dim independently of the center.
-  const material = React.useMemo(
-    () =>
-      new THREE.MeshStandardMaterial({
-        color: CENTER_COLOR.clone(),
-        roughness: 0.52,
-        metalness: 0.16,
-        transparent: true,
-      }),
-    [],
+  // Cloned per item, so tinting and fading one flank leaves the others alone.
+  const { model, materials } = React.useMemo(
+    () => cloneForDisplay(scene, { fit: def.fit }),
+    [scene, def.fit],
   );
-
-  // Clone, re-material, center and fit-to-unit. Memoized on the loaded asset.
-  const model = React.useMemo(() => {
-    const raw = (
-      def.type === "dae" ? (loaded as { scene: THREE.Object3D }).scene : loaded
-    ) as THREE.Object3D;
-    const obj = raw.clone(true);
-    obj.traverse((child) => {
-      const mesh = child as THREE.Mesh;
-      if (mesh.isMesh) {
-        mesh.material = material;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-      }
-    });
-    const box = new THREE.Box3().setFromObject(obj);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const maxDim = Math.max(size.x, size.y, size.z) || 1;
-    const inner = new THREE.Group();
-    obj.position.set(-center.x, -center.y, -center.z);
-    inner.add(obj);
-    inner.scale.setScalar(((def.fit ?? 1) * 2.3) / maxDim);
-    if (def.rotation) inner.rotation.set(...def.rotation);
-    return inner;
-  }, [loaded, def, material]);
+  useDisposeMaterials(materials);
 
   useFrame((_, dt) => {
     const g = outer.current;
@@ -165,19 +108,27 @@ function ShowcaseItem({
     g.scale.setScalar(sc);
     g.rotation.y = THREE.MathUtils.damp(g.rotation.y, t.rotY, 6, k);
 
-    // Dim flanks toward the background so the center reads as the subject.
-    material.color.copy(CENTER_COLOR).lerp(FLANK_COLOR, t.dim);
-
     // Fade anything past the two flanks fully out, so on a multi-object ring the
     // hidden items never streak across the view when they wrap around.
     const opacityTarget = Math.abs(rel) <= 1 ? (isCenter ? 1 : 0.94) : 0;
-    material.opacity = THREE.MathUtils.damp(
-      material.opacity,
-      opacityTarget,
-      6,
-      k,
-    );
-    g.visible = material.opacity > 0.02;
+    let opacity = 1;
+    for (const { material, baseColor } of materials) {
+      material.opacity = THREE.MathUtils.damp(
+        material.opacity,
+        opacityTarget,
+        6,
+        k,
+      );
+      opacity = material.opacity;
+      // Dim flanks toward the background so the center reads as the subject.
+      // Tinting the base color keeps the real texture maps intact.
+      if (baseColor) {
+        (material as THREE.Material & { color: THREE.Color }).color
+          .copy(baseColor)
+          .lerp(FLANK_COLOR, t.dim * FLANK_TINT);
+      }
+    }
+    g.visible = opacity > 0.02;
 
     // Drag-spin only the centered model; ease the others back to rest.
     if (isCenter) {
@@ -297,15 +248,7 @@ function Scene({
 
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <directionalLight
-        position={[4, 6.5, 5]}
-        intensity={2.2}
-        castShadow={shadows}
-        shadow-mapSize={[1024, 1024]}
-        shadow-bias={-0.0002}
-      />
-      <directionalLight position={[-5, 2, -3]} intensity={0.45} />
+      <StudioRig shadows={shadows} />
       <React.Suspense fallback={null}>
         {OBJECTS.map((def, i) => (
           <ShowcaseItem
@@ -370,7 +313,11 @@ export default function ShowcaseCanvas({
       shadows={shadows}
       gl={{ alpha: true, antialias: true }}
       camera={{ position: [0, 0.35, 6.4], fov: 32 }}
-      onCreated={({ gl }) => gl.setClearAlpha(0)}
+      onCreated={({ gl }) => {
+        gl.setClearAlpha(0);
+        // Matches the asset-pack viewer, so the same GLB reads the same here.
+        gl.toneMappingExposure = 1.25;
+      }}
     >
       <Scene
         onActiveChange={onActiveChange}
