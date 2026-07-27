@@ -64,14 +64,10 @@ export function AssetPackGallery({
       </div>
 
       <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-3">
           {manifest.assets.map((asset, index) => (
             <article
-              className={
-                index === 2
-                  ? "overflow-hidden border border-border bg-card md:col-span-2"
-                  : "overflow-hidden border border-border bg-card"
-              }
+              className="overflow-hidden border border-border bg-card"
               key={asset.slug}
             >
               <button
@@ -79,13 +75,7 @@ export function AssetPackGallery({
                 onClick={() => onSelectAsset(asset)}
                 aria-label={`Open ${asset.title}`}
               >
-                <div
-                  className={
-                    index === 2
-                      ? "relative aspect-[2/1] overflow-hidden border-b border-border bg-(--void)"
-                      : "relative aspect-[4/3] overflow-hidden border-b border-border bg-(--void)"
-                  }
-                >
+                <div className="relative aspect-[4/3] overflow-hidden border-b border-border bg-(--void)">
                   {/* Posters load before visitors opt into any GLB. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

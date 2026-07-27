@@ -102,10 +102,22 @@ export type TransformTrack = {
     weights: number[][];
     faces: number[];
     rmseM: number;
+    displayAlignment?: {
+      method: "nearest-visual-surface";
+      source: string;
+      maxDistanceM: number;
+    };
   };
 };
 
 export type ViewerPose = {
   position: [number, number, number];
   quaternion: [number, number, number, number];
+};
+
+export type ViewerComparison = {
+  labels: [string, string];
+  poses: [ViewerPose, ViewerPose];
+  pivots: [[number, number, number], [number, number, number]];
+  pivotLabel: string;
 };

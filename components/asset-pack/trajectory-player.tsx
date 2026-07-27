@@ -26,13 +26,13 @@ export function TrajectoryPlayer({
   const [progress, setProgress] = React.useState(0);
   const [playing, setPlaying] = React.useState(false);
   const [signal, setSignal] = React.useState("");
-  const startedAt = React.useRef(0);
-  const progressAtStart = React.useRef(0);
+  const progressRef = React.useRef(0);
 
   React.useEffect(() => {
     const controller = new AbortController();
     setTrack(null);
     setLoadError(false);
+    progressRef.current = 0;
     setProgress(0);
     setPlaying(false);
     fetch(trackUrl, { signal: controller.signal, cache: "force-cache" })
@@ -44,7 +44,11 @@ export function TrajectoryPlayer({
       })
       .then((value: TransformTrack) => {
         setTrack(value);
-        setSignal(Object.keys(value.signals)[0] ?? "");
+        setSignal(
+          value.comparison && "phase_difference" in value.signals
+            ? "phase_difference"
+            : Object.keys(value.signals)[0] ?? "",
+        );
       })
       .catch((error: unknown) => {
         if ((error as { name?: string }).name !== "AbortError") {
@@ -70,29 +74,36 @@ export function TrajectoryPlayer({
 
   React.useEffect(() => {
     if (!playing || !track) return;
-    startedAt.current = performance.now();
-    progressAtStart.current = progress;
+    let previous = performance.now();
     let request = 0;
     const tick = (now: number) => {
-      const elapsed = (now - startedAt.current) / 1000;
-      const next =
-        progressAtStart.current +
-        elapsed / Math.max(track.duration, 0.001);
+      const elapsed = Math.max(0, now - previous) / 1000;
+      previous = now;
+      const next = Math.min(
+        1,
+        Math.max(
+          0,
+          progressRef.current + elapsed / Math.max(track.duration, 0.001),
+        ),
+      );
+      progressRef.current = next;
+      setProgress(next);
       if (next >= 1) {
-        setProgress(1);
         setPlaying(false);
         return;
       }
-      setProgress(next);
       request = requestAnimationFrame(tick);
     };
     request = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(request);
-  }, [playing, progress, track]);
+  }, [playing, track]);
 
   function togglePlayback() {
     if (!track) return;
-    if (progress >= 1) setProgress(0);
+    if (progress >= 1) {
+      progressRef.current = 0;
+      setProgress(0);
+    }
     setPlaying((value) => !value);
     recordAssetPackEvent("proof_play", {
       assetSlug,
@@ -133,6 +144,7 @@ export function TrajectoryPlayer({
           className={buttonClass}
           onClick={() => {
             setPlaying(false);
+            progressRef.current = 0;
             setProgress(0);
           }}
           aria-label="Restart"
@@ -149,7 +161,12 @@ export function TrajectoryPlayer({
           aria-label="Trajectory time"
           onChange={(event) => {
             setPlaying(false);
-            setProgress(Number(event.target.value));
+            const next = Math.min(
+              1,
+              Math.max(0, Number(event.target.value)),
+            );
+            progressRef.current = next;
+            setProgress(next);
           }}
           onPointerUp={() =>
             recordAssetPackEvent("proof_scrub", {

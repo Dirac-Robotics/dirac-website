@@ -1,10 +1,22 @@
 "use client";
 
-import { Bounds, Grid, OrbitControls } from "@react-three/drei";
+import {
+  Bounds,
+  Environment,
+  Grid,
+  Lightformer,
+  OrbitControls,
+} from "@react-three/drei";
 import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { Expand, Grid3X3, RotateCcw, SunMedium } from "lucide-react";
 import * as React from "react";
-import { BufferAttribute, BufferGeometry } from "three";
+import {
+  BufferAttribute,
+  BufferGeometry,
+  Color,
+  DoubleSide,
+  type Material,
+} from "three";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
@@ -13,6 +25,7 @@ import { recordAssetPackEvent } from "@/lib/asset-pack/analytics";
 import type {
   AssetRecord,
   TransformTrack,
+  ViewerComparison,
   ViewerPose,
 } from "@/lib/asset-pack/types";
 
@@ -30,7 +43,42 @@ function PcaDeformation({
       "position",
       new BufferAttribute(new Float32Array(track.pca.rest), 3),
     );
-    next.setIndex(track.pca.faces);
+    const faces = track.pca.displayAlignment
+      ? track.pca.faces.flatMap((_, faceOffset, sourceFaces) => {
+          if (faceOffset % 3 !== 0) return [];
+          const first = sourceFaces[faceOffset] * 3;
+          const second = sourceFaces[faceOffset + 1] * 3;
+          const third = sourceFaces[faceOffset + 2] * 3;
+          const rest = track.pca?.rest ?? [];
+          const edgeSquared = (left: number, right: number) => {
+            const deltaX = rest[left] - rest[right];
+            const deltaY = rest[left + 1] - rest[right + 1];
+            const deltaZ = rest[left + 2] - rest[right + 2];
+            return deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
+          };
+          const firstX = rest[second] - rest[first];
+          const firstY = rest[second + 1] - rest[first + 1];
+          const firstZ = rest[second + 2] - rest[first + 2];
+          const secondX = rest[third] - rest[first];
+          const secondY = rest[third + 1] - rest[first + 1];
+          const secondZ = rest[third + 2] - rest[first + 2];
+          const crossX = firstY * secondZ - firstZ * secondY;
+          const crossY = firstZ * secondX - firstX * secondZ;
+          const crossZ = firstX * secondY - firstY * secondX;
+          const areaSquared =
+            crossX * crossX + crossY * crossY + crossZ * crossZ;
+          const maxEdgeSquared = 0.035 ** 2;
+          const valid =
+            areaSquared > 1e-16 &&
+            edgeSquared(first, second) <= maxEdgeSquared &&
+            edgeSquared(second, third) <= maxEdgeSquared &&
+            edgeSquared(third, first) <= maxEdgeSquared;
+          return valid
+            ? sourceFaces.slice(faceOffset, faceOffset + 3)
+            : [];
+        })
+      : track.pca.faces;
+    next.setIndex(faces);
     next.computeVertexNormals();
     return next;
   }, [track]);
@@ -58,26 +106,49 @@ function PcaDeformation({
   return (
     <mesh geometry={geometry}>
       <meshStandardMaterial
-        color="#e8e6e0"
-        emissive="#8a8a8a"
-        emissiveIntensity={0.2}
+        color="#b794f4"
+        emissive="#6b46c1"
+        emissiveIntensity={0.35}
+        roughness={0.72}
+        side={DoubleSide}
         transparent
-        opacity={0.38}
-        wireframe
+        opacity={0.3}
         depthWrite={false}
+        polygonOffset
+        polygonOffsetFactor={-1}
+        polygonOffsetUnits={-1}
       />
     </mesh>
   );
 }
 
+type ModelTone = "standard" | "comparison";
+
+function styleComparisonMaterial(material: Material): Material {
+  const next = material.clone() as Material & {
+    color?: Color;
+    emissive?: Color;
+    emissiveIntensity?: number;
+  };
+  next.color?.lerp(new Color("#55c7f3"), 0.58);
+  next.emissive?.set("#123f56");
+  if (typeof next.emissiveIntensity === "number") {
+    next.emissiveIntensity = Math.max(next.emissiveIntensity, 0.3);
+  }
+  next.transparent = true;
+  next.opacity = Math.min(next.opacity, 0.78);
+  return next;
+}
 function Model({
   url,
   pose,
   visibleParts,
+  tone = "standard",
 }: {
   url: string;
   pose?: ViewerPose;
   visibleParts?: Record<string, boolean>;
+  tone?: ModelTone;
 }) {
   const renderer = useThree((state) => state.gl);
   const { scene } = useLoader(GLTFLoader, url, (loader) => {
@@ -87,7 +158,19 @@ function Model({
     loader.setKTX2Loader(ktx2);
     loader.setMeshoptDecoder(MeshoptDecoder);
   });
-  const copy = React.useMemo(() => scene.clone(true), [scene]);
+  const copy = React.useMemo(() => {
+    const next = scene.clone(true);
+    if (tone === "comparison") {
+      next.traverse((object) => {
+        const mesh = object as { material?: Material | Material[] };
+        if (!mesh.material) return;
+        mesh.material = Array.isArray(mesh.material)
+          ? mesh.material.map(styleComparisonMaterial)
+          : styleComparisonMaterial(mesh.material);
+      });
+    }
+    return next;
+  }, [scene, tone]);
 
   React.useEffect(() => {
     copy.traverse((object) => {
@@ -135,6 +218,27 @@ function Model({
   );
 }
 
+function PivotMarker({
+  position,
+  color,
+}: {
+  position: [number, number, number];
+  color: string;
+}) {
+  return (
+    <group position={position}>
+      <mesh>
+        <sphereGeometry args={[0.012, 20, 20]} />
+        <meshStandardMaterial color={color} emissive={color} />
+      </mesh>
+      <mesh>
+        <torusGeometry args={[0.025, 0.0025, 10, 32]} />
+        <meshBasicMaterial color={color} />
+      </mesh>
+    </group>
+  );
+}
+
 function Scene({
   asset,
   pose,
@@ -143,6 +247,7 @@ function Scene({
   resetToken,
   visibleParts,
   deformation,
+  comparison,
 }: {
   asset: AssetRecord;
   pose?: ViewerPose;
@@ -151,6 +256,7 @@ function Scene({
   resetToken: number;
   visibleParts?: Record<string, boolean>;
   deformation?: { track: TransformTrack; frame: number };
+  comparison?: ViewerComparison;
 }) {
   const controls = React.useRef<{ reset: () => void } | null>(null);
   React.useEffect(() => controls.current?.reset(), [resetToken]);
@@ -159,35 +265,81 @@ function Scene({
     <>
       <color
         attach="background"
-        args={[lightMode === "dark" ? "#050508" : "#d9d7d1"]}
+        args={[lightMode === "dark" ? "#080a0f" : "#e5e2da"]}
       />
+      <ambientLight intensity={lightMode === "dark" ? 1.1 : 1.65} />
       <hemisphereLight
-        args={["#f1f0ec", "#20212a", lightMode === "dark" ? 2 : 2.5]}
+        args={["#fffdf7", "#454854", lightMode === "dark" ? 2.8 : 3.4]}
       />
-      <directionalLight position={[4, 7, 5]} intensity={3.5} castShadow />
+      <directionalLight position={[4, 7, 5]} intensity={5} castShadow />
       <directionalLight
         position={[-4, 2, -3]}
-        intensity={1.2}
-        color="#a8a9b2"
+        intensity={2.2}
+        color="#c4d5ed"
       />
+      <Environment resolution={128}>
+        <Lightformer
+          form="rect"
+          intensity={5}
+          color="#fff8e8"
+          position={[0, 3, 4]}
+          scale={[5, 5, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={3}
+          color="#b8d8ff"
+          position={[-4, 1, 0]}
+          rotation={[0, Math.PI / 2, 0]}
+          scale={[4, 4, 1]}
+        />
+        <Lightformer
+          form="rect"
+          intensity={4}
+          color="#ffffff"
+          position={[0, 5, 0]}
+          rotation={[Math.PI / 2, 0, 0]}
+          scale={[4, 4, 1]}
+        />
+      </Environment>
       <React.Suspense fallback={null}>
-        <Bounds fit clip observe margin={1.35}>
-          <Model
-            url={asset.previewGlbUrl}
-            pose={pose}
-            visibleParts={visibleParts}
-          />
-          {deformation ? (
-            <PcaDeformation
-              track={deformation.track}
-              frame={deformation.frame}
-            />
-          ) : null}
+        <Bounds fit clip observe margin={comparison ? 1.75 : 1.35}>
+          {comparison ? (
+            <>
+              <Model
+                url={asset.previewGlbUrl}
+                pose={comparison.poses[0]}
+                visibleParts={visibleParts}
+              />
+              <PivotMarker position={comparison.pivots[0]} color="#ffbd59" />
+              <Model
+                url={asset.previewGlbUrl}
+                pose={comparison.poses[1]}
+                visibleParts={visibleParts}
+                tone="comparison"
+              />
+              <PivotMarker position={comparison.pivots[1]} color="#55c7f3" />
+            </>
+          ) : (
+            <>
+              <Model
+                url={asset.previewGlbUrl}
+                pose={pose}
+                visibleParts={visibleParts}
+              />
+              {deformation ? (
+                <PcaDeformation
+                  track={deformation.track}
+                  frame={deformation.frame}
+                />
+              ) : null}
+            </>
+          )}
         </Bounds>
       </React.Suspense>
       {grid ? (
         <Grid
-          position={[0, -0.001, 0]}
+          position={[0, comparison ? -0.45 : -0.001, 0]}
           args={[asset.preview.gridSize, asset.preview.gridSize]}
           cellSize={0.1}
           cellThickness={0.6}
@@ -216,15 +368,17 @@ export function AssetViewer({
   pose,
   visibleParts,
   deformation,
+  comparison,
 }: {
   asset: AssetRecord;
   pose?: ViewerPose;
   visibleParts?: Record<string, boolean>;
   deformation?: { track: TransformTrack; frame: number };
+  comparison?: ViewerComparison;
 }) {
   const shell = React.useRef<HTMLDivElement>(null);
   const [grid, setGrid] = React.useState(true);
-  const [lightMode, setLightMode] = React.useState<"dark" | "light">("dark");
+  const [lightMode, setLightMode] = React.useState<"dark" | "light">("light");
   const [resetToken, setResetToken] = React.useState(0);
   const [webgl, setWebgl] = React.useState<boolean | null>(null);
 
@@ -269,6 +423,9 @@ export function AssetViewer({
               alpha: false,
               powerPreference: "high-performance",
             }}
+            onCreated={({ gl }) => {
+              gl.toneMappingExposure = 1.25;
+            }}
             shadows
           >
             <Scene
@@ -279,6 +436,7 @@ export function AssetViewer({
               resetToken={resetToken}
               visibleParts={visibleParts}
               deformation={deformation}
+              comparison={comparison}
             />
           </Canvas>
         ) : (
@@ -289,6 +447,22 @@ export function AssetViewer({
             alt={`${asset.title} preview`}
           />
         )}
+
+        {comparison ? (
+          <div className="data absolute top-3 left-3 z-10 grid gap-1.5 bg-black/75 p-3 text-[0.58rem] uppercase text-white/80">
+            <div className="flex items-center gap-2">
+              <span className="size-2 bg-[#ffbd59]" />
+              {comparison.labels[0]}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="size-2 bg-[#55c7f3]" />
+              {comparison.labels[1]}
+            </div>
+            <small className="mt-1 max-w-44 normal-case leading-4 text-white/55">
+              {comparison.pivotLabel}
+            </small>
+          </div>
+        ) : null}
 
         <div
           className="absolute top-3 right-3 z-10 flex gap-1"

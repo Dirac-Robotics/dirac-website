@@ -129,9 +129,9 @@
       "posterUrl": "/asset-pack/posters/purple-chair.webp",
       "preview": {
         "cameraPosition": [
-          1.4,
-          1.1,
-          1.4
+          -0.636,
+          0.54,
+          1.145
         ],
         "canonicalTransform": [
           1,
@@ -284,9 +284,9 @@
       "posterUrl": "/asset-pack/posters/table.webp",
       "preview": {
         "cameraPosition": [
-          1.7,
-          1.2,
-          1.5
+          0.6,
+          0.42,
+          1.35
         ],
         "canonicalTransform": [
           1,
@@ -332,7 +332,7 @@
           "status": "not-verified"
         }
       ],
-      "description": "A repaired steel-and-hickory composite with five collision proxies and quantitative balance, pendulum, and force-plate evidence.",
+      "description": "A repaired steel-and-hickory composite with five collision proxies and quantitative balance and pendulum evidence.",
       "dimensions": "0.33 m overall",
       "disclosure": "Physics consistency is validated against analytic predictions. Scale, part masses, and contact material values are category priors, not specimen measurements.",
       "evidence": [
@@ -352,20 +352,20 @@
           "value": "0.239 m from butt"
         },
         {
-          "label": "Angular impulse closure",
+          "label": "Pendulum period error",
           "provenance": "fitted",
-          "value": "within 5%"
+          "value": "< 2%"
         }
       ],
       "evidenceTier": "quantitative",
       "experiments": [
         {
-          "description": "Compare part-aware mass distribution against the same geometry and total mass with one uniform density.",
+          "description": "Scrub two same-mass hammers about a shared pivot at the fitted COM station. Amber is the part-aware steel-and-wood model; cyan is the uniform-density control.",
           "id": "balance",
           "kind": "comparison",
           "presets": [
             {
-              "disclosure": "Composite and uniform models share geometry, colliders, and total mass; only density distribution changes.",
+              "disclosure": "Composite and uniform models share geometry, colliders, total mass, and pivot. Only density distribution changes; the uniform model rotates away while the fitted composite balances.",
               "id": "balance",
               "label": "Balance",
               "metrics": [
@@ -378,7 +378,7 @@
               "trackUrl": "/asset-pack/tracks/hammer-balance.json"
             },
             {
-              "disclosure": "Periods are checked against the analytic physical-pendulum model.",
+              "disclosure": "Both models release from the same angle at the same grip pivot. Their phase divergence comes only from different COM and inertia; periods are checked analytically.",
               "id": "pendulum",
               "label": "Pendulum",
               "metrics": [
@@ -392,53 +392,6 @@
             }
           ],
           "title": "Balance / pendulum"
-        },
-        {
-          "description": "Choose a precomputed impact-energy preset and inspect force, impulse, angular velocity, and energy at 60 Hz.",
-          "id": "strike",
-          "kind": "rigid-transform",
-          "presets": [
-            {
-              "disclosure": "Passive Newton revolute swing with no animation curve or scripted slowdown after initialization. Peak force remains solver-dependent.",
-              "id": "1j",
-              "label": "1 J",
-              "metrics": [
-                {
-                  "label": "Configured energy",
-                  "provenance": "prior-driven",
-                  "value": "1 J"
-                }
-              ],
-              "trackUrl": "/asset-pack/tracks/hammer-strike-1j.json"
-            },
-            {
-              "disclosure": "Passive Newton revolute swing with no animation curve or scripted slowdown after initialization. Peak force remains solver-dependent.",
-              "id": "2j",
-              "label": "2 J",
-              "metrics": [
-                {
-                  "label": "Configured energy",
-                  "provenance": "prior-driven",
-                  "value": "2 J"
-                }
-              ],
-              "trackUrl": "/asset-pack/tracks/hammer-strike-2j.json"
-            },
-            {
-              "disclosure": "Passive Newton revolute swing with no animation curve or scripted slowdown after initialization. Peak force remains solver-dependent.",
-              "id": "3j",
-              "label": "3 J",
-              "metrics": [
-                {
-                  "label": "Configured energy",
-                  "provenance": "prior-driven",
-                  "value": "3 J"
-                }
-              ],
-              "trackUrl": "/asset-pack/tracks/hammer-strike-3j.json"
-            }
-          ],
-          "title": "Force plate"
         }
       ],
       "files": [
@@ -471,9 +424,9 @@
       "posterUrl": "/asset-pack/posters/hammer.webp",
       "preview": {
         "cameraPosition": [
-          0.6,
-          0.4,
-          0.6
+          0.165,
+          0.08,
+          1.0
         ],
         "canonicalTransform": [
           1,

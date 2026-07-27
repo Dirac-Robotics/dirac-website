@@ -10,8 +10,39 @@ import { recordAssetPackEvent } from "@/lib/asset-pack/analytics";
 import type {
   AssetRecord,
   TransformTrack,
+  ViewerComparison,
   ViewerPose,
 } from "@/lib/asset-pack/types";
+
+const HAMMER_BALANCE_PIVOT = [
+  0.2388560182163568,
+  0.010498220113394668,
+  -0.00030231248636543073,
+] as const;
+const HAMMER_GRIP_PIVOT = [0.08, 0, 0] as const;
+
+function hammerPoseAroundPivot(
+  angle: number,
+  laneOffsetY: number,
+  pivot: readonly [number, number, number],
+): { pose: ViewerPose; pivot: [number, number, number] } {
+  const [pivotX, pivotY, pivotZ] = pivot;
+  const cosine = Math.cos(angle);
+  const sine = Math.sin(angle);
+  const rotatedPivotX = cosine * pivotX - sine * pivotY;
+  const rotatedPivotY = sine * pivotX + cosine * pivotY;
+  return {
+    pose: {
+      position: [
+        pivotX - rotatedPivotX,
+        pivotY - rotatedPivotY + laneOffsetY,
+        pivotZ,
+      ],
+      quaternion: [0, 0, Math.sin(angle / 2), Math.cos(angle / 2)],
+    },
+    pivot: [pivotX, pivotY + laneOffsetY, pivotZ],
+  };
+}
 
 export function PhysicsProof({ asset }: { asset: AssetRecord }) {
   const [experimentId, setExperimentId] = React.useState(
@@ -27,6 +58,9 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
     experiment?.presets.find((item) => item.id === presetId) ??
     experiment?.presets[0];
   const [pose, setPose] = React.useState<ViewerPose | undefined>();
+  const [comparison, setComparison] = React.useState<
+    ViewerComparison | undefined
+  >();
   const [deformation, setDeformation] = React.useState<
     { track: TransformTrack; frame: number } | undefined
   >();
@@ -39,6 +73,32 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
 
   const onFrame = React.useCallback(
     (frame: number, track: TransformTrack | null) => {
+      if (asset.slug === "hammer" && track?.comparison) {
+        const values = track.comparison.values[frame] ?? [0, 0];
+        const isPendulum = preset?.id === "pendulum";
+        const pivot = isPendulum
+          ? HAMMER_GRIP_PIVOT
+          : HAMMER_BALANCE_PIVOT;
+        const partAware = hammerPoseAroundPivot(values[0] ?? 0, 0.2, pivot);
+        const uniform = hammerPoseAroundPivot(values[1] ?? 0, -0.2, pivot);
+        const labels: [string, string] = [
+          track.comparison.labels[0] ?? "part-aware composite",
+          track.comparison.labels[1] ?? "same-mass uniform",
+        ];
+        setComparison({
+          labels,
+          poses: [partAware.pose, uniform.pose],
+          pivots: [partAware.pivot, uniform.pivot],
+          pivotLabel: isPendulum
+            ? "Shared pivot at the measured grip station (0.08 m)"
+            : "Shared pivot at the fitted part-aware center of mass",
+        });
+        setPose(undefined);
+        setDeformation(undefined);
+        return;
+      }
+
+      setComparison(undefined);
       setDeformation(track?.pca ? { track, frame } : undefined);
       if (!track?.transform) {
         setPose(undefined);
@@ -52,7 +112,7 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
         | undefined;
       if (position && quaternion) setPose({ position, quaternion });
     },
-    [],
+    [asset.slug, preset?.id],
   );
 
   const partOptions = React.useMemo(() => {
@@ -142,8 +202,9 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
           <div className="mt-6 flex gap-3 border border-border p-3 text-sm leading-5 text-body">
             <Layers3 className="mt-0.5 size-4 shrink-0 text-ash" />
             <span>
-              Shell, foam, and core deformation is distilled into no more than
-              eight PCA modes.
+              The purple surface shows the PCA deformation field projected
+              onto the chair shell. The original PBR mesh remains visible
+              beneath it.
             </span>
           </div>
         )}
@@ -166,6 +227,7 @@ export function PhysicsProof({ asset }: { asset: AssetRecord }) {
             pose={pose}
             visibleParts={parts}
             deformation={deformation}
+            comparison={comparison}
           />
         </div>
         <TrajectoryPlayer
