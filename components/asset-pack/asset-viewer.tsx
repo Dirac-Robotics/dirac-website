@@ -6,9 +6,10 @@ import {
   Grid,
   Lightformer,
   OrbitControls,
+  useBounds,
 } from "@react-three/drei";
 import { Canvas, useLoader, useThree, type ThreeEvent } from "@react-three/fiber";
-import { Expand, Grid3X3, RotateCcw, SunMedium } from "lucide-react";
+import { Expand, Focus, Grid3X3, SunMedium } from "lucide-react";
 import * as React from "react";
 import * as THREE from "three";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
@@ -352,12 +353,25 @@ function SeatPressIndicator({ press }: { press: ViewerSeatPress }) {
   );
 }
 
+function Recenter({ token }: { token: number }) {
+  const bounds = useBounds();
+  const previousToken = React.useRef(token);
+
+  React.useEffect(() => {
+    if (previousToken.current === token) return;
+    previousToken.current = token;
+    bounds.refresh().clip().fit();
+  }, [bounds, token]);
+
+  return null;
+}
+
 function Scene({
   asset,
   pose,
   lightMode,
   grid,
-  resetToken,
+  recenterToken,
   visibleParts,
   markers,
   target,
@@ -367,15 +381,12 @@ function Scene({
   pose?: ViewerPose;
   lightMode: "dark" | "light";
   grid: boolean;
-  resetToken: number;
+  recenterToken: number;
   visibleParts?: Record<string, boolean>;
   markers?: ViewerMarker[];
   target?: [number, number, number];
   seatPress?: ViewerSeatPress;
 }) {
-  const controls = React.useRef<{ reset: () => void } | null>(null);
-  React.useEffect(() => controls.current?.reset(), [resetToken]);
-
   return (
     <>
       <color
@@ -418,7 +429,7 @@ function Scene({
         />
       </Environment>
       <React.Suspense fallback={null}>
-        <Bounds fit clip observe margin={markers?.length ? 1.65 : 1.35}>
+        <Bounds fit clip margin={markers?.length ? 1.65 : 1.35}>
           <Model
             url={asset.previewGlbUrl}
             pose={pose}
@@ -428,6 +439,7 @@ function Scene({
           {markers?.map((marker) => (
             <Marker marker={marker} key={marker.label} />
           ))}
+          <Recenter token={recenterToken} />
         </Bounds>
         {seatPress ? <SeatPressIndicator press={seatPress} /> : null}
       </React.Suspense>
@@ -446,7 +458,6 @@ function Scene({
         />
       ) : null}
       <OrbitControls
-        ref={controls as React.MutableRefObject<never>}
         makeDefault
         target={target ?? asset.preview.target}
         minDistance={0.08}
@@ -477,7 +488,7 @@ export function AssetViewer({
   const shell = React.useRef<HTMLDivElement>(null);
   const [grid, setGrid] = React.useState(true);
   const [lightMode, setLightMode] = React.useState<"dark" | "light">("light");
-  const [resetToken, setResetToken] = React.useState(0);
+  const [recenterToken, setRecenterToken] = React.useState(0);
   const [webgl, setWebgl] = React.useState<boolean | null>(null);
 
   React.useEffect(() => {
@@ -532,7 +543,7 @@ export function AssetViewer({
               pose={pose}
               lightMode={lightMode}
               grid={grid}
-              resetToken={resetToken}
+              recenterToken={recenterToken}
               visibleParts={visibleParts}
               markers={markers}
               target={target}
@@ -568,11 +579,11 @@ export function AssetViewer({
         >
           <button
             className={toolClass}
-            onClick={() => setResetToken((value) => value + 1)}
-            title="Reset camera"
+            onClick={() => setRecenterToken((value) => value + 1)}
+            title="Center object in view"
           >
-            <RotateCcw className="size-4" />
-            <span className="hidden sm:inline">Reset</span>
+            <Focus className="size-4" />
+            <span className="hidden sm:inline">Center</span>
           </button>
           <button
             className={toolClass}
