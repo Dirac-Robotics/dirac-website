@@ -10,6 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/deployments",
     "/about",
     "/contact",
+    "/asset-pack",
+    "/community-assets",
     "/requests",
   ];
   const now = new Date();
