@@ -5,10 +5,26 @@ export const SITE = {
   domain: "diracrobotics.com",
   url: "https://diracrobotics.com",
   description:
-    "Physics-accurate Isaac Sim assets built from real objects. Our Real2Sim pipeline predicts mass, inertia, friction, and joint dynamics automatically, with stated confidence on every value.",
+    "Dirac turns camera video of real sites and objects into physics-accurate simulation, so robots can train in the environments where they will actually work.",
   bookingUrl:
     "https://cal.com/divyansh-chauhan-bqv9r6/quick-chat-with-dirac-robotics",
   contactEmail: "divyansh@diracrobotics.com",
+} as const;
+
+/**
+ * Web derivatives of the Real2Sim launch media. Production can point this at
+ * the existing Azure `media/site` prefix with NEXT_PUBLIC_SITE_MEDIA_URL.
+ */
+const siteMediaRoot = (
+  process.env.NEXT_PUBLIC_SITE_MEDIA_URL ?? "/media"
+).replace(/\/$/, "");
+
+export const SITE_MEDIA = {
+  comparison: `${siteMediaRoot}/real2sim-comparison.webp`,
+  launchVideo: `${siteMediaRoot}/dirac-launch.mp4`,
+  launchPoster: `${siteMediaRoot}/dirac-launch-poster.webp`,
+  scene: `${siteMediaRoot}/real2sim-scene.glb`,
+  scenePoster: `${siteMediaRoot}/real2sim-scene-poster.webp`,
 } as const;
 
 /**
@@ -47,10 +63,10 @@ export function socialMetadata({
 
 export type NavItem = { label: string; href: string };
 
-// Order is fixed by brand spec. Assets is the home page.
+// Order is fixed by brand spec. The logo is the home-page link.
 export const NAV_ITEMS: readonly NavItem[] = [
-  { label: "Assets", href: "/" },
   { label: "Real2Sim", href: "/real2sim" },
+  { label: "Assets", href: "/asset-pack" },
   { label: "Evals", href: "/evals" },
   { label: "Deployments", href: "/deployments" },
   { label: "About", href: "/about" },

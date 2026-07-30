@@ -39,6 +39,10 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Cache-Control", value: IMMUTABLE }],
       },
       {
+        source: "/media/:path*",
+        headers: [{ key: "Cache-Control", value: IMMUTABLE }],
+      },
+      {
         source: "/Logo.png",
         headers: [{ key: "Cache-Control", value: IMMUTABLE }],
       },

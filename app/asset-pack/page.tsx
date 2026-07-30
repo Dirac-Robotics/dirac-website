@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
 
 import { AssetPackRoute } from "@/components/asset-pack/asset-pack-route";
+import { socialMetadata } from "@/lib/config/site";
+
+const DESCRIPTION =
+  "Simulation-ready chair, table, and hammer assets with disclosed physical assumptions and validation evidence.";
 
 export const metadata: Metadata = {
   title: "Simulation Asset Pack",
-  description:
-    "Simulation-ready chair, table, and hammer assets with disclosed physical assumptions and validation evidence.",
+  description: DESCRIPTION,
   alternates: { canonical: "/asset-pack" },
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
+  ...socialMetadata({
+    title: "Simulation Asset Pack · Dirac Robotics",
+    description: DESCRIPTION,
+    path: "/asset-pack",
+  }),
 };
 
 export const revalidate = 0;

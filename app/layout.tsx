@@ -27,7 +27,7 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "Dirac Robotics. Physics-accurate simulation assets.",
+    default: "Dirac Robotics. Bring the real world into simulation.",
     template: `%s · ${SITE.name}`,
   },
   description: SITE.description,
@@ -64,12 +64,12 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     url: SITE.url,
     locale: "en_US",
-    title: "Dirac Robotics. Physics-accurate simulation assets.",
+    title: "Dirac Robotics. Bring the real world into simulation.",
     description: SITE.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dirac Robotics. Physics-accurate simulation assets.",
+    title: "Dirac Robotics. Bring the real world into simulation.",
     description: SITE.description,
   },
 };
