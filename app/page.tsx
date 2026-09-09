@@ -17,6 +17,7 @@ import { HeroShowcase } from "@/components/assets/hero-showcase";
 import { SpecStrip, type Spec } from "@/components/marketing/spec-strip";
 import { CtaSection } from "@/components/marketing/cta-section";
 import { Team } from "@/components/assets/team";
+import { PipelineVideo } from "@/components/landing/pipeline-video";
 import { SceneExplorer } from "@/components/landing/scene-explorer";
 
 const DESCRIPTION =
@@ -230,16 +231,10 @@ export default function HomePage() {
                   00:51
                 </span>
               </div>
-              <video
-                className="aspect-video size-full bg-(--void) object-cover"
-                controls
-                playsInline
-                preload="none"
+              <PipelineVideo
+                src={SITE_MEDIA.launchVideo}
                 poster={SITE_MEDIA.launchPoster}
-              >
-                <source src={SITE_MEDIA.launchVideo} type="video/mp4" />
-                Your browser does not support embedded video.
-              </video>
+              />
             </article>
 
             <article className="overflow-hidden border border-border bg-card">
