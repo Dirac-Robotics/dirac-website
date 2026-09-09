@@ -23,8 +23,8 @@ export const SITE_MEDIA = {
   comparison: `${siteMediaRoot}/real2sim-comparison.webp`,
   launchVideo: `${siteMediaRoot}/dirac-launch.mp4`,
   launchPoster: `${siteMediaRoot}/dirac-launch-poster.webp`,
-  scene: `${siteMediaRoot}/real2sim-scene.glb`,
-  scenePoster: `${siteMediaRoot}/real2sim-scene-poster.webp`,
+  scene: `${siteMediaRoot}/real2sim-scene.glb?rev=674d2e5f`,
+  scenePoster: `${siteMediaRoot}/real2sim-scene-poster.webp?rev=ef-room-layout-v2`,
 } as const;
 
 /**

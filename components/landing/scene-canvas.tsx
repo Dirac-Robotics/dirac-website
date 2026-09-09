@@ -15,6 +15,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 
 import { useCanvasProfile } from "@/components/assets/canvas-profile";
+import { EF_ROOM_CAMERA, prepareEfRoom } from "@/lib/three/ef-room";
 import { StudioRig } from "@/components/assets/glb-display";
 
 class SceneErrorBoundary extends React.Component<
@@ -62,19 +63,10 @@ function ReconstructedScene({ url }: { url: string }) {
     loader.setMeshoptDecoder(MeshoptDecoder);
   });
 
-  const object = React.useMemo(() => {
-    const clone = scene.clone(true);
-    clone.traverse((child) => {
-      const mesh = child as THREE.Mesh;
-      if (!mesh.isMesh) return;
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-    });
-    return clone;
-  }, [scene]);
+  const object = React.useMemo(() => prepareEfRoom(scene), [scene]);
 
   return (
-    <Bounds fit clip observe margin={1.08}>
+    <Bounds fit clip observe margin={1.02}>
       <primitive object={object} />
     </Bounds>
   );
@@ -97,13 +89,13 @@ export default function SceneCanvas({
         className="absolute! inset-0"
         dpr={dpr}
         shadows={shadows}
-        camera={{ position: [4, 3, 6], fov: 42, near: 0.01, far: 500 }}
+        camera={{ position: EF_ROOM_CAMERA, fov: 40, near: 0.01, far: 500 }}
         gl={{ antialias: true, alpha: false }}
         style={{ touchAction: "none" }}
         onCreated={({ gl }) => {
           gl.setClearColor("#050508");
           gl.toneMapping = THREE.ACESFilmicToneMapping;
-          gl.toneMappingExposure = 1.15;
+          gl.toneMappingExposure = 1.12;
         }}
       >
         <StudioRig shadows={shadows} />
@@ -114,6 +106,8 @@ export default function SceneCanvas({
           makeDefault
           enableDamping
           dampingFactor={0.08}
+          minDistance={1.1}
+          maxDistance={18}
           minPolarAngle={0.15}
           maxPolarAngle={Math.PI / 2.02}
           zoomToCursor
