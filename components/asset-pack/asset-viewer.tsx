@@ -513,7 +513,7 @@ export function AssetViewer({
   }
 
   const toolClass =
-    "inline-flex h-9 items-center gap-1.5 border border-white/15 bg-black/70 px-2.5 text-xs text-white transition-colors hover:border-white/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50";
+    "inline-flex h-10 items-center gap-1.5 border border-border bg-background/95 px-2.5 text-xs text-foreground transition-colors hover:border-graphite focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50";
 
   return (
     <div ref={shell} className="w-full bg-(--void)">
@@ -560,7 +560,7 @@ export function AssetViewer({
         )}
 
         {markers?.length ? (
-          <div className="data absolute top-3 left-3 z-10 grid gap-1.5 bg-black/75 p-3 text-[0.58rem] uppercase text-white/80">
+          <div className="data absolute top-3 left-3 z-10 grid gap-1.5 border border-border bg-background/95 p-3 text-[0.58rem] uppercase text-body">
             {markers.map((marker) => (
               <div className="flex items-center gap-2" key={marker.label}>
                 <span
@@ -613,7 +613,7 @@ export function AssetViewer({
             <span className="hidden sm:inline">Full</span>
           </button>
         </div>
-        <span className="data absolute bottom-3 left-3 z-10 bg-black/70 px-2 py-1 text-[0.58rem] uppercase text-white/70">
+        <span className="data absolute right-3 bottom-3 left-3 z-10 w-fit max-w-[calc(100%-1.5rem)] border border-border bg-background/95 px-2 py-1 text-[0.58rem] uppercase text-body">
           {seatPress
             ? "Click the seat to place the press · drag to orbit"
             : "Drag to orbit · scroll to zoom · 10 cm grid"}

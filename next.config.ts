@@ -10,9 +10,24 @@ const nextConfig: NextConfig = {
   output: "standalone",
   // Drop the framework fingerprint header.
   poweredByHeader: false,
+  images: {
+    qualities: [75, 95],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 2560, 3072, 3840, 4146],
+  },
+  async redirects() {
+    return [
+      { source: "/real2sim", destination: "/#how-it-works", permanent: true },
+      { source: "/evals", destination: "/#stage-04", permanent: true },
+      { source: "/deployments", destination: "/#stage-05", permanent: true },
+      { source: "/about", destination: "/#affiliations", permanent: true },
+      { source: "/contact", destination: "/#submit", permanent: true },
+      { source: "/community-assets", destination: "/asset-pack", permanent: true },
+      { source: "/requests", destination: "/asset-pack", permanent: true },
+    ];
+  },
   // User-uploaded and catalog media are rendered with plain <img> from public
-  // Azure Blob URLs, so next/image optimization and remotePatterns are
-  // intentionally not configured here.
+  // Azure Blob URLs. The local hero uses next/image; remotePatterns are not
+  // needed for the catalog or user-uploaded media.
   async headers() {
     return [
       {

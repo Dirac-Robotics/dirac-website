@@ -1,0 +1,11 @@
+{
+  "title": "Cobot UR5",
+  "author": "GrowSkills Robotics",
+  "source": "https://commons.wikimedia.org/wiki/File:Cobot.jpg",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "changes": "Cropped empty headroom and cart/controller, resized to 520 x 608, converted JPEG to WebP. No robot geometry or colors changed.",
+  "retrieved": "2026-09-24",
+  "credit": "UR5 photo: GrowSkills Robotics / Wikimedia Commons, CC BY-SA 4.0. Cropped and resized.",
+  "usage": "External hardware reference only. Not a Dirac deployment, not the simulated generic robot, and not a warehouse scene."
+}

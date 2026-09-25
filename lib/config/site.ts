@@ -5,10 +5,10 @@ export const SITE = {
   domain: "diracrobotics.com",
   url: "https://diracrobotics.com",
   description:
-    "Dirac turns camera video of real sites and objects into physics-accurate simulation, so robots can train in the environments where they will actually work.",
+    "Build accurate robot models, reconstruct real environments, and train, test, and improve policies before and after deployment.",
   bookingUrl:
-    "https://cal.com/divyansh-chauhan-bqv9r6/quick-chat-with-dirac-robotics",
-  contactEmail: "divyansh@diracrobotics.com",
+    "https://cal.com/founders-bow3m9/30min",
+  contactEmail: "founders@diracrobotics.com",
 } as const;
 
 /**
@@ -65,12 +65,9 @@ export type NavItem = { label: string; href: string };
 
 // Order is fixed by brand spec. The logo is the home-page link.
 export const NAV_ITEMS: readonly NavItem[] = [
-  { label: "Real2Sim", href: "/real2sim" },
-  { label: "Assets", href: "/asset-pack" },
-  { label: "Evals", href: "/evals" },
-  { label: "Deployments", href: "/deployments" },
-  { label: "About", href: "/about" },
-  { label: "Contact Us", href: "/contact" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Explore assets", href: "/asset-pack" },
+  { label: "Book a call", href: SITE.bookingUrl },
 ];
 
 /** True when `href` is the active nav item for the current `pathname`. */

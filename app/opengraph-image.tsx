@@ -4,7 +4,7 @@ import { SITE } from "@/lib/config/site";
 
 // Social share image, generated at request time. Applies to every route via
 // the Next.js file convention (og:image + twitter:image fallback).
-export const alt = "Dirac Robotics, bring the real world into simulation";
+export const alt = "Dirac Robotics, from robot to deployment";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -18,8 +18,8 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#050508",
-          color: "#f5f4f0",
+          background: "#F5F3EE",
+          color: "#17191D",
           padding: "80px",
           fontFamily: "sans-serif",
         }}
@@ -29,8 +29,7 @@ export default function OpengraphImage() {
             style={{
               width: 16,
               height: 16,
-              borderRadius: 9999,
-              background: "#cdcac2",
+              background: "#FF7900",
             }}
           />
           <div
@@ -38,7 +37,7 @@ export default function OpengraphImage() {
               fontSize: 30,
               letterSpacing: 6,
               textTransform: "uppercase",
-              color: "#8a8a8a",
+              color: "#535650",
             }}
           >
             {SITE.name}
@@ -47,15 +46,14 @@ export default function OpengraphImage() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ fontSize: 76, lineHeight: 1.05, fontWeight: 700 }}>
-            Bring the real world into simulation.
+            From robot to deployment.
           </div>
-          <div style={{ fontSize: 32, color: "#b4b4b4", maxWidth: 900 }}>
-            Camera video becomes a physics-accurate scene where robots can
-            train for the environments where they will actually work.
+          <div style={{ fontSize: 32, color: "#535650", maxWidth: 900 }}>
+            Model. Reconstruct. Train. Test. Improve.
           </div>
         </div>
 
-        <div style={{ fontSize: 26, color: "#8a8a8a" }}>{SITE.domain}</div>
+        <div style={{ fontSize: 26, color: "#535650" }}>{SITE.domain}</div>
       </div>
     ),
     { ...size },

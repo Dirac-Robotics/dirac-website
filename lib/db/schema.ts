@@ -386,3 +386,48 @@ export type Lead = typeof leads.$inferSelect;
 export type NewLead = typeof leads.$inferInsert;
 export type Asset = typeof assets.$inferSelect;
 export type AssetMedia = typeof assetMedia.$inferSelect;
+
+// Private inbound samples are deliberately separate from public asset requests.
+export const sampleStatus = pgEnum("sample_status", ["new", "reviewing", "contacted", "closed"]);
+export const sampleUploadState = pgEnum("sample_upload_state", ["uploading", "complete", "delete_failed"]);
+export const sampleRequests = pgTable("sample_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  company: text("company").notNull(),
+  category: text("category").notNull(),
+  description: text("description").notNull().default(""),
+  status: sampleStatus("status").notNull().default("new"),
+  internalNotes: text("internal_notes").notNull().default(""),
+  uploadState: sampleUploadState("upload_state").notNull().default("uploading"),
+  uploadTokenHash: text("upload_token_hash"),
+  uploadExpiresAt: timestamp("upload_expires_at", { withTimezone: true }),
+  writeSasExpiresAt: timestamp("write_sas_expires_at", { withTimezone: true }),
+  lastError: text("last_error"),
+}, (t) => [
+  index("sample_requests_created_idx").on(t.createdAt.desc()),
+  index("sample_requests_status_idx").on(t.status),
+  check("sample_category_check", sql`${t.category} IN ('scene_videos', 'teleoperation')`),
+]);
+
+export const sampleAttachments = pgTable("sample_attachments", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  requestId: uuid("request_id").notNull().references(() => sampleRequests.id, { onDelete: "cascade" }),
+  originalFilename: text("original_filename").notNull(),
+  relativePath: text("relative_path").notNull(),
+  contentType: text("content_type").notNull(),
+  sizeBytes: bigint("size_bytes", { mode: "number" }).notNull(),
+  stagingKey: text("staging_key").notNull(),
+  storageKey: text("storage_key").notNull(),
+  uploadedAt: timestamp("uploaded_at", { withTimezone: true }),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+}, (t) => [
+  index("sample_attachments_request_idx").on(t.requestId),
+  uniqueIndex("sample_attachments_storage_unique").on(t.storageKey),
+  uniqueIndex("sample_attachments_staging_unique").on(t.stagingKey),
+]);
+
+export type SampleRequest = typeof sampleRequests.$inferSelect;
+export type SampleAttachment = typeof sampleAttachments.$inferSelect;

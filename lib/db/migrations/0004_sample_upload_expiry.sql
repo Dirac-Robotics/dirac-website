@@ -1,0 +1,1 @@
+ALTER TABLE "sample_requests" ADD COLUMN "write_sas_expires_at" timestamp with time zone;

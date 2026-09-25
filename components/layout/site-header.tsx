@@ -1,19 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Logo } from "@/components/layout/logo";
 import { SiteNav } from "@/components/layout/site-nav";
 
 /** Header appears on every page (rendered from the root layout). */
 export function SiteHeader() {
+  const onHome = usePathname() === "/";
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+    <header className={`global-header ${onHome ? "global-header-home" : "global-header-light"}`}>
+      <div className="site-container site-header flex items-center justify-between gap-4">
         <Link
           href="/"
           aria-label="Dirac Robotics home"
-          className="flex items-center rounded-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+          className="flex shrink-0 items-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
         >
-          <Logo size="md" />
+          <Logo size="md" onDark={onHome} />
         </Link>
         <SiteNav />
       </div>

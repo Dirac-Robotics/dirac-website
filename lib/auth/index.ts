@@ -14,6 +14,7 @@ import { db } from "@/lib/db";
 import { users, accounts, sessions, verificationTokens } from "@/lib/db/schema";
 import { env } from "@/lib/config/env";
 import { sendMagicLink } from "@/lib/email";
+import { and, eq, sql } from "drizzle-orm";
 
 declare module "next-auth" {
   interface Session {
@@ -53,6 +54,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   ],
   callbacks: {
+    // The public sample form needs no account. Email authentication is reserved
+    // for team members explicitly provisioned by an existing administrator.
+    async signIn({ user }) {
+      if (!user.email) return false;
+      const [member] = await db.select({ id: users.id }).from(users).where(
+        and(sql`lower(${users.email}) = ${user.email.toLowerCase()}`, eq(users.role, "admin")),
+      ).limit(1);
+      return !!member;
+    },
     // Database strategy: `user` is the full DB row, so role is present.
     session({ session, user }) {
       session.user.id = user.id;

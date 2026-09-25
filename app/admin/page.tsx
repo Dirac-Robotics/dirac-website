@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { requireAdmin } from "@/lib/auth/session";
 import {
@@ -28,7 +29,10 @@ export default async function AdminPage() {
     <main id="content" className="relative flex-1">
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="eyebrow mb-2">Admin</div>
-        <h1 className="mb-12 text-3xl text-foreground">Triage</h1>
+        <div className="mb-12 flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-3xl text-foreground">Triage</h1>
+          <Link href="/admin/samples" className="border border-border bg-secondary px-5 py-3 text-sm">Open private sample inbox →</Link>
+        </div>
 
         {/* Asset requests */}
         <div className="mb-16">
