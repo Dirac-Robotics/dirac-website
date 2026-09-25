@@ -5,6 +5,7 @@ import "./globals.css";
 import { SITE } from "@/lib/config/site";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { HERO_INTRO_SCRIPT, HeroIntro } from "@/components/landing/hero-intro";
 
 const syne = localFont({
   src: "../public/fonts/syne-latin-variable.woff2",
@@ -104,9 +105,15 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${syne.variable} ${inter.variable} ${dmMono.variable} ${geistPixel.variable} h-full antialiased`}
     >
+      <head>
+        {/* The intro state must be selected before the first paint, not at hydration. */}
+        <script dangerouslySetInnerHTML={{ __html: HERO_INTRO_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
+        <HeroIntro />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
