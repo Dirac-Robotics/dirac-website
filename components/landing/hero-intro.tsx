@@ -1,49 +1,37 @@
-"use client";
+/** Runs in <head> while HTML is parsed, before either the page or React paints. */
+export const HERO_INTRO_SCRIPT = `(() => {
+  const root = document.documentElement;
+  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const navigation = performance.getEntriesByType("navigation")[0];
+  let seen = false;
+  try { seen = sessionStorage.getItem("dirac-hero-intro-seen") === "true"; } catch {}
+  if (window.location.pathname !== "/" || window.location.hash || seen ||
+      motion.matches || document.hidden || window.scrollY > 12 ||
+      navigation?.type === "back_forward") return;
 
-import { useLayoutEffect, useRef } from "react";
+  const events = new AbortController();
+  const finish = () => {
+    root.dataset.heroIntro = "complete";
+    window.clearTimeout(timeout);
+    events.abort();
+  };
+  const timeout = window.setTimeout(finish, 1400);
+  const options = { signal: events.signal, passive: true };
+  window.addEventListener("pointerdown", finish, options);
+  window.addEventListener("keydown", finish, options);
+  window.addEventListener("scroll", () => { if (window.scrollY > 12) finish(); }, options);
+  window.addEventListener("pagehide", finish, options);
+  document.addEventListener("focusin", finish, options);
+  document.addEventListener("visibilitychange", finish, options);
+  motion.addEventListener("change", finish, options);
+  root.dataset.heroIntro = "playing";
+  try { sessionStorage.setItem("dirac-hero-intro-seen", "true"); } catch {}
+})();`;
 
-const SESSION_KEY = "dirac-hero-intro-seen";
-
-/** A brief first-visit reveal; navigation and input always take priority. */
+/** CSS completes the reveal even if the React bundle is delayed or fails. */
 export function HeroIntro() {
-  const intro = useRef<HTMLDivElement>(null);
-
-  useLayoutEffect(() => {
-    const element = intro.current;
-    if (!element) return;
-    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let seen = false;
-    try { seen = sessionStorage.getItem(SESSION_KEY) === "true"; } catch { /* Storage is optional. */ }
-    if (seen || motion.matches || document.hidden || window.scrollY > 12 || window.location.hash) return;
-
-    const events = new AbortController();
-    let finished = false;
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      element.dataset.state = "complete";
-      try { sessionStorage.setItem(SESSION_KEY, "true"); } catch { /* Storage is optional. */ }
-    };
-    element.dataset.state = "playing";
-    const timeout = window.setTimeout(finish, 1400);
-    const options = { signal: events.signal, passive: true };
-    window.addEventListener("pointerdown", finish, options);
-    window.addEventListener("keydown", finish, options);
-    window.addEventListener("scroll", finish, options);
-    window.addEventListener("resize", finish, options);
-    document.addEventListener("focusin", finish, options);
-    document.addEventListener("visibilitychange", finish, options);
-    motion.addEventListener("change", finish, options);
-
-    return () => {
-      window.clearTimeout(timeout);
-      events.abort();
-      element.dataset.state = "idle";
-    };
-  }, []);
-
   return (
-    <div ref={intro} className="hero-intro" data-state="idle" aria-hidden="true">
+    <div className="hero-intro" aria-hidden="true">
       <div className="hero-intro-lockup">
         {/* The transparent mark is extracted from the original Dirac artwork. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}

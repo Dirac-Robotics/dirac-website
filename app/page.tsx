@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { socialMetadata } from "@/lib/config/site";
 import { HeroHorizon } from "@/components/landing/hero-horizon";
-import { HeroIntro } from "@/components/landing/hero-intro";
 import { GridIllumination } from "@/components/marketing/grid-illumination";
 import { WarehouseStory } from "@/components/workflow/warehouse-story";
 import { AssetGallery } from "@/components/assets/asset-gallery";
@@ -17,7 +16,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <main id="content" className="relative flex-1">
-      <HeroIntro />
       <GridIllumination />
       <HeroHorizon />
       <WarehouseStory />

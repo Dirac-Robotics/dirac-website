@@ -278,7 +278,7 @@
   .hero-button:hover::before { transform: scaleX(1); transform-origin: left center; }
 }
 .hero-intro { display: none; position: fixed; inset: 0; z-index: 100; place-items: center; pointer-events: none; background: var(--hero-depth); }
-.hero-intro[data-state="playing"] { display: grid; animation: hero-intro-out 350ms ease 950ms both; }
+html[data-hero-intro="playing"] .hero-intro { display: grid; animation: hero-intro-out 350ms ease 950ms both; }
 .hero-intro-lockup { display: grid; justify-items: center; gap: 24px; }
 .hero-intro-mark { width: 128px; height: auto; animation: hero-mark-in 750ms cubic-bezier(.22, 1, .36, 1) both; }
 .hero-intro-name { color: #fff; font-family: var(--font-syne), sans-serif; font-size: 22px; letter-spacing: -.02em; animation: hero-name-in 500ms ease 200ms both; }
