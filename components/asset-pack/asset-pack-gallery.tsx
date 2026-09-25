@@ -1,4 +1,4 @@
-import { ArrowUpRight, Box, Download, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Box, Download } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -22,52 +22,44 @@ export function AssetPackGallery({
 }) {
   return (
     <section aria-labelledby="asset-pack-title">
-      <div className="border-b border-border">
-        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-[minmax(0,1fr)_20rem] md:items-end md:py-24">
+      <div className="technical-grid border-b border-border">
+        <div className="site-container pt-8"><Link href="/" className="inline-flex items-center gap-2 text-xs text-body hover:text-foreground"><ArrowLeft className="size-3.5" aria-hidden="true" />Back to Dirac</Link></div>
+        <div className="site-container flex flex-col items-start gap-6 py-10 md:flex-row md:items-end md:justify-between md:py-14">
           <div>
-            <div className="eyebrow mb-5">
-              {manifest.version} · evaluation beta
-            </div>
             <h1
               id="asset-pack-title"
-              className="max-w-4xl text-[2.7rem] leading-[1.02] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-[4.8rem]"
+              className="section-heading text-foreground"
             >
-              Three objects. Full simulation records.
+              Simulation assets.
             </h1>
-            <p className="prose-standfirst mt-6">{manifest.headline}</p>
-            {downloadsEnabled ? (
-              <Button
-                size="lg"
-                className="mt-8 h-12 px-5"
-                onClick={onDownloadAll}
-              >
-                <Download className="size-4" />
-                Unlock all assets
-              </Button>
-            ) : (
-              <Button asChild size="lg" className="mt-8 h-12 px-5">
-                <Link href={contactUrl}>
-                  Request asset access
-                  <ArrowUpRight className="size-4" />
-                </Link>
-              </Button>
-            )}
+            <p className="mt-4 text-base text-body">Explore in 3D.</p>
           </div>
-          <div className="flex gap-3 border border-border bg-card p-4">
-            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-ash" />
-            <p className="text-sm leading-6 text-body">
-              Every displayed physical value is labeled as measured, fitted,
-              prior-driven, or unvalidated.
-            </p>
-          </div>
+          {downloadsEnabled ? (
+            <Button
+              size="lg"
+              className="h-12 shrink-0 px-5"
+              onClick={onDownloadAll}
+            >
+              <Download className="size-4" />
+              Download all
+            </Button>
+          ) : (
+            <Button asChild size="lg" className="h-12 shrink-0 px-5">
+              <Link href={contactUrl}>
+                Request access
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+      <div className="site-container py-12 md:py-16">
+        <h2 className="data mb-6 text-[10px] uppercase text-dim">{manifest.assets.length} assets</h2>
         <div className="grid gap-5 md:grid-cols-3">
           {manifest.assets.map((asset, index) => (
             <article
-              className="overflow-hidden border border-border bg-card"
+              className="overflow-hidden border border-border bg-card transition-colors hover:border-graphite"
               key={asset.slug}
             >
               <button
@@ -83,26 +75,18 @@ export function AssetPackGallery({
                     alt={`${asset.title} rendered preview`}
                     className="h-full w-full object-cover transition-transform duration-500 motion-reduce:transition-none group-hover:scale-[1.02]"
                   />
-                  <span className="data absolute top-4 left-4 bg-black/75 px-2 py-1 text-[0.62rem] text-white/75">
+                  <span className="data absolute top-4 left-4 border border-border bg-background/95 px-2 py-1 text-[0.62rem] text-body">
                     0{index + 1}
                   </span>
-                  <span className="absolute top-4 right-4 flex size-9 items-center justify-center border border-white/20 bg-black/75 text-white transition-colors group-hover:border-white/50">
+                  <span className="absolute top-4 right-4 flex size-9 items-center justify-center border border-border bg-background/95 text-foreground transition-colors group-hover:bg-secondary">
                     <ArrowUpRight className="size-4" />
                   </span>
                 </div>
                 <div className="p-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <h2 className="text-2xl leading-tight text-foreground">
-                      {asset.title}
-                    </h2>
-                    <span className="data border border-border px-2 py-1 text-[0.58rem] uppercase text-dim">
-                      {asset.evidenceTier.replaceAll("-", " ")}
-                    </span>
-                  </div>
-                  <p className="mt-4 max-w-2xl text-sm leading-6 text-body">
-                    {asset.description}
-                  </p>
-                  <div className="data mt-6 flex flex-wrap justify-between gap-3 border-t border-border pt-4 text-[0.62rem] uppercase text-dim">
+                  <h2 className="text-2xl leading-tight text-foreground">
+                    {asset.title}
+                  </h2>
+                  <div className="data mt-4 flex flex-wrap justify-between gap-3 border-t border-border pt-4 text-[0.62rem] uppercase text-dim">
                     <span className="inline-flex items-center gap-2">
                       <Box className="size-3.5" />
                       {asset.dimensions}
@@ -115,7 +99,7 @@ export function AssetPackGallery({
           ))}
         </div>
         <p className="mt-6 text-right text-xs leading-5 text-dim">
-          Evaluation-only showcase. Download bundles are available by request.
+          {downloadsEnabled ? "For evaluation." : "Evaluation access by request."}
         </p>
       </div>
     </section>

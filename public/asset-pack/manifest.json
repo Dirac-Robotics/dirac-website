@@ -87,7 +87,7 @@
         }
       ],
       "mass": "14.0 kg estimate",
-      "posterUrl": "/asset-pack/posters/purple-chair-beta2.webp",
+      "posterUrl": "/asset-pack/posters/purple-chair-light.webp",
       "preview": {
         "cameraPosition": [
           -0.636,
@@ -242,7 +242,7 @@
         }
       ],
       "mass": "14.0 kg estimate",
-      "posterUrl": "/asset-pack/posters/table-beta2.webp",
+      "posterUrl": "/asset-pack/posters/table-light.webp",
       "preview": {
         "cameraPosition": [
           0.6,
@@ -355,7 +355,7 @@
         }
       ],
       "mass": "0.654 kg",
-      "posterUrl": "/asset-pack/posters/hammer-beta2.webp",
+      "posterUrl": "/asset-pack/posters/hammer-light.webp",
       "preview": {
         "cameraPosition": [
           0.165,

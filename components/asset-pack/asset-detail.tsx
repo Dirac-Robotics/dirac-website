@@ -38,22 +38,19 @@ export function AssetDetail({
   const [gate, setGate] = React.useState(false);
 
   const tabClass =
-    "data border border-transparent px-3 py-2 text-[0.64rem] uppercase text-dim transition-colors hover:text-foreground aria-[current=page]:border-border aria-[current=page]:bg-card aria-[current=page]:text-foreground";
+    "data border border-transparent px-3 py-3 text-[0.64rem] uppercase text-dim transition-colors hover:text-foreground aria-[current=page]:border-border aria-[current=page]:bg-secondary aria-[current=page]:text-foreground";
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-6 py-10 md:py-16">
+    <section className="asset-detail site-container py-10 md:py-16">
       <header className="flex items-center justify-between gap-5">
         <button
           className="inline-flex items-center gap-2 text-sm text-dim transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
           onClick={onBack}
         >
           <ArrowLeft className="size-4" />
-          Asset pack
+          All assets
         </button>
         <div className="flex items-center gap-4">
-          <span className="data hidden text-[0.62rem] uppercase text-dim sm:inline">
-            {asset.version}
-          </span>
           {downloadsEnabled ? (
             <Button
               size="lg"
@@ -80,7 +77,7 @@ export function AssetDetail({
         </div>
       </header>
 
-      <div className="grid gap-8 py-12 md:grid-cols-[minmax(0,1fr)_18rem] md:items-end md:py-16">
+      <div className="grid gap-6 py-8 md:grid-cols-[minmax(0,1fr)_18rem] md:items-end md:py-10">
         <div>
           <div className="eyebrow mb-4">
             {asset.evidenceTier.replaceAll("-", " ")}
@@ -88,7 +85,6 @@ export function AssetDetail({
           <h1 className="text-5xl leading-none tracking-[-0.035em] text-foreground sm:text-7xl lg:text-8xl">
             {asset.title}
           </h1>
-          <p className="prose-lead mt-6">{asset.description}</p>
         </div>
         <div className="data grid gap-3 border-y border-border py-4 text-[0.65rem] uppercase text-dim">
           <span className="inline-flex items-center gap-2">
@@ -96,7 +92,6 @@ export function AssetDetail({
             {asset.dimensions}
           </span>
           <span>{asset.mass}</span>
-          <span>Meters · right-handed</span>
         </div>
       </div>
 
@@ -126,13 +121,6 @@ export function AssetDetail({
       {tab === "preview" ? (
         <div className="border border-border bg-card p-2">
           <AssetViewer asset={asset} />
-          <div className="grid gap-2 border-t border-border p-4 sm:grid-cols-[10rem_minmax(0,1fr)]">
-            <span className="label">Browser preview</span>
-            <p className="text-sm leading-6 text-body">
-              GLB carries appearance in glTF Y-up. The download&apos;s canonical
-              physics stage is meter-scaled, right-handed OpenUSD with Z-up.
-            </p>
-          </div>
         </div>
       ) : null}
 
@@ -141,8 +129,7 @@ export function AssetDetail({
           <div>
             <h2 className="text-2xl text-foreground">Physical record</h2>
             <p className="mt-3 text-sm leading-6 text-body">
-              Values remain useful only when their provenance is visible. This
-              record separates observations, fitted values, and assumptions.
+              {asset.description}
             </p>
             <div className="mt-6">
               <EvidenceDrawer
@@ -182,8 +169,7 @@ export function AssetDetail({
         <div className="grid gap-8 border border-border bg-card p-5 md:p-8">
           {!downloadsEnabled ? (
             <p className="border border-border bg-background p-4 text-sm leading-6 text-body">
-              These file records describe the upcoming evaluation bundles.
-              Public downloads are not enabled in this showcase.
+              Planned evaluation bundles. Access by request.
             </p>
           ) : null}
           <div className="grid gap-px bg-border sm:grid-cols-2">
@@ -193,8 +179,7 @@ export function AssetDetail({
               </span>
               <h2 className="mt-4 text-xl text-foreground">Appearance</h2>
               <p className="mt-2 text-sm leading-6 text-body">
-                Compact browser and DCC preview with PBR materials. Physics
-                metadata is not canonical here.
+                Visual preview with PBR materials. Y-up.
               </p>
             </div>
             <div className="bg-background p-5">
@@ -203,8 +188,7 @@ export function AssetDetail({
               </span>
               <h2 className="mt-4 text-xl text-foreground">Simulation</h2>
               <p className="mt-2 text-sm leading-6 text-body">
-                Canonical geometry, mass properties, colliders, materials, and
-                evidence metadata.
+                Canonical physics and evidence. Meters, right-handed, Z-up.
               </p>
             </div>
           </div>

@@ -1,33 +1,45 @@
 import type { Metadata } from "next";
-import { Syne, DM_Mono, Inter } from "next/font/google";
+import localFont from "next/font/local";
 
 import "./globals.css";
 import { SITE } from "@/lib/config/site";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
-const syne = Syne({
+const syne = localFont({
+  src: "../public/fonts/syne-latin-variable.woff2",
   variable: "--font-syne",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  weight: "400 800",
 });
 
 // Body face. Variable, so no weight list. Role assignment lives in globals.css.
-const inter = Inter({
+const inter = localFont({
+  src: "../public/fonts/inter-latin-variable.woff2",
   variable: "--font-inter",
-  subsets: ["latin"],
+  display: "swap",
+  weight: "100 900",
 });
 
-const dmMono = DM_Mono({
+const dmMono = localFont({
+  src: "../public/fonts/dm-mono-latin-400.woff2",
   variable: "--font-dm-mono",
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  display: "swap",
+  weight: "400",
+  preload: false,
+});
+
+const geistPixel = localFont({
+  src: "../public/fonts/geist-pixel-square.woff2",
+  variable: "--font-geist-pixel",
+  display: "swap",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "Dirac Robotics. Bring the real world into simulation.",
+    default: "Dirac Robotics. From robot to deployment.",
     template: `%s · ${SITE.name}`,
   },
   description: SITE.description,
@@ -64,12 +76,12 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     url: SITE.url,
     locale: "en_US",
-    title: "Dirac Robotics. Bring the real world into simulation.",
+    title: "Dirac Robotics. From robot to deployment.",
     description: SITE.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dirac Robotics. Bring the real world into simulation.",
+    title: "Dirac Robotics. From robot to deployment.",
     description: SITE.description,
   },
 };
@@ -91,7 +103,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${syne.variable} ${inter.variable} ${dmMono.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
+      className={`${syne.variable} ${inter.variable} ${dmMono.variable} ${geistPixel.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <script

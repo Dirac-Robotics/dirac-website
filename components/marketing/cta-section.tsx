@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import type { LeadInterest } from "@/lib/validation";
 import { SITE } from "@/lib/config/site";
 import { Button } from "@/components/ui/button";
+import { ButtonLabel } from "@/components/ui/button-label";
 
 /**
  * Closing CTA. Every marketing page ends with one, on the same content grid as
@@ -31,14 +32,14 @@ export function CtaSection({
           <Button
             asChild
             size="lg"
-            className="h-12 gap-2 px-8 text-base font-semibold"
+            className="button-motion h-12 gap-2 px-8 text-base font-semibold"
           >
             <a
               href={SITE.bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Book a call
+              <ButtonLabel>Book a call</ButtonLabel>
               <ArrowRight className="size-4" />
             </a>
           </Button>

@@ -60,7 +60,7 @@ export function AssetPackRoute({
     setSelected(asset);
     const next = asset ? `#${asset.slug}` : window.location.pathname;
     window.history.pushState({}, "", next);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
   }
 
   if (error) {
@@ -74,7 +74,7 @@ export function AssetPackRoute({
   if (!manifest) {
     return (
       <div className="data mx-auto max-w-6xl px-6 py-24 text-center text-[0.65rem] uppercase text-dim">
-        Loading asset records
+        Loading assets
       </div>
     );
   }
