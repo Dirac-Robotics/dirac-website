@@ -14,6 +14,13 @@ artwork in `public/brands`; no logo downloads remain outstanding.
 | MIT | Header SVG at https://www.mit.edu/ | `mit.svg` |
 | Stanford | https://identity.stanford.edu/wp-content/uploads/sites/3/2020/06/wordmark-nospace-white.png | `stanford.png` |
 | NVIDIA | Footer SVG at https://www.nvidia.com/ | `nvidia.svg` |
+| NVIDIA Inception | Program badge at https://www.preml.io/wp-content/uploads/2023/05/nvidia-inception-program-badge-rgb-for-screen.jpg | `nvidia-inception.png` |
+
+The NVIDIA Inception badge was retrieved October 10, 2026 from a public member
+website. Its original geometry is retained; the neutral background is removed,
+the dark lettering is white for the hero, and NVIDIA green is preserved. The
+membership line is separate from the investor row. Program information:
+https://www.nvidia.com/en-us/startups/.
 
 Wordmarks preserve the original letter shapes. Artwork is displayed in white
 on the dark hero, including a monochrome version of EF's wordmark. IIT Bombay uses its

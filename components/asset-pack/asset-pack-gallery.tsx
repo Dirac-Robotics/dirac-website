@@ -45,10 +45,10 @@ export function AssetPackGallery({
             </Button>
           ) : (
             <Button asChild size="lg" className="h-12 shrink-0 px-5">
-              <Link href={contactUrl}>
+              <a href={contactUrl} target="_blank" rel="noopener noreferrer">
                 Request access
                 <ArrowUpRight className="size-4" />
-              </Link>
+              </a>
             </Button>
           )}
         </div>

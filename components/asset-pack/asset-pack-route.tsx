@@ -10,6 +10,7 @@ import {
   recordAssetPackEvent,
 } from "@/lib/asset-pack/analytics";
 import { fetchAssetPackManifest } from "@/lib/asset-pack/manifest";
+import { SITE } from "@/lib/config/site";
 import type {
   AssetPackManifest,
   AssetRecord,
@@ -68,6 +69,7 @@ export function AssetPackRoute({
       <div className="mx-auto max-w-3xl px-6 py-24 text-center">
         <h1 className="text-3xl text-foreground">Asset pack unavailable</h1>
         <p className="prose-body mx-auto mt-4">{error}</p>
+        <a href={SITE.bookingUrl} target="_blank" rel="noopener noreferrer" className="site-button site-button-dark mt-6">Book a call</a>
       </div>
     );
   }
@@ -87,14 +89,14 @@ export function AssetPackRoute({
           asset={selected}
           termsVersion={manifest.termsVersion}
           downloadsEnabled={manifest.capabilities.downloads}
-          contactUrl={manifest.capabilities.contactUrl}
+          contactUrl={SITE.bookingUrl}
           onBack={() => select(null)}
         />
       ) : (
         <AssetPackGallery
           manifest={manifest}
           downloadsEnabled={manifest.capabilities.downloads}
-          contactUrl={manifest.capabilities.contactUrl}
+          contactUrl={SITE.bookingUrl}
           onSelectAsset={(asset) => select(asset)}
           onDownloadAll={() => {
             setDownloadAll(true);

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { SITE } from "@/lib/config/site";
 import { MOTION_CONFIG } from "@/lib/config/motion";
@@ -81,13 +81,17 @@ export function HeroHorizon() {
             <span className="hero-simulations">with simulations.</span>
           </h1>
           <div className="hero-actions">
-            <a href="#submit" className="site-button hero-button hero-button-primary"><ButtonLabel>Upload your data</ButtonLabel><ArrowDown aria-hidden="true" /></a>
+            <a href={SITE.bookingUrl} target="_blank" rel="noopener noreferrer" className="site-button hero-button hero-button-primary"><ButtonLabel>Get started</ButtonLabel><ArrowUpRight aria-hidden="true" /></a>
             <a href={SITE.bookingUrl} target="_blank" rel="noopener noreferrer" className="site-button hero-button hero-button-glass"><ButtonLabel>Book a call</ButtonLabel><ArrowUpRight aria-hidden="true" /></a>
           </div>
           <div className="hero-backers" aria-label="Backed by Entrepreneurs First and Transpose Platform">
             <span className="data">Backed by</span>
             <Image className="backer-ef" src="/brands/entrepreneur-first.svg" alt="Entrepreneurs First" width={190} height={14} unoptimized />
             <Image className="backer-transpose" src="/brands/transpose-platform.svg" alt="Transpose Platform" width={194} height={25} unoptimized />
+          </div>
+          <div className="hero-program" aria-label="Member of the NVIDIA Inception program">
+            <span className="data">Member of</span>
+            <Image src="/brands/nvidia-inception.png" alt="NVIDIA Inception program" width={180} height={64} unoptimized />
           </div>
         </div>
       </div>
