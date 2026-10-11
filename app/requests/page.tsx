@@ -1,5 +1,6 @@
-import { permanentRedirect } from "next/navigation";
+import { redirect } from "next/navigation";
+import { SITE } from "@/lib/config/site";
 
 export default function RetiredPage() {
-  permanentRedirect("/asset-pack");
+  redirect(SITE.bookingUrl);
 }

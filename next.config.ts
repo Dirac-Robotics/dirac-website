@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { SITE } from "./lib/config/site";
 
 // One year, immutable: the browser keeps these across visits without
 // revalidating. Applied only to genuinely static public assets.
@@ -20,9 +21,9 @@ const nextConfig: NextConfig = {
       { source: "/evals", destination: "/#stage-04", permanent: true },
       { source: "/deployments", destination: "/#stage-05", permanent: true },
       { source: "/about", destination: "/#affiliations", permanent: true },
-      { source: "/contact", destination: "/#submit", permanent: true },
+      { source: "/contact", destination: SITE.bookingUrl, permanent: false },
       { source: "/community-assets", destination: "/asset-pack", permanent: true },
-      { source: "/requests", destination: "/asset-pack", permanent: true },
+      { source: "/requests", destination: SITE.bookingUrl, permanent: false },
     ];
   },
   // User-uploaded and catalog media are rendered with plain <img> from public

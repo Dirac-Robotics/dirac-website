@@ -398,7 +398,7 @@
   "capabilities": {
     "downloads": false,
     "serverAnalytics": false,
-    "contactUrl": "/contact"
+    "contactUrl": "https://cal.com/founders-bow3m9/30min"
   },
   "releaseStatus": "evaluation-only-beta",
   "schema": "asset-pack.web.v1",

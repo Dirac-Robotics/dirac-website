@@ -8,7 +8,6 @@ import {
   FileCode2,
   ShieldCheck,
 } from "lucide-react";
-import Link from "next/link";
 import * as React from "react";
 
 import { AssetViewer } from "@/components/asset-pack/asset-viewer";
@@ -68,10 +67,10 @@ export function AssetDetail({
             </Button>
           ) : (
             <Button asChild size="lg" className="h-11">
-              <Link href={contactUrl}>
+              <a href={contactUrl} target="_blank" rel="noopener noreferrer">
                 Request access
                 <ArrowUpRight className="size-4" />
-              </Link>
+              </a>
             </Button>
           )}
         </div>

@@ -1,6 +1,11 @@
 # Private sample requests
 
-The marketing form is at `/#submit`. The private inbox is at `/admin/samples`.
+As of October 10, 2026, the public `/#submit` section directs visitors to book
+a call. The upload form and backend remain in the repository, but enabling
+public uploads again requires restoring `SampleSubmissionForm` in
+`SampleSubmissionSection` as well as completing the configuration below.
+
+The private inbox is at `/admin/samples`.
 This workflow reuses Postgres + Drizzle, Azure Blob Storage, and Auth.js database
 sessions with the existing `users.role = 'admin'` authorization. It does not
 create a new provider, send notifications, process samples, or provision services.
